@@ -13,6 +13,6 @@
  */
 class Action_DisplayLogin {
      public function display($request) {
-        header("Location: ./Views/login.php");
+        header("Location: login.html");
     }
 }

@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>myabet Admin</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+            <!-- Bootstrap -->
+        <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
+                <!-- styles -->
+        <link href="css/styles.css" rel="stylesheet">
+                    
+                    
+                    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+                    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+                    <!--[if lt IE 9]>
+                     <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+                     <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+                     <![endif]-->
+                    </head>
+    <body>
+        <!-- Modal -->
+        <div class="modal fade" id="myModalA" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="myModalLabelA">new status</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="panel-body">
+                            <form class="form-horizontal" role="form">
+                                
+                                <fieldset>
+                                   
+                                    <div class="form-group">
+                                        <label>Status Type</label>
+                                        <input class="form-control" placeholder="type" type="text" id = "inputC1A">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Status Name</label>
+                                        <input class="form-control" placeholder="name" type="text" id = "inputC2A">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Description</label>
+                                        <textarea class="form-control" placeholder="Textarea" rows="3" id = "inputC3A"></textarea>
+                                    </div>
+                                
+                                    
+                                </fieldset>
+                                
+                                </from>
+                                </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" data-dismiss = "modal" id = "save">Add</button>
+                </div>
+            </div>
+        </div>
+        </div>
+        <!-- Modal -->
+        <div class="modal fade" id="myModalU" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="myModalLabelU">update status</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="panel-body">
+                            <form class="form-horizontal" role="form">
+                                
+                                <fieldset>
+                                    
+                                    <div class="form-group">
+                                        <label>Status Type</label>
+                                        <input class="form-control" placeholder="type" type="text" id = "inputC1U">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Status Name</label>
+                                        <input class="form-control" placeholder="name" type="text" id = "inputC2U">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Description</label>
+                                        <textarea class="form-control" placeholder="Textarea" rows="3" id = "inputC3U"></textarea>
+                                    </div>
+                                    
+                                   
+                                </fieldset>
+                                
+                                </from>
+                                </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" data-dismiss = "modal" id = "update">Update</button>
+                </div>
+            </div>
+        </div>
+        </div>
+        
+        <div class="header">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-5">
+                        <!-- Logo -->
+                        <div class="logo">
+                            <h1><a href="index.html">myabet Admin</a></h1>
+                        </div>
+                    </div>
+                                        <div class="col-md-2" style = "float: right">
+                        <div class="navbar navbar-inverse" role="banner">
+                            <nav class="collapse navbar-collapse bs-navbar-collapse navbar-right" role="navigation">
+                                <ul class="nav navbar-nav">
+                                    <li class="dropdown">
+                                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" id = "username" > My Account<b class="caret"></b></a>
+                                        <ul class="dropdown-menu animated fadeInUp">
+                                            
+                                            <li><a href="login.html">Logout</a></li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script src = "js/index.js">
+            </script>
+        <div class="page-content">
+            <div class="row">
+                <div class="col-md-2">
+                    <div class="sidebar content-box" style="display: block;">
+                        <ul class="nav">
+                           
+                            <li> <a href="students.html">
+                                <i class="glyphicon glyphicon-list"></i> Students
+                            </a></li>
+                            <li><a href="colleges.html"><i class="glyphicon glyphicon-list"></i> Colleges</a></li>
+                            <li><a href="departments.html"><i class="glyphicon glyphicon-list"></i> Departments</a></li>
+                            <li ><a href="programs.html"><i class="glyphicon glyphicon-list"></i> Programs</a></li>
+                            <li ><a href="courses.html"><i class="glyphicon glyphicon-list"></i> Courses</a></li>
+                            <li ><a href="faculty.html"><i class="glyphicon glyphicon-list"></i> Faculty</a></li>
+                            <li ><a href="employer.html"><i class="glyphicon glyphicon-list"></i> Employer</a></li>
+                            <li ><a href="semester.html"><i class="glyphicon glyphicon-list"></i> Semester</a></li>
+                            <li><a href="section.html"><i class="glyphicon glyphicon-list"></i> Section</a></li>
+                            <li><a href="surveytype.html"><i class="glyphicon glyphicon-list"></i> Survey Type</a></li>
+                            <li class = "current"><a href="status.html"><i class="glyphicon glyphicon-list"></i> Status</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-md-10">
+                    
+                    
+                    
+                    
+                    <div class="content-box-large">
+                        <div class="panel-heading">
+                            <div class="panel-title"><a href="" style = "text-decoration: underline; color: blue" id = "addR" data-toggle="modal" data-target="#myModalA">new status...</a></div>
+                        </div>
+                        <div class="panel-body">
+                            <table cellpadding="0" cellspacing="0" border="0" class="table  " id="myT">
+                                <thead>
+                                    <tr>
+                                        <th> Sr# </th>
+                                        <th>Status Type</th>
+                                        <th>Status Name</th>
+                                        <th>Description</th>
+                                        <th>actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id ="tbody">
+                                                                    </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        
+        <footer>
+            <div class="container">
+                
+                <div class="copy text-center">
+                    Copyright 2016 <a href='#'>ICS Department, KFUPM</a>
+                </div>
+                
+            </div>
+        </footer>
+        
+        <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+        <script src="https://code.jquery.com/jquery.js"></script>
+        <!-- Include all compiled plugins (below), or include individual files as needed -->
+        <script src="bootstrap/js/bootstrap.min.js"></script>
+        <script src="js/custom.js"></script>
+        <script src = "js/status.js"></script>
+
+    </body>
+</html>

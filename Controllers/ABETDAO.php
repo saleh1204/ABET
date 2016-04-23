@@ -6,7 +6,7 @@ class ABETDAO {
     private $_host = "localhost";
     private $_user = "root";
     private $_pass = "saleh";
-    private $_db = "ABET";
+    private $_db = "abet";
 
     function __construct() {
         

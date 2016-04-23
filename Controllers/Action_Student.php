@@ -3,33 +3,34 @@
 require_once 'ABETDAO.php';
 
 class Action_Student {
-/*
-    public function getSurvey($request) {
-        $dao = new ABETDAO();
+    /*
+      public function getSurvey($request) {
+      $dao = new ABETDAO();
 
-        $query = '';
-        $result = $dao->excuteQuery($query);
-        return json_encode($result);
-    }
+      $query = '';
+      $result = $dao->excuteQuery($query);
+      return json_encode($result);
+      }
 
-    public function getAllSurveys($request) {
-        $dao = new ABETDAO();
+      public function getAllSurveys($request) {
+      $dao = new ABETDAO();
 
-        $query = '';
-        $result = $dao->excuteQuery($query);
-        return json_encode($result);
-    }
- */
- 
-/*
-    public function addStudentQA($request) {
-        $dao = new ABETDAO();
-        $query = 'insert into ABET.StudentQA (QA_QAID, Student_Section_SSID) values (' . $request->get('qaid') . ',' .
-                ', ' . $request->get('ssid') . ');';
-        $result = $dao->excuteQuery($query);
-        // return json_encode($result);
-    }
-*/
+      $query = '';
+      $result = $dao->excuteQuery($query);
+      return json_encode($result);
+      }
+     */
+
+    /*
+      public function addStudentQA($request) {
+      $dao = new ABETDAO();
+      $query = 'insert into ABET.StudentQA (QA_QAID, Student_Section_SSID) values (' . $request->get('qaid') . ',' .
+      ', ' . $request->get('ssid') . ');';
+      $result = $dao->excuteQuery($query);
+      // return json_encode($result);
+      }
+     */
+
     public function addStudentQA($request) {
         $dao = new ABETDAO();
         $query = 'INSERT INTO ABET.STUDENTQA (STUDENT_SECTION_SSID, QA_QAID) VALUES '
@@ -61,11 +62,8 @@ class Action_Student {
                 . 'AND P.PNAMESHORT = ? '
                 . 'AND A.WEIGHT_NAME = ? '
                 . 'AND SOCODE = ? ));';
-        
-        $rows = $dao->query($query, $request->get('SUID'), $request->get('Semester'), $request->get('facultyEmail'), 
-                                    $request->get('courseCode'), $request->get('PNameShort'), $request->get('Rubric'), 
-                                    $request->get('courseCode'), $request->get('PNameShort'), $request->get('PNameShort'), 
-                                    $request->get('SOCODE'));
+
+        $dao->query($query, $request->get('SUID'), $request->get('Semester'), $request->get('facultyEmail'), $request->get('courseCode'), $request->get('pnameShort'), $request->get('Rubric'), $request->get('courseCode'), $request->get('PNameShort'), $request->get('weightName'), $request->get('SOCode'));
     }
 
 }
