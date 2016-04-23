@@ -65,7 +65,7 @@ $(document).ready(function () {
                 console.log(textStatus + "\n" + errorThrown.toString());
 
             });
-            ;
+            
         }
         else { // it is an update button
             document.getElementById("inputC1U").value = nname;
