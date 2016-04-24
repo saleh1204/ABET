@@ -72,7 +72,7 @@ $(document).ready(function () {
                 var newC1 = document.getElementById("mySelectU").value;
                 var newC2 = document.getElementById("inputC1U").value;
                 var newC3 = document.getElementById("inputC2U").value;
-                alert("UPDATING: " + newC1 + " " + newC2 + " " + newC3);
+                //alert("UPDATING: " + newC1 + " " + newC2 + " " + newC3);
                 // THE UPDATE STATEMENT GOES HERE
 
                 var parameters = {
@@ -104,7 +104,7 @@ $(document).ready(function () {
     });
     $('#addR').click(function () {
         document.getElementById("mySelectA").value = "";
-        alert("inside add");
+        //alert("inside add");
     });
     $('#save').click(function () {
         //alert("INSIDE SAVE");

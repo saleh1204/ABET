@@ -10,7 +10,6 @@ $(document).ready(function () {
         };
         $.getJSON("../index.php", parameters).done(function (data, textStatus, jqXHR)
         {
-            $("#tbody tr").remove();
             var col1 = [];
             var col2 = [];
             var col3 = [];
@@ -82,7 +81,7 @@ $(document).ready(function () {
             document.getElementById("inputC2U").value = $col3;
             document.getElementById("inputC3U").value = $col4;
             document.getElementById("inputC4U").value = $col5;
-            
+
             document.getElementById("mySelectU2").value = $col6;
             $('#update').unbind().click(function () {
                 var newC1 = document.getElementById("mySelectU1").value;

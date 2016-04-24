@@ -377,18 +377,101 @@ class Action_DBA {
 
     public function addSurveyType($request) {
         $dao = new ABETDAO();
-        $query = 'insert into ABET.SurveyType (SurveyName, StatusID) values (\'' . $request->get('surveyName') . '\', \'' .
-                '(select StatusID from ABET.Status where StatusType = \'Survey\' and StatusName = \'Valid\'));';
-        $dao->excuteQuery($query);
+        $query = 'SELECT StatusID FROM ABET.Status WHERE StatusType = ?';
+        $result = $dao->query($query, $request->get('statusType'));
+        $query = 'INSERT INTO SurveyType (SurveyName, StatusID, Description, DateActivated, DateDeactivated) VALUES (?, ?, ?, ?, ?)';
+        $result = $dao->query($query, $request->get('surveyName'), $result[0]['StatusID'], $request->get('description'), $request->get('dateActivated'), $request->get('dateDeactivated'));
+        $encoded = json_encode($result);
+        echo $encoded;
+    }
+
+    public function getSurveyType($request) {
+        $dao = new ABETDAO();
+        $query = 'SELECT ST.Description, ST.SurveyName, ST.DateActivated, ST.DateDeactivated,S.StatusType FROM abet.SurveyType ST, abet.Status S where ST.StatusID = S.StatusID;';
+        $rows = $dao->query($query);
+        $surveyTypes = [];
+        if ($rows != false) {
+            foreach ($rows as $row) {
+                $surveyTypes[] = [
+                    "SurveyType" => $row["SurveyName"],
+                    "Status" => $row["StatusType"],
+                    "description" => $row["Description"],
+                    "dateActivated" => $row["DateActivated"],
+                    "dateDeactivated" => $row["DateDeactivated"],
+                ];
+            }
+        }
+        $encoded = json_encode($surveyTypes);
+        echo $encoded;
+    }
+
+    public function updateSurveyType($request) {
+        $dao = new ABETDAO();
+        $query = 'SELECT StatusID FROM ABET.Status WHERE StatusType = ?';
+        $result = $dao->query($query, $request->get('status'));
+        $query = 'UPDATE ABET.SurveyType SET SurveyName = (?), DateActivated = (?), DateDeactivated = (?), Description = ?, StatusID = ? where SurveyName = ?;';
+        $result = $dao->query($query, $request->get('surveyName'), $request->get('dateActivated'), $request->get('dateDeactivated'), $request->get('description'), $result[0]['StatusID'], $request->get('oldSurveyName'));
+        $encoded = json_encode($result);
+        echo $encoded;
+    }
+
+    public function deleteSurveyType($request) {
+        $dao = new ABETDAO();
+        $query = 'DELETE FROM ABET.SurveyType WHERE SurveyName = ?;';
+        $result = $dao->query($query, $request->get('surveyName'));
+        $encoded = json_encode($result);
+        echo $encoded;
     }
 
     public function addSection($request) {
         $dao = new ABETDAO();
-        $query = 'insert into abet.Section (SectionNum, CourseID, SemesterID, Faculty_FacultyID) values (' . $request->get('sectionNum') . ',\'' .
-                '(select CourseID from ABET.Course where CourseCode = ' . $request->get('courseCode') . ')' . '\',' .
-                '(select SemesterID from Abet.Semester where SemesterNum = ' . $request->get('sectionNum') . ')' .
-                ',\' (select FacultyID from abet.Faculty where Email =\'' . $request->get('facultyEmail') . '\'));';
-        $result = $dao->excuteQuery($query);
+        $query = 'INSERT INTO ABET.Section (SectionNum, CourseID, SemesterID, FacultyID) VALUES ('
+                . '?,'
+                . '(SELECT CourseID FROM ABET.Course WHERE CourseCode = ?),'
+                . '(SELECT SemesterID FROM ABET.Semester WHERE SemesterNum = ?),'
+                . ' (SELECT FacultyID FROM ABET.Faculty WHERE FacultyName = ?)'
+                . ');';
+        // $result[0]['FacultyID']
+        $result = $dao->query($query, $request->get('sectionNum'), $request->get('courseCode'), $request->get('semesterNum'), $request->get('facultyName'));
+        $encoded = json_encode($result);
+        echo $encoded;
+    }
+
+    public function getSections($request) {
+        $dao = new ABETDAO();
+        $query = 'SELECT DISTINCT P.PNameShort, C.CourseCode, SEM.SemesterNum, F.FacultyName, SEC.SectionNum, SEC.SectionID FROM abet.Section SEC, abet.Faculty F, abet.Semester SEM, abet.Course C, abet.Program P '
+                . 'WHERE SEC.SemesterID = SEM.SemesterID AND SEC.FacultyID = F.FacultyID AND C.CourseID = SEC.CourseID AND C.ProgramID = P.ProgramID';
+        $rows = $dao->query($query);
+        $sections = [];
+        if ($rows != false) {
+            foreach ($rows as $row) {
+                $sections[] = [
+                    "PName" => $row["PNameShort"],
+                    "courseCode" => $row["CourseCode"],
+                    "semester" => $row["SemesterNum"],
+                    "FacultyName" => $row["FacultyName"],
+                    "SectionNum" => $row["SectionNum"]
+                ];
+            }
+        }
+        $encoded = json_encode($sections);
+        echo $encoded;
+    }
+
+    public function updateSection($request) {
+        $dao = new ABETDAO();
+        $query = 'UPDATE ABET.Section SET SectionNum = (?), CourseID = (SELECT COURSEID FROM COURSE WHERE COURSECODE = ?), SemesterID = (SELECT SemesterID from abet.Semester where SemesterNum = ?), FacultyID = (SELECT FacultyID FROM Faculty WHERE FacultyName = ?) '
+                . 'WHERE SectionNum = ? AND SemesterID = (SELECT SemesterID from abet.Semester where SemesterNum = ?) AND FacultyID = (SELECT FacultyID FROM Faculty WHERE FacultyName = ?) AND CourseID = (SELECT COURSEID FROM COURSE WHERE COURSECODE = ? AND ProgramID = (SELECT ProgramID FROM Program WHERE PNameShort = ?));';
+        $result = $dao->query($query, $request->get('newSectionNum'), $request->get('newCourseCode'), $request->get('newSemester'), $request->get('newFacultyName'), $request->get('sectionNum'), $request->get('semesterNum'), $request->get('facultyName'), $request->get('courseCode'), $request->get('pname'));
+        $encoded = json_encode($result);
+        echo $encoded;
+    }
+
+    public function deleteSection($request) {
+        $dao = new ABETDAO();
+        // pname, courseCode
+        $query = 'DELETE FROM ABET.Section WHERE sectionNum = ? AND SemesterID = (SELECT SemesterID from abet.Semester where SemesterNum = ?) AND FacultyID = (SELECT FacultyID FROM Faculty WHERE FacultyName = ?) AND CourseID = (SELECT COURSEID FROM COURSE WHERE COURSECODE = ? AND ProgramID = (SELECT ProgramID FROM Program WHERE PNameShort = ?));';
+        $result = $dao->query($query, $request->get('sectionNum'), $request->get('semesterNum'), $request->get('facultyName'), $request->get('courseCode'), $request->get('pname'));
         $encoded = json_encode($result);
         echo $encoded;
     }
@@ -437,7 +520,18 @@ class Action_DBA {
     }
 
     public function display($request) {
-        return $this->getEmployers($request);
+      //  $request->set("sectionNum", "0");
+      //  $request->set("courseCode", "233");
+     //   $request->set("semesterNum", "151");
+      //  $request->set("facultyName", "Salah");
+      //  $request->set("newSectionNum", "2");
+       // $request->set("newCourseCode", "233");
+       // $request->set("newSemester", "152");
+      //  $request->set("newFacultyName", "Salah");
+       // $request->set("sectionNum", "2");
+       // $request->set("pname", "CS");
+        //$request->set("datedeActivated", "2011-02-03");
+        return $this->getStudents($request);
     }
 
 }
