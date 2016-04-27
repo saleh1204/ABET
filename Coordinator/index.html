@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="description" content="">
+        <meta name="author" content=""> 
+        <script src="../js/vendor/jquery-1.11.2.js"></script>
+        <script src="../js/vendor/jquery.js"></script>
+
+        <!-- DataTables Responsive CSS -->
+
+        <link rel="stylesheet" type="text/css" href="css/font-awesome.min.css" />
+
+        <script src="js/vendor/jquery.dataTables.min.js"></script>         
+        <script src="js/vendor/bootstrap.min.js"></script>
+        <script src="js/main.js"></script>
+        <title>Coordinator</title>
+        <!-- Bootstrap core CSS -->
+        <!-- Custom CSS -->
+
+
+
+        <link rel="stylesheet" href="css/jquery.dataTables.min.css">
+        <link rel="stylesheet" href="css/Select.css">
+
+        <link rel="stylesheet" type="text/css" href="css/font-awesome.min.css" />
+
+
+        <link href="css/bootstrap.css" rel="stylesheet">
+        <!-- Custom styles for this template -->
+        <link href="css/dashboard.css" rel="stylesheet">
+        <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+        <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    </head>
+    <body>
+        <nav class="navbar navbar-inverse navbar-fixed-top">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="index.html">Abet Report Generator</a>
+                </div>
+                <div id="navbar" class="navbar-collapse collapse">
+                    <ul class="nav navbar-nav navbar-right">
+
+                    </ul>
+
+                </div>
+            </div>
+        </nav>
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-sm-3 col-md-2 sidebar">
+                    <ul class="nav nav-sidebar">
+                        <li class="active">
+                            <a id="RCoptions" data-toggle="collapse" data-target="#ReportCenter" ><span class="glyphicon glyphicon-collapse-down"></span> Report Center</a>
+                        </li>
+                        <li  >
+
+                            <div class="container">
+
+                                <div id="ReportCenter" class="collapse">
+                                    <ul class="nav nav-sidebar"> <li class="active">
+                                            <a href="index.html">      - Exit Survey</a>
+                                        </li>
+                                        <li  >
+                                            <a href="employerSurvey.html">      - Employer Survey</a>
+                                        </li>
+                                        <li>
+                                            <a href="CLOSurvey.html">      - CLO Survey</a>
+                                        </li>
+                                        <li>
+                                            <a href=" rubricsSurvey.html">      - Rubrics Survey </a>
+                                        </li>    </ul> </div>
+                            </div> 
+                        </li>
+                        <li>
+                            <a href="PO.html">Program Outcomes</a>
+                        </li>
+                        <li>
+                            <a href="changePO.html">Change Program Outcomes</a>
+                        </li>
+                        <li>
+                            <a href="employeSurvey.html">Employe Survey</a>
+                        </li>
+                        <li>
+                            <a href="exitSurvey.html">Exit Survey</a>
+                        </li>
+
+                    </ul>
+                </div>
+                <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+                    <h1 class="page-header">Report Center</h1>
+                    <div class="row placeholders">
+                    </div>
+                    <h2 class="sub-header">Exit Survey</h2>
+                    <!-- Modal -->
+                    <div class="modal fade" id="myModal" tabindex="-1" role="dialog">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-body">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                        <h4 class="modal-title">Add Student</h4>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <form role="form"> 
+                                            <div class="form-group"> 
+                                                <label class="control-label" for="exampleInputEmail1">ID</label>                                                 
+                                                <input type="number" class="form-control" id="studentID" placeholder="Enter Student Id"> 
+                                            </div>
+                                            <div class="form-group"> 
+                                                <label class="control-label" for="exampleInputEmail1">Name</label>                                                 
+                                                <input type="text" class="form-control" id="studentName" placeholder="Enter Student Name"> 
+                                            </div>
+                                            <div class="form-group"> 
+                                                <label class="control-label" for="exampleInputEmail1">Email address</label>                                                 
+                                                <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Enter email"> 
+                                            </div>
+                                            <div class="form-group"> 
+                                                <label class="control-label" for="exampleInputEmail1">Major</label>                                                 
+                                                <input type="text" class="form-control" id="majorID" placeholder="Enter Student Major"> 
+                                            </div>                                             
+                                            <button type="submit" class="btn">Submit</button>                                             
+                                        </form>                                         
+                                    </div>
+                                    <div class="modal-footer">
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- /.modal-content -->
+                        </div>
+                        <!-- /.modal-dialog -->
+                    </div>                     
+                    <nav class="navbar navbar-inverse navbar-fixed-top">
+                        <div class="container">
+                            <div class="navbar-header">
+                                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                                    <span class="sr-only">Toggle navigation</span>
+                                    <span class="icon-bar"></span>
+                                    <span class="icon-bar"></span>
+                                    <span class="icon-bar"></span>
+                                </button>
+                                <a class="navbar-brand" href="index.html">Abet Report Generator</a>
+                            </div>
+                            <div id="navbar" class="navbar-collapse collapse" aria-expanded="false" style="height: 1px;">
+                                <ul class="nav navbar-nav">
+
+                                </ul>
+                            </div>
+                            <!--/.nav-collapse -->
+                        </div>
+                    </nav>
+
+                    <!--<script>
+$(function() {
+//twitter bootstrap script
+    $("button#submit").click(function(){
+                    $.ajax({
+                    type: "POST",
+                    url: "process.php",
+                    data: $('form.contact').serialize(),
+                    success: function(msg){
+                              $("#thanks").html(msg)
+                            $("#form-content").modal('hide');	
+                    },
+                    error: function(){
+                            alert("failure");
+                            }
+                    });
+    });
+});
+</script> -->
+                    <link rel="stylesheet" type="text/css" href="http://www.shieldui.com/shared/components/latest/css/light/all.min.css" />
+                    <script type="text/javascript" src="http://www.shieldui.com/shared/components/latest/js/shieldui-all.min.js"></script>
+
+
+                    <script type="text/javascript">
+
+
+                        $(document).ready(function () {
+
+                            // get terms 
+                            var parameters = {
+                                grp: "DBA",
+                                cmd: "getSemesters"
+
+                            };
+                            $.getJSON("../index.php", parameters).done(function (data, textStatus, jqXHR) {
+                                var terms = [];
+                                for (var i = 0; i < data.length; i++)
+                                {
+                                    terms[i] = data[i].semesterNum;
+                                    alert(terms[i]);
+                                }
+                                creatSelectOptions("#startT", terms);
+                                creatSelectOptions("#endT", terms);
+                            }
+                            ).fail(function (jqXHR, textStatus, errorThrown)
+                            {// log error to browser's console
+                                console.log(textStatus + "\n" + errorThrown.toString());
+                            });
+
+                            function creatSelectOptions(id, data)
+                            {  //not sure if it will work or it neads .each
+                                //$(id).html("");//clear the defualt value
+                                $(id).empty();
+                                for (var i = 0; i < data.length; i++) {
+                                    $(id).append("<option value='" + data[i] + "'>" + data[i] + "</option>");
+                                }
+                            }
+
+
+
+
+
+                            function creatTable(id, data)
+                            {
+
+                                $("#table").html("<div class='panel panel-default'><div class='panel-heading'>DataTables Advanced Tables</div><div class='panel-body'><div class='dataTable_wrapper'><table class='table table-striped table-bordered table-hover' id='dataTables-example'></table></div></div></div> <hr id='report' />");
+
+
+                                var table = $('#dataTables-example').DataTable({
+                                    data: data,
+                                    columns: [
+                                        {title: "Sr"},
+                                        {title: "Question"},
+                                        {title: "Exellent"},
+                                        {title: "Vgood"},
+                                        {title: "Good"},
+                                        {title: "Fair"},
+                                        {title: "Poor"},
+                                        {title: "NA"}
+                                    ]
+
+                                });
+
+
+                            }
+
+
+
+
+                            function creatReport(SOCode, HPerformace)
+                            {
+                                $("#report").html("<div class='row'><div class='col-lg-12 col-md-12 '><div class='panel panel-info'><div class='panel-heading'><h3>Quarterly Sales</h3></div><div class='panel-body'><div id='performance2' style='height: 270px;'></div></div></div></div></div>");
+
+                                $("#performance2").shieldChart({
+                                    primaryHeader: {
+                                        text: "Visitors"
+                                    },
+                                    axisX: {
+                                        collectionAlias: "StudentOutcome",
+                                        categoricalValues: SOCode},
+                                    dataSeries: [{
+                                            seriesType: "bar",
+                                            collectionAlias: "HPerformace",
+                                            data: HPerformace
+                                        }]
+                                });
+                            }
+                            //var data = [{sr: "fghn1",question: "fghn1",Exellent: "fghn1",vgood: "fghn1",Good: "fghn1",fair: "fghn1",poor: "fghn1",NA:"asd"},{sr: "fghn1",question: "fghn1",Exellent: "fghn1",vgood: "fghn1",Good: "fghn1",fair: "fghn1",poor: "fghn1",NA:"asd"},{sr: "fghn1",question: "fghn1",Exellent: "fghn1",vgood: "fghn1",Good: "fghn1",fair: "fghn1",poor: "fghn1",NA:"asd"}]
+
+
+
+                            $('form').submit(function (event) {
+                                event.preventDefault();
+
+
+                                var parameters = {//for the table
+                                    grp: "Coordinator",
+                                    cmd: "getExitSurvey",
+                                    startTerm: $("#startT option:selected").val(),
+                                    endTerm: $("#endT option:selected").val() //expected an array of #sr,question,Exellent,v.good,Good,fair,poor,NA
+                                };
+                                $.getJSON("../index.php", parameters).done(function (data, textStatus, jqXHR) {
+                                    var datatable = [];
+                                    for (var i = 0; i < data.length; i++)//2d array
+                                    {
+                                        datatable[i] = [];
+                                    }
+                                    for (var i = 0; i < data.length; i++)//fill 2d array
+                                    {
+                                        datatable[i][0] = data[i].Sr;
+                                        datatable[i][1] = data[i].Question;
+                                        datatable[i][2] = data[i].Exellent;
+                                        datatable[i][3] = data[i].Vgood;
+                                        datatable[i][4] = data[i].Good;
+                                        datatable[i][5] = data[i].Fair;
+                                        datatable[i][6] = data[i].Poor;
+                                        datatable[i][7] = data[i].NA;
+
+                                    }
+                                    creatTable("#example", datatable);
+
+                                }
+                                ).fail(function (jqXHR, textStatus, errorThrown)
+                                {// log error to browser's console
+                                    console.log(textStatus + "\n" + errorThrown.toString());
+                                });//*****end creat Table
+
+
+
+
+
+                                var parameters = {//for the chart figure
+                                    grp: "Coordinator",
+                                    cmd: "getChartData"//not sure of the command
+
+                                            //expected an array of SOCode,highestmarks
+                                };
+                                $.getJSON("../index.php", parameters).done(function (data, textStatus, jqXHR) {
+                                    var SOCode = [];
+                                    var highestmarks = [];//not sure of this
+
+                                    for (var i = 0; i < data.length; i++)//fill 2d array
+                                    {
+                                        SOCode[i] = data[i].SOCode;
+                                        highestmarks[i] = data[i].highestmarks;
+
+                                    }
+                                    creatReport(SOCode, highestmarks);
+
+
+                                }
+                                ).fail(function (jqXHR, textStatus, errorThrown)
+                                {// log error to browser's console
+                                    console.log(textStatus + "\n" + errorThrown.toString());
+                                });//*****end Chart Figure
+
+
+
+
+                            });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                            $("#ReportCenter").on("hide.bs.collapse", function () {
+                                $("#RCoptions").html('<span class="glyphicon glyphicon-collapse-down"></span> Report Center');
+                            });
+                            $("#ReportCenter").on("show.bs.collapse", function () {
+                                $("#RCoptions").html('<span class="glyphicon glyphicon-collapse-up"></span> Report Center');
+                            });
+
+
+
+
+
+
+                        });
+
+
+
+
+
+
+                    </script> 
+
+                    <div class="col-lg-10">
+                        <form class="form-inline">
+                            <div class="form-group">
+                                <label for="startT">Start term  :</label>
+                                <select id="startT"  class=" form-control">
+                                    <option>132</option> 
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="endT">       End term   :   </label>
+                                <select id="endT" class=" form-control">
+                                    <option>132</option>
+                                </select>   </div>
+                            <button type="submit" id="generate" class="btn btn-success">Generate Reports</button>
+                        </form> 
+
+                    </div >
+
+                    <hr id="table" />
+
+
+
+                </div>
+            </div>
+        </div>
+
+        <!-- Bootstrap core JavaScript
+    ================================================== -->
+        <!-- Placed at the end of the document so the pages load faster -->
+
+        <!-- Metis Menu Plugin JavaScript -->
+
+        <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    </body>
+</html>

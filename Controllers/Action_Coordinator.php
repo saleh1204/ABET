@@ -195,7 +195,7 @@ class Action_Coordinator {
         return json_encode($rubrics);
     }
 
-    public function getAvgAllSOCourse($request) {
+    public function getAvgAllSOCourse1($request) {
         // -- retrieve the average for all the SO in a given term for a course
         $dao = new ABETDAO();
         $query = 'SELECT SOCode , AVG(Weight_Value) '

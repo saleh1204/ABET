@@ -1,7 +1,8 @@
 <?php
 
 require_once 'ABETDAO.php';
-require_once '../Models/Term.php';
+
+//require_once '../Models/Term.php';
 
 class Action_Faculty {
 
@@ -27,12 +28,31 @@ class Action_Faculty {
 
     public function addStudentSection($request) {
         $dao = new ABETDAO();
-        $query = 'insert into abet.Student_Section (SectionID, Student_StudentID) values (' .
-                ' (select SectionID From abet.Section where SectionNum = ' . $request->get('sectionNum') . ' and Faculty_FacultyID = '
-                . '(select FacultyID from ABET.Faculty where email = \'' . $request->get('facultyEmail') . '\')), '
-                . '(select StudentID from ABET.Student where SUID = ' . $request->get('studentID') . ')'
+        $query = 'SELECT SectionID FROM Section WHERE courseID = (SELECT CourseID FROM Course WHERE CourseCode = ? '
+                . 'AND ProgramID = (SELECT ProgramID FROM Program WHERE PNameShort = ?)) '
+                . 'AND FacultyID = (SELECT FacultyID FROM ABET.Faculty WHERE email = ? ) '
+                . 'AND SemesterID = (SELECT SemesterID FROM Semester WHERE semesterNum = ?);';
+        $result = $dao->query($query, $request->get('courseCode'), $request->get('pnameShort'), $request->get('email'), $request->get('semester'));
+        $query = 'insert into abet.Student_Section (SectionID, Student_StudentID) values '
+                . '( ?, '
+                . '(SELECT StudentID FROM ABET.Student WHERE SUID = ? )'
                 . ');';
-        $dao->excuteQuery($query);
+        $result = $dao->query($query, $result[0]["SectionID"], $request->get('studentID'));
+        echo json_encode($result);
+    }
+
+    function deleteStudentSection($request) {
+        $dao = new ABETDAO();
+        $query = 'SELECT StudentID FROM STUDENT WHERE SUID = ?;';
+        $result1 = $dao->query($query, $request->get('studentID'));
+        $query = 'SELECT SectionID FROM Section WHERE courseID = (SELECT CourseID FROM Course WHERE CourseCode = ? '
+                . 'AND ProgramID = (SELECT ProgramID FROM Program WHERE PNameShort = ?)) '
+                . 'AND FacultyID = (SELECT FacultyID FROM ABET.Faculty WHERE email = ? ) '
+                . 'AND SemesterID = (SELECT SemesterID FROM Semester WHERE semesterNum = ?);';
+        $result = $dao->query($query, $request->get('courseCode'), $request->get('pnameShort'), $request->get('email'), $request->get('semester'));
+        $query = 'DELETE FROM abet.Student_Section WHERE SectionID = ? AND Student_StudentID = ?;';
+        $result = $dao->query($query, $result[0]["SectionID"], $result1[0]["StudentID"]);
+        echo json_encode($result);
     }
 
     public function addQuestion($request) {
@@ -60,28 +80,59 @@ class Action_Faculty {
         return json_encode($terms);
     }
 
-    public function getCourses($request) {
+    public function getAllCourses($request) {
         $dao = new ABETDAO();
-        $query = 'SELECT PNameShort, CourseCode '
-                . 'FROM ABET.Faculty F, ABET.Section SEC, ABET.Semester SEM, ABET.Course C, ABET.Program P '
-                . 'WHERE F.FACULTYID = SEC.FACULTY_FACULTYID '
-                . 'AND SEM.SEMESTERID = SEC.SEMESTERID '
-                . 'AND SEC.COURSEID = C.COURSEID '
+        // $query = 'SELECT FacultyID FROM Faculty WHERE Email = ?';
+        // $rows = $dao->query($query, $request->get('email'));
+        // echo $rows[0]['FacultyID'] . '<br>';
+        $query = 'SELECT PNameShort, CourseCode, SEM.SemesterNum, F.FacultyName '
+                . 'FROM Faculty F, Section SEC, Semester SEM, Course C, Program P '
+                . 'WHERE C.CourseID = SEC.CourseID '
+                . 'AND Email = ? '
+                . 'AND F.FacultyID = SEC.FacultyID '
                 . 'AND C.PROGRAMID = P.PROGRAMID '
-                . 'AND F.EMAIL = ? '
-                . 'AND SEM.SEMESTERNUM = ?'
-                . 'AND PNameShort = ?;';
-        $rows = $dao->query($query, $request->get('facultyEmail'), $request->get('semester'), $request->get('pnameShort'));
+                . 'AND SEM.SemesterID = SEC.SemesterID ';
+        $rows = $dao->query($query, $request->get('email'));
+        // AND FacultyName = "Saleh"
+        //, $request->get('facultyName')
+        //echo $request->get('facultyName') . '<br>';
         // $courseID, $courseName, $courseCode, $courseCredit, $dateActivated, $dateDeactivated, $programID)
         $courses = [];
         foreach ($rows as $row) {
             $courses[] = [
                 "pnameShort" => $row["PNameShort"],
-                "courseCode" => $row["CourseCode"]
+                "courseCode" => $row["CourseCode"],
+                "Faculty" => $row["FacultyName"],
+                "semester" => $row["SemesterNum"]
             ];
         }
-        return json_encode($courses);
+        echo json_encode($courses);
     }
+
+    /*
+      public function getCourses($request) {
+      $dao = new ABETDAO();
+      $query = 'SELECT PNameShort, CourseCode '
+      . 'FROM ABET.Faculty F, ABET.Section SEC, ABET.Semester SEM, ABET.Course C, ABET.Program P '
+      . 'WHERE F.FACULTYID = SEC.FACULTY_FACULTYID '
+      . 'AND SEM.SEMESTERID = SEC.SEMESTERID '
+      . 'AND SEC.COURSEID = C.COURSEID '
+      . 'AND C.PROGRAMID = P.PROGRAMID '
+      . 'AND F.EMAIL = ? '
+      . 'AND SEM.SEMESTERNUM = ?'
+      . 'AND PNameShort = ?;';
+      $rows = $dao->query($query, $request->get('facultyEmail'), $request->get('semester'), $request->get('pnameShort'));
+      // $courseID, $courseName, $courseCode, $courseCredit, $dateActivated, $dateDeactivated, $programID)
+      $courses = [];
+      foreach ($rows as $row) {
+      $courses[] = [
+      "pnameShort" => $row["PNameShort"],
+      "courseCode" => $row["CourseCode"]
+      ];
+      }
+      return json_encode($courses);
+      }
+     */
 
     public function getStudents($request) {
         $dao = new ABETDAO();
@@ -93,7 +144,7 @@ class Action_Faculty {
                 . 'AND SEC.COURSEID = C.COURSEID '
                 . 'AND C.PROGRAMID = P.PROGRAMID '
                 . 'AND SEM.SEMESTERNUM = ? '
-                . 'AND C.COURSECODE = ?'
+                . 'AND C.COURSECODE = ? '
                 . 'AND P.PNAMESHORT = ?;';
         $rows = $dao->query($query, $request->get('semester'), $request->get('courseCode'), $request->get('pnameShort'));
 
@@ -104,7 +155,7 @@ class Action_Faculty {
                 "STUName" => $row["StudentName"]
             ];
         }
-        return json_encode($students);
+        echo json_encode($students);
     }
 
     public function getQuestionStatus($request) {
@@ -142,19 +193,44 @@ class Action_Faculty {
         return json_encode($weights);
     }
 
-    public function getCLOQuestions($request) {
+    function getCLOQuestions($request) {
         $dao = new ABETDAO();
-        $query = 'SELECT QuestionText, Weight_Name, Weight_Value '
-                . 'FROM ABET.Question Q, ABET.Answer A, ABET.QA QA, ABET.Course C, ABET.Program P, ABET.Status, ABET.SurveyType ST '
+        $query = 'SELECT * '
+                . 'FROM ABET.Question Q, ABET.Course C, ABET.Program P, ABET.Status STA, ABET.SurveyType ST, ABET.studentoutcome so'
+                . 'WHERE Q.COURSE_COURSEID = C.COURSEID '
+                . 'AND Q.SURVEYTYPEID = ST.SURVEYTYPEID '
+                . 'AND C.COURSECODE = ? '
+                . 'AND P.PNAMESHORT = ? '
+                . 'AND ST.SURVEYNAME = \'CLO-Based\' '
+                . 'AND so.SOID = StudentOutcome_SOID;';
+        // AND STA.STATUSNAME = \'Valid\' 
+        $rows = $dao->query($query, $request->get('courseCode'), $request->get('pnameShort'));
+        $questions = [];
+        foreach ($rows as $row) {
+            $questions[] = [
+                "Question" => $row["QuestionText"],
+                "Order" => $row["OrderNo"],
+                "SOCode" => $row["SOCOde"]
+            ];
+        }
+        echo json_encode($rows);
+    }
+
+    /// QA 
+    public function getCLOQA($request) {
+        $dao = new ABETDAO();
+        $query = 'SELECT * '
+                . 'FROM ABET.Question Q, ABET.Answer A, ABET.QA QA, ABET.Course C, ABET.Program P, ABET.Status STA, ABET.SurveyType ST '
                 . 'WHERE QA.Answer_AID = A.AID '
                 . 'AND QA.Question_QID = Q.QID '
                 . 'AND Q.COURSE_COURSEID = C.COURSEID '
                 . 'AND Q.SURVEYTYPEID = ST.SURVEYTYPEID '
                 . 'AND C.COURSECODE = ? '
                 . 'AND P.PNAMESHORT = ? '
-                . 'AND STA.STATUSNAME = \'Valid\' '
+                . ' '
                 . 'AND ST.SURVEYNAME = \'CLO-Based\''
                 . 'ORDER BY QID, WEIGHT_VALUE ;';
+        // AND STA.STATUSNAME = \'Valid\' 
         $rows = $dao->query($query, $request->get('courseCode'), $request->get('pnameShort'));
         $questions = [];
         foreach ($rows as $row) {
@@ -164,7 +240,19 @@ class Action_Faculty {
                 "weightValue" => $row["Weight_Name"]
             ];
         }
-        echo json_encode($questions);
+        echo json_encode($rows);
+    }
+
+    function display($request) {
+        //echo 'Hello <br>';
+        $request->set("semester", '152');
+        $request->set("email", 'adam@kfupm.edu.sa');
+        $request->set("courseCode", '233');
+        $request->set("pnameShort", 'CS');
+        $request->set("studentID", '1111');
+
+
+        $this->getCLOQuestions($request);
     }
 
 }

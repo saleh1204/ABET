@@ -261,17 +261,17 @@ class Action_DBA {
         $dao = new ABETDAO();
         $query = 'SELECT * FROM abet.Semester;';
         $rows = $dao->query($query);
-        $faculty = [];
+        $semesters = [];
         if ($rows != false) {
             foreach ($rows as $row) {
-                $faculty[] = [
+                $semesters[] = [
                     "semesterNum" => $row["SemesterNum"],
                     "startDate" => $row["StartDate"],
                     "endDate" => $row["EndDate"],
                 ];
             }
         }
-        $encoded = json_encode($faculty);
+        $encoded = json_encode($semesters);
         echo $encoded;
     }
 
