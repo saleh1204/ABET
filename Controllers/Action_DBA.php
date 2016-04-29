@@ -520,18 +520,21 @@ class Action_DBA {
     }
 
     public function display($request) {
-      //  $request->set("sectionNum", "0");
-      //  $request->set("courseCode", "233");
-     //   $request->set("semesterNum", "151");
-      //  $request->set("facultyName", "Salah");
-      //  $request->set("newSectionNum", "2");
-       // $request->set("newCourseCode", "233");
-       // $request->set("newSemester", "152");
-      //  $request->set("newFacultyName", "Salah");
-       // $request->set("sectionNum", "2");
-       // $request->set("pname", "CS");
-        //$request->set("datedeActivated", "2011-02-03");
-        return $this->getStudents($request);
+        //  $request->set("sectionNum", "0");
+        $request->set("courseCode", "102");
+        //   $request->set("semesterNum", "151");
+        //  $request->set("facultyName", "Salah");
+        //  $request->set("newSectionNum", "2");
+        // $request->set("newCourseCode", "233");
+        // $request->set("newSemester", "152");
+        //  $request->set("newFacultyName", "Salah");
+        // $request->set("sectionNum", "2");
+        $request->set("pnameShort", "ICS");
+        $request->set("courseName", "Java 1");
+        $request->set("courseCredit", 3);
+        $request->set("datedeActivated", "2011-02-03");
+        $request->set("datedeDeactivated", "2011-02-03");
+        return $this->getStatus($request);
     }
 
 }

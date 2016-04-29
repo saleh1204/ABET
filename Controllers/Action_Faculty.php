@@ -55,18 +55,35 @@ class Action_Faculty {
         echo json_encode($result);
     }
 
+    // Add Question Rubrics
+    public function addQuestionRubrics($request) {
+        $dao = new ABETDAO();
+        $query = 'insert into abet.question (RubricsNo, OrderNo, QuestionText, SurveyTypeID, StatusID, StudentOutcome_SOID, Course_CourseID) values ('
+                . '?, '
+                . '?, '
+                . '?, '
+                . '(select SurveyTypeID from ABET.SurveyType where SurveyName = ?), ' // SurveyType: CLO-Based
+                . '(select StatusID from ABET.Status where StatusName = ?), ' // Active, Inactive
+                . '(select SOID from ABET.StudentOutcome where SOCode = ?), ' // a-k
+                . '(select CourseID from ABET.Course where CourseCode = ? AND ProgramID = (select ProgramID from Program where PNameShort = ?))'
+                . ');';
+        $result = $dao->query($query, $request->get('rubricsNo'), $request->get('orderNo'), $request->get('questionText'), $request->get('surveyType'), $request->get('statusName'), $request->get('SOCode'), $request->get('courseCode'), $request->get('pnameShort'));
+        echo json_encode($result);
+    }
+
+    // Add Question 
     public function addQuestion($request) {
         $dao = new ABETDAO();
-        $query = 'insert into abet.question (RubricsNo, QuestionText, SurveyTypeID, StatusID, StudentOutcome_SOID, Course_CourseID) values (' .
-                $request->get('rubricsNo')
-                . ',\'' . $request->get('questionText') . '\''
-                . ',(select SurveyTypeID from ABET.SurveyType where SurveyName = \'' . $request->get('surveyName') . '\'), '
-                . '(select StatusID from abet.status where StatusType = \'' . $request->get('statusType') . '\' and statusname = \'' . $request->get('statusName') . '\')'
-                . '(select SOID from ABET.StudentOutcome where SOCode = \'' . $request->get('SOCode') . '\'),'
-                . '(select CourseID from ABET.Course where CourseCode = ' . $request->get('courseCode') . ' and ProgramID = '
-                . '(select ProgramID from ABET.Program where PNameShort = \'' . $request->get('pnameShort') . '\'))'
+        $query = 'insert into abet.question (OrderNo, QuestionText, SurveyTypeID, StatusID, StudentOutcome_SOID, Course_CourseID) values ('
+                . '?, '
+                . '?, '
+                . '(select SurveyTypeID from ABET.SurveyType where SurveyName = ? ), ' // SurveyType: CLO-Based
+                . '(select StatusID from ABET.Status where StatusName = ? AND StatusType = ?), ' // Active, Inactive
+                . '(select SOID from ABET.StudentOutcome where SOCode = ?), ' // a-k
+                . '(select CourseID from ABET.Course where CourseCode = ? AND ProgramID = (select ProgramID from Program where PNameShort = ?))'
                 . ');';
-        $dao->excuteQuery($query);
+        $result = $dao->query($query, $request->get('orderNo'), $request->get('questionText'), $request->get('SurveyName'), $request->get('statusName'), $request->get('statusType'), $request->get('SOCode'), $request->get('courseCode'), $request->get('pnameShort'));
+        echo json_encode($result);
     }
 
     public function getTerms($request) {
@@ -82,9 +99,6 @@ class Action_Faculty {
 
     public function getAllCourses($request) {
         $dao = new ABETDAO();
-        // $query = 'SELECT FacultyID FROM Faculty WHERE Email = ?';
-        // $rows = $dao->query($query, $request->get('email'));
-        // echo $rows[0]['FacultyID'] . '<br>';
         $query = 'SELECT PNameShort, CourseCode, SEM.SemesterNum, F.FacultyName '
                 . 'FROM Faculty F, Section SEC, Semester SEM, Course C, Program P '
                 . 'WHERE C.CourseID = SEC.CourseID '
@@ -93,10 +107,6 @@ class Action_Faculty {
                 . 'AND C.PROGRAMID = P.PROGRAMID '
                 . 'AND SEM.SemesterID = SEC.SemesterID ';
         $rows = $dao->query($query, $request->get('email'));
-        // AND FacultyName = "Saleh"
-        //, $request->get('facultyName')
-        //echo $request->get('facultyName') . '<br>';
-        // $courseID, $courseName, $courseCode, $courseCredit, $dateActivated, $dateDeactivated, $programID)
         $courses = [];
         foreach ($rows as $row) {
             $courses[] = [
@@ -109,30 +119,23 @@ class Action_Faculty {
         echo json_encode($courses);
     }
 
-    /*
-      public function getCourses($request) {
-      $dao = new ABETDAO();
-      $query = 'SELECT PNameShort, CourseCode '
-      . 'FROM ABET.Faculty F, ABET.Section SEC, ABET.Semester SEM, ABET.Course C, ABET.Program P '
-      . 'WHERE F.FACULTYID = SEC.FACULTY_FACULTYID '
-      . 'AND SEM.SEMESTERID = SEC.SEMESTERID '
-      . 'AND SEC.COURSEID = C.COURSEID '
-      . 'AND C.PROGRAMID = P.PROGRAMID '
-      . 'AND F.EMAIL = ? '
-      . 'AND SEM.SEMESTERNUM = ?'
-      . 'AND PNameShort = ?;';
-      $rows = $dao->query($query, $request->get('facultyEmail'), $request->get('semester'), $request->get('pnameShort'));
-      // $courseID, $courseName, $courseCode, $courseCredit, $dateActivated, $dateDeactivated, $programID)
-      $courses = [];
-      foreach ($rows as $row) {
-      $courses[] = [
-      "pnameShort" => $row["PNameShort"],
-      "courseCode" => $row["CourseCode"]
-      ];
-      }
-      return json_encode($courses);
-      }
-     */
+    public function getStatus($request) {
+        $dao = new ABETDAO();
+        $query = 'SELECT * FROM abet.Status where StatusType = ?;';
+        $rows = $dao->query($query, $request->get("StatusType"));
+        $faculty = [];
+        if ($rows != false) {
+            foreach ($rows as $row) {
+                $faculty[] = [
+                    "StatusName" => $row["StatusName"],
+                    "StatusType" => $row["StatusType"],
+                    "description" => $row["Description"],
+                ];
+            }
+        }
+        $encoded = json_encode($faculty);
+        echo $encoded;
+    }
 
     public function getStudents($request) {
         $dao = new ABETDAO();
@@ -195,24 +198,144 @@ class Action_Faculty {
 
     function getCLOQuestions($request) {
         $dao = new ABETDAO();
+
         $query = 'SELECT * '
-                . 'FROM ABET.Question Q, ABET.Course C, ABET.Program P, ABET.Status STA, ABET.SurveyType ST, ABET.studentoutcome so'
+                . 'FROM ABET.QUESTION Q, ABET.COURSE C, ABET.PROGRAM P, ABET.StudentOutcome SO, ABET.SurveyType ST, ABET.STATUS STA '
                 . 'WHERE Q.COURSE_COURSEID = C.COURSEID '
-                . 'AND Q.SURVEYTYPEID = ST.SURVEYTYPEID '
+                . 'AND Q.STUDENTOUTCOME_SOID = SO.SOID '
+                . 'AND ST.SURVEYTYPEID = Q.SURVEYTYPEID '
+                . 'AND C.PROGRAMID = P.PROGRAMID '
                 . 'AND C.COURSECODE = ? '
                 . 'AND P.PNAMESHORT = ? '
-                . 'AND ST.SURVEYNAME = \'CLO-Based\' '
-                . 'AND so.SOID = StudentOutcome_SOID;';
-        // AND STA.STATUSNAME = \'Valid\' 
-        $rows = $dao->query($query, $request->get('courseCode'), $request->get('pnameShort'));
+                . 'AND ST.SURVEYNAME = ? ' // CLO-Based
+                . 'AND STA.STATUSID = ST.STATUSID '
+                . 'AND STA.STATUSTYPE = ? ;'; // Survey
+        $rows = $dao->query($query, $request->get('courseCode'), $request->get('pnameShort'), 'CLO-Based', 'Survey');
         $questions = [];
-        foreach ($rows as $row) {
-            $questions[] = [
-                "Question" => $row["QuestionText"],
-                "Order" => $row["OrderNo"],
-                "SOCode" => $row["SOCOde"]
-            ];
+        if ($rows != false) {
+            foreach ($rows as $row) {
+                $questions[] = [
+                    "question" => $row["QuestionText"],
+                    "order" => $row["OrderNo"],
+                    "SOCode" => $row["SOCode"],
+                    "status" => $row["StatusName"],
+                    "survey" => $row["SurveyName"]
+                ];
+            }
         }
+        echo json_encode($questions);
+    }
+
+    function getRubQuestions($request) {
+        $dao = new ABETDAO();
+
+        $query = 'SELECT * '
+                . 'FROM ABET.QUESTION Q, ABET.COURSE C, ABET.PROGRAM P, ABET.StudentOutcome SO, ABET.SurveyType ST, ABET.STATUS STA '
+                . 'WHERE Q.COURSE_COURSEID = C.COURSEID '
+                . 'AND Q.STUDENTOUTCOME_SOID = SO.SOID '
+                . 'AND ST.SURVEYTYPEID = Q.SURVEYTYPEID '
+                . 'AND C.PROGRAMID = P.PROGRAMID '
+                . 'AND C.COURSECODE = ? '
+                . 'AND P.PNAMESHORT = ? '
+                . 'AND ST.SURVEYNAME = ? ' // CLO-Based
+                . 'AND STA.STATUSID = ST.STATUSID '
+                . 'AND STA.STATUSTYPE = ? ;'; // Survey
+        $rows = $dao->query($query, $request->get('courseCode'), $request->get('pnameShort'), 'Rubrics-Based', 'Survey');
+        $questions = [];
+        if ($rows != false) {
+            foreach ($rows as $row) {
+                $questions[] = [
+                    "question" => $row["QuestionText"],
+                    "order" => $row["OrderNo"],
+                    "SOCode" => $row["SOCode"],
+                    "status" => $row["StatusName"],
+                    "survey" => $row["SurveyName"]
+                ];
+            }
+        }
+        echo json_encode($questions);
+    }
+
+    function getExitQuestions($request) {
+        $dao = new ABETDAO();
+
+        $query = 'SELECT * '
+                . 'FROM ABET.QUESTION Q, ABET.COURSE C, ABET.PROGRAM P, ABET.StudentOutcome SO, ABET.SurveyType ST, ABET.STATUS STA '
+                . 'WHERE Q.COURSE_COURSEID = C.COURSEID '
+                . 'AND Q.STUDENTOUTCOME_SOID = SO.SOID '
+                . 'AND ST.SURVEYTYPEID = Q.SURVEYTYPEID '
+                . 'AND C.PROGRAMID = P.PROGRAMID '
+                . 'AND C.COURSECODE = ? '
+                . 'AND P.PNAMESHORT = ? '
+                . 'AND ST.SURVEYNAME = ? ' // CLO-Based
+                . 'AND STA.STATUSID = ST.STATUSID '
+                . 'AND STA.STATUSTYPE = ? ;'; // Survey
+        $rows = $dao->query($query, $request->get('courseCode'), $request->get('pnameShort'), 'Exit-Based', 'Survey');
+        $questions = [];
+        if ($rows != false) {
+            foreach ($rows as $row) {
+                $questions[] = [
+                    "question" => $row["QuestionText"],
+                    "order" => $row["OrderNo"],
+                    "SOCode" => $row["SOCode"],
+                    "status" => $row["StatusName"],
+                    "survey" => $row["SurveyName"]
+                ];
+            }
+        }
+        echo json_encode($questions);
+    }
+
+    function getStudentAnswers($request) {
+        $dao = new ABETDAO();
+        $query = '';
+        $rows = $dao->query($query);
+        $studentAnswers = [];
+        if ($rows != false) {
+            foreach ($rows as $row) {
+                $studentAnswers[] = [
+                    "SUID" => $row["SUID"],
+                    "Question1Answer" //
+                ];
+            }
+        }
+        echo json_encode($studentAnswers);
+    }
+
+    function addStudentAnswers($request) {
+        $dao = new ABETDAO();
+        $query = '';
+        $rows = $dao->query($query);
+        echo json_encode($rows);
+    }
+
+    function deleteStudentAnswers($request) {
+        $dao = new ABETDAO();
+        $query = '';
+        $rows = $dao->query($query);
+        echo json_encode($rows);
+    }
+
+    function getSummary($request) {
+        $dao = new ABETDAO();
+        $query = '';
+        $rows = $dao->query($query);
+        $summary = [];
+        if ($rows != false) {
+            foreach ($rows as $row) {
+                $summary[] = [
+                    "SUID" => $row["SUID"],
+                    "Question1Answer" //
+                ];
+            }
+        }
+        echo json_encode($summary);
+    }
+
+    function deleteQuestion($request) {
+        $dao = new ABETDAO();
+        $query = 'delete from Question where QuestionText = ? and Course_CourseID = (select CourseID from Course where courseCode = ? AND ProgramID = (select ProgramID from Program where PNameShort = ?)) ;';
+        $rows = $dao->query($query, $request->get('questionText'), $request->get('courseCode'), $request->get('pnameShort'));
         echo json_encode($rows);
     }
 
@@ -243,16 +366,37 @@ class Action_Faculty {
         echo json_encode($rows);
     }
 
+    function getSO($request) {
+        $dao = new ABETDAO();
+        $query = 'SELECT * FROM ABET.StudentOutcome;';
+
+        $rows = $dao->query($query);
+        $sos = [];
+        foreach ($rows as $row) {
+            $sos[] = [
+                "SOCode" => $row["SOCode"],
+                "Description" => $row["Description"]
+            ];
+        }
+        echo json_encode($sos);
+    }
+
     function display($request) {
         //echo 'Hello <br>';
-        $request->set("semester", '152');
-        $request->set("email", 'adam@kfupm.edu.sa');
-        $request->set("courseCode", '233');
-        $request->set("pnameShort", 'CS');
-        $request->set("studentID", '1111');
+        // $request->get('rubricsNo'), $request->get('orderNo'), $request->get('questionText'), $request->get('surveyType'), $request->get('statusName'),$request->get('SOCode'), $request->get('courseCode'), $request->get('pnameShort'));
+        //$request->set("rubricsNo", '152');
+        // $dao->query($query, $request->get('orderNo'), $request->get('questionText'), $request->get('SurveyName'), $request->get('statusName'), $request->get('statusType'), $request->get('SOCode'), $request->get('courseCode'), $request->get('pnameShort'));
+        $request->set("orderNo", '6');
+        $request->set("questionText", 'Hello, Test3');
+        $request->set("statusType", 'Survey');
+        $request->set("statusName", 'Active');
+        $request->set("SurveyName", 'Rubrics-Based');
+        $request->set("pnameShort", 'ICS');
+        $request->set("courseCode", '102');
+        $request->set("SOCode", 'a');
 
 
-        $this->getCLOQuestions($request);
+        $this->addQuestion($request);
     }
 
 }

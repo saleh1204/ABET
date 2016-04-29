@@ -24,8 +24,8 @@ $(document).ready(function () {
             {
 
                 col1[i] = data[i].DNameShort;
-                col2[i] = data[i].FacultyName;
-                col3[i] = data[i].Email;
+                col3[i] = data[i].FacultyName;
+                col2[i] = data[i].Email;
                 col4[i] = "Active";
 
             }

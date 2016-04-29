@@ -8,8 +8,8 @@ class Action_Student {
       $dao = new ABETDAO();
 
       $query = '';
-      $result = $dao->excuteQuery($query);
-      return json_encode($result);
+      $result = $dao->query($query);
+      echo json_encode($result);
       }
 
       public function getAllSurveys($request) {
@@ -17,7 +17,7 @@ class Action_Student {
 
       $query = '';
       $result = $dao->excuteQuery($query);
-      return json_encode($result);
+      echo json_encode($result);
       }
      */
 
@@ -26,8 +26,8 @@ class Action_Student {
       $dao = new ABETDAO();
       $query = 'insert into ABET.StudentQA (QA_QAID, Student_Section_SSID) values (' . $request->get('qaid') . ',' .
       ', ' . $request->get('ssid') . ');';
-      $result = $dao->excuteQuery($query);
-      // return json_encode($result);
+      $result = $dao->query($query);
+       echo json_encode($result);
       }
      */
 

@@ -10,11 +10,11 @@ $(document).ready(function () {
         // AJAX HERE
         // getStatus
         //alert("Here");
-        var parameters = {
-            grp: "DBA",
-            cmd: "getStatus"
+        var parameters1 = {
+            grp: "Faculty",
+            cmd: "getSO"
         };
-        $.getJSON("../index.php", parameters).done(
+        $.getJSON("../index.php", parameters1).done(
                 function (data, textStatus, jqXHR)
                 {
 
@@ -23,23 +23,24 @@ $(document).ready(function () {
                     var s1L = [];
                     for (var i = 0; i < data.length; i++)
                     {
-                        s1L[i] = data[i].StatusType;
-                        //alert(data[i].StatusType);
-                        //alert
+                        s1L[i] = data[i].SOCode;
+                        // alert(data[i].SOCode);
                     }
                     for (var i = 0; i < s1L.length; i++) {
-                       // s1.append('<option value = "' + s1L[i] + '">' + s1L[i] + '</option>');
+                        s1.append('<option value = "' + s1L[i] + '">' + s1L[i] + '</option>');
                     }
-                    // s1.val('');
                 }).fail(
                 function (jqXHR, textStatus, errorThrown)
                 {
                     // log error to browser's console
                     console.log(errorThrown.toString());
                 });
+
+
         var parameters = {
-            grp: "DBA",
-            cmd: "getStatus"
+            grp: "Faculty",
+            cmd: "getStatus",
+            StatusType: "Survey"
         };
         $.getJSON("../index.php", parameters).done(
                 function (data, textStatus, jqXHR)
@@ -50,7 +51,8 @@ $(document).ready(function () {
                     var s1L = [];
                     for (var i = 0; i < data.length; i++)
                     {
-                        s1L[i] = data[i].StatusType;
+                        //s1L[i] = data[i].StatusType;
+                        s1L[i] = data[i].StatusName;
                         //alert(data[i].StatusType);
                         //alert
                     }
@@ -64,52 +66,10 @@ $(document).ready(function () {
                     // log error to browser's console
                     console.log(errorThrown.toString());
                 });
-        /*
-         var parameters2 = {
-         grp: "DBA",
-         cmd: "getStatus"
-         };
-         $.getJSON("../index.php", parameters2).done(
-         function (data, textStatus, jqXHR)
-         {
-         var s2 = $('#inputC4A');
-         var s2L = [];
-         for (var i = 0; i < data.length; i++)
-         {
-         s2L[i] = data[i].StatusType;
-         }
-         for (var j = 0; j < s2L.length; j++) {
-         s2.append('<option value = "' + s2L[j] + '">' + s2L[j] + '</option>');
-         
-         }
-         //s2.val("");
-         }).fail(
-         function (jqXHR, textStatus, errorThrown)
-         {
-         // log error to browser's console
-         console.log(errorThrown.toString());
-         //return cl;
-         });
-         */
-        /*var s1L = ["a", "b", "c", "d"];
-         for (var i = 0; i < s1L.length; i++) {
-         s1.append('<option value = "' + s1L[i] + '">' + s1L[i] + '</option>');
-         }
-         s1.val('');
-         */
-        /*
-         var s2 = $('#inputC4A');
-         // AJAX HERE
-         var s2L = ["Active", "Inactive"];
-         for (var j = 0; j < s2L.length; j++) {
-         s2.append('<option value = "' + s2L[j] + '">' + s2L[j] + '</option>');
-         
-         }
-         s2.val("");
-         */
     }
     function generateTable() {
 // flush the table
+        // alert('1');
         var parameters = {
             grp: "Faculty",
             cmd: "getCLOQuestions",
@@ -130,8 +90,18 @@ $(document).ready(function () {
                      THIS SELECT NEEDS ALL COOKIES
                      *************************************
                      */
-                    var tb = $('#tbody');
                     var i = 0;
+                    // alert(data);
+                    for (i = 0; i < data.length; i++)
+                    {
+                        col1[i] = data[i].order;
+                        col2[i] = data[i].question;
+                        col3[i] = data[i].SOCode;
+                        col4[i] = data[i].status;
+                        // alert(i);
+                    }
+                    var tb = $('#tbody');
+
                     for (i = 0; i < col2.length; i++) {
                         var tr = $('<tr>').appendTo(tb);
                         tr.append('<td class = "col1">' + col1[i] + '</td>');
@@ -180,31 +150,80 @@ $(document).ready(function () {
 // DELETE THE RECORD FROM DATABSE PLEASE
 // THIS DELETE WILL USE ALL THE VALUES IN THE COOKIES INCLUDING: EMAIL, SEMESTER, PNAMESHORT, COURSECODE
 // IN ADDITION TO COL1, COL2
+            var parameters = {
+                grp: "Faculty",
+                cmd: "deleteQuestion",
+                surveyType: 'CLO-Based',
+                questionText: $col2,
+                pnameShort: getCookie('PName'),
+                courseCode: getCookie('CCode'),
+                SOCode: $col3
+
+            };
+
+            $.getJSON("../index.php", parameters).done(function (data, textStatus, jqXHR) {
+                generateTable();
+            }
+            ).fail(function (jqXHR, textStatus, errorThrown)
+            {
+                // log error to browser's console
+                console.log(textStatus + "\n" + errorThrown.toString());
+
+            });
         } else { // it is an update
             document.getElementById("inputC1A").value = $col1;
             document.getElementById("inputC2A").value = $col2;
             $("#inputC3A").val($col3);
             $("#inputC4A").val($col4);
         }
-        generateTable();
+        //generateTable();
     });
     $("#demo-form2").on('click', '#save', function () {
-        alert("save 1");
+        //alert("save 1");
         var newC1 = document.getElementById("inputC1A").value;
         var newC2 = document.getElementById("inputC2A").value;
         var newC3 = document.getElementById("inputC3A").value;
         var newC4 = document.getElementById("inputC4A").value;
-        alert(newC1 + " " + newC2 + " " + newC3);
-        /**************************
-         DELETE GOES HERE (in case of update just to be safe)
-         INSERT STATEMENT GOES HERE
-         **************************
+        // $dao->query($query, $request->get('orderNo'), $request->get('questionText'), $request->get('SurveyName'), $request->get('statusName'), $request->get('statusType'), $request->get('SOCode'), $request->get('courseCode'), $request->get('pnameShort'));
+        /*
+         *   $request->set("orderNo", '6');
+        $request->set("questionText", 'Hello, Test2');
+        $request->set("statusType", 'Survey');
+        $request->set("statusName", 'Active');
+        $request->set("SurveyName", 'CLO-Based');
+        $request->set("pnameShort", 'ICS');
+        $request->set("courseCode", '102');
+        $request->set("SOCode", 'a');
          */
+        var parameters = {
+            grp: "Faculty",
+            cmd: "addQuestion",
+            orderNo: newC1,
+            questionText: newC2,
+            SurveyName: 'CLO-Based',
+            statusName: newC4,
+            statusType: 'Survey',
+            pnameShort: getCookie('PName'),
+            courseCode: getCookie('CCode'),
+            SOCode: newC3
+
+        };
+
+        $.getJSON("../index.php", parameters).done(function (data, textStatus, jqXHR) {
+            //alert("Added Successfully!!!");
+            generateTable();
+        }
+        ).fail(function (jqXHR, textStatus, errorThrown)
+        {
+            // log error to browser's console
+            console.log(textStatus + "\n" + errorThrown.toString());
+
+        });
         document.getElementById("inputC1A").value = "";
         document.getElementById("inputC2A").value = "";
         $("#inputC3A").val('');
         $("#inputC4A").val("");
-        generateTable();
+        //generateTable();
     });
     $("#demo-form2").on('click', '#cancel', function () {
 
