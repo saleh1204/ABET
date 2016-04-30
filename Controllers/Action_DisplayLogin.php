@@ -40,4 +40,59 @@ class Action_DisplayLogin {
         echo $encoded;
     }
 
+    public function StudentLogin($request) {
+        $dao = new ABETDAO();
+        $query = 'SELECT * FROM Student WHERE SUID = ? AND Password = ?;';
+        $rows = $dao->query($query, $request->get('sID'), $request->get('spassword'));
+        $answer = [];
+        if ($rows != false) {
+            $answer[] = [
+                "correct" => true
+            ];
+        } else {
+            $answer[] = [
+                "correct" => false
+            ];
+        }
+        $encoded = json_encode($answer);
+        echo $encoded;
+    }
+
+    public function CoordinatorLogin($request) {
+        $dao = new ABETDAO();
+        $query = 'SELECT * FROM faculty join Program on Program.ProgramID = Faculty.Program_ProgramID WHERE Email = ? AND Password = ? AND Program_ProgramID is not null';
+        $rows = $dao->query($query, $request->get("femail"), $request->get('fpassword'));
+        $answer = [];
+        if ($rows != false) {
+            $answer[] = [
+                "PName" => $rows[0]['PNameShort'],
+                "correct" => true
+            ];
+        } else {
+            $answer[] = [
+                "correct" => false
+            ];
+        }
+        $encoded = json_encode($answer);
+        echo $encoded;
+    }
+
+    public function DBALogin($request) {
+        $dao = new ABETDAO();
+        $query = 'SELECT * FROM DBA WHERE email = ? AND password = ?;';
+        $rows = $dao->query($query, $request->get('demail'), $request->get('dpassword'));
+        $answer = [];
+        if ($rows != false) {
+            $answer[] = [
+                "correct" => true
+            ];
+        } else {
+            $answer[] = [
+                "correct" => false
+            ];
+        }
+        $encoded = json_encode($answer);
+        echo $encoded;
+    }
+
 }

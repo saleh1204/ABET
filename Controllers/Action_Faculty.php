@@ -6,15 +6,7 @@ require_once 'ABETDAO.php';
 
 class Action_Faculty {
 
-    public function addAnswer($request) {
-        $dao = new ABETDAO();
-        $query = 'insert into Abet.Answer (RubricsNo, Answer, Weight_Value, Weight_Name, SurveyType_SurveyTypeID, Status_StatusID) values (' .
-                $request->get('rubricsNo') . ',\'' . $request->get('answer') . '\', ' . $request->get('weightValue') . ',\'' . $request->get('weightName') .
-                '\', (select SurveyTypeID from ABET.SurveyType where SurveyName = \'' . $request->get('surveyName') . '\'), '
-                . '(select StatusID from Abet.Status where StatusType = \'' . $request->get('statusType') . '\' and StatusName = \'' . $request->get('statusName') . '\')'
-                . ');';
-        $dao->excuteQuery($query);
-    }
+    
 
     public function addQA($request) {
         $dao = new ABETDAO();
@@ -304,8 +296,15 @@ class Action_Faculty {
 
     function addStudentAnswers($request) {
         $dao = new ABETDAO();
-        $query = '';
-        $rows = $dao->query($query);
+        $query = 'INSERT INTO ABET.STUDENTQA (STUDENT_SECTION_SSID, QA_QAID) VALUES ( 
+            (SELECT SSID FROM ABET.PROGRAM P, ABET.COURSE C, ABET.SECTION SEC, ABET.FACULTY F, ABET.SEMESTER SEM, ABET.STUDENT STU, ABET.STUDENT_SECTION SS 
+            WHERE P.PROGRAMID = C.PROGRAMID AND C.COURSEID = SEC.COURSEID AND SEC.FACULTYID = F.FACULTYID 
+            AND SEC.SEMESTERID = SEM.SEMESTERID AND SEC.SECTIONID = SS.SECTIONID AND SS.STUDENT_STUDENTID = STU.STUDENTID 
+            AND STU.SUID = ? AND SEM.SEMESTERNUM = ? AND F.EMAIL = ? AND C.COURSECODE = ? AND P.PNAMESHORT = ?), 
+            (SELECT QAID FROM ABET.QA QA, ABET.QUESTION Q, ABET.ANSWER A, ABET.SURVEYTYPE SUT, ABET.STUDENTOUTCOME SO, ABET.COURSE C, ABET.PROGRAM P 
+            WHERE QA.QUESTION_QID = Q.QID AND QA.ANSWER_AID = A.AID AND Q.STUDENTOUTCOME_SOID = SO.SOID AND Q.COURSE_COURSEID = C.COURSEID AND C.PROGRAMID = P.PROGRAMID
+            AND Q.SURVEYTYPEID = SUT.SURVEYTYPEID AND SUT.SURVEYNAME = \'CLO-Based\' AND C.COURSECODE = ? AND P.PNAMESHORT = ? AND A.WEIGHT_Name = ? AND Q.QUESTIONTEXT = ?));';
+        $rows = $dao->query($query, $request->get('suid'), $request->get('semester'), $request->get('femail'), $request->get('courseCode'), $request->get('pname'), $request->get('courseCode'), $request->get('pname'), $request->get('weightAnswer'), $request->get('Question'));
         echo json_encode($rows);
     }
 
@@ -383,20 +382,22 @@ class Action_Faculty {
 
     function display($request) {
         //echo 'Hello <br>';
-        // $request->get('rubricsNo'), $request->get('orderNo'), $request->get('questionText'), $request->get('surveyType'), $request->get('statusName'),$request->get('SOCode'), $request->get('courseCode'), $request->get('pnameShort'));
-        //$request->set("rubricsNo", '152');
-        // $dao->query($query, $request->get('orderNo'), $request->get('questionText'), $request->get('SurveyName'), $request->get('statusName'), $request->get('statusType'), $request->get('SOCode'), $request->get('courseCode'), $request->get('pnameShort'));
+        // $request->get('suid'), $request->get('semester'), $request->get('courseCode'), $request->get('pname'), $request->get('courseCode'), $request->get('pname'),  $request->get('weightAnswer'), $request->get('Question'));
         $request->set("orderNo", '6');
-        $request->set("questionText", 'Hello, Test3');
-        $request->set("statusType", 'Survey');
-        $request->set("statusName", 'Active');
-        $request->set("SurveyName", 'Rubrics-Based');
-        $request->set("pnameShort", 'ICS');
+        $request->set("Question", 'Hello, Test2');
+        $request->set("semester", '152');
+        $request->set("weightAnswer", 'Agree');
+        $request->set('suid', '201154810');
+        
+        // $request->set("statusType", 'Survey');
+        // $request->set("statusName", 'Active');
+        // $request->set("SurveyName", 'Rubrics-Based');
+        $request->set("pname", 'ICS');
         $request->set("courseCode", '102');
-        $request->set("SOCode", 'a');
+        //$request->set("SOCode", 'a');
+        $request->set("email", 'saleh');
 
-
-        $this->addQuestion($request);
+        $this->getAllCourses($request);
     }
 
 }

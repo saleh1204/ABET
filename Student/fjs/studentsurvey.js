@@ -8,6 +8,29 @@ $(document).ready(function () {
     // THIS SHOULD BE INSIDE THE FOR LOOP
     qheader.push(q1[0]);
     qheader.push(q2[0]);
+    var parameters = {
+        grp: "Student",
+        cmd: "getQuestions",
+        term: getCookie('Term'),
+        pname: getCookie('PName'),
+        courseCode: getCookie('CCode')
+    };
+    $.getJSON("../index.php", parameters).done(
+            function (data, textStatus, jqXHR)
+            {
+
+                for (var i = 0; i < data.length; i++)
+                {
+
+                }
+
+            }).fail(
+            function (jqXHR, textStatus, errorThrown)
+            {
+                // log error to browser's console
+                console.log(errorThrown.toString());
+                //return cl;
+            });
     var qanswers = [];// TO BE FILLED LATER
     // REPALCE THE TWO FOR LOOP BY THE NUMBER OF RECORDS
     var head;

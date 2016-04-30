@@ -27,9 +27,43 @@ class Action_Student {
       $query = 'insert into ABET.StudentQA (QA_QAID, Student_Section_SSID) values (' . $request->get('qaid') . ',' .
       ', ' . $request->get('ssid') . ');';
       $result = $dao->query($query);
-       echo json_encode($result);
+      echo json_encode($result);
       }
      */
+
+    function getQuestions($request) {
+        $dao = new ABETDAO();
+        $query = '';
+        $rows = $dao->query($query);
+        $questions = [];
+        foreach ($rows as $row) {
+            $questions[] = [
+                
+            ];
+        }
+        echo json_encode($questions);
+    }
+
+    function getCourses($request) {
+        $dao = new ABETDAO();
+        $query = 'SELECT `program`.`PNameShort`, `course`.`CourseCode`, `semester`.`SemesterNum`, `student`.`SUID` '
+                . 'FROM `program` JOIN `course` ON `course`.`ProgramID` = `program`.`ProgramID` '
+                . 'JOIN `section` ON `section`.`CourseID` = `course`.`CourseID` '
+                . 'JOIN `semester` ON `section`.`SemesterID` = `semester`.`SemesterID` '
+                . 'JOIN `student_section` ON `student_section`.`SectionID` = `section`.`SectionID` '
+                . 'JOIN `student` ON `student_section`.`Student_StudentID` = `student`.`StudentID` '
+                . 'WHERE student.SUID = ?';
+        $rows = $dao->query($query, $request->get('ID'));
+        $courses = [];
+        foreach ($rows as $row) {
+            $courses[] = [
+                "pnameShort" => $row["PNameShort"],
+                "courseCode" => $row["CourseCode"],
+                "semester" => $row["SemesterNum"]
+            ];
+        }
+        echo json_encode($courses);
+    }
 
     public function addStudentQA($request) {
         $dao = new ABETDAO();
@@ -64,6 +98,11 @@ class Action_Student {
                 . 'AND SOCODE = ? ));';
 
         $dao->query($query, $request->get('SUID'), $request->get('Semester'), $request->get('facultyEmail'), $request->get('courseCode'), $request->get('pnameShort'), $request->get('Rubric'), $request->get('courseCode'), $request->get('PNameShort'), $request->get('weightName'), $request->get('SOCode'));
+    }
+
+    function display($request) {
+        $request->set("ID", "201154810");
+        $this->getCourses($request);
     }
 
 }

@@ -6,10 +6,193 @@ class Action_Coordinator {
 
     public function addStudentOutcome($request) {
         $dao = new ABETDAO();
-        $query = 'insert into ABET.StudentOutcome (SOCode, StatusID, Description, Program_ProgramID) values (\'' . $request->get('SOCode') . '\', \'' .
-                '(select StatusID from ABET.Status where StatusType = \'StudentOutcome\' and StatusName = \'Activated\'), \'' . $request->get('description') .
-                '\', (SELECT ProgramID FROM ABET.Program WHERE PNameShort =\'' . $request->get('pnameShort') . '\'));';
-        $dao->excuteQuery($query);
+        $query = 'insert into ABET.StudentOutcome (SOCode, StatusID, Description, Program_ProgramID, DateActivated, DateDeactivated) values (?, '
+                . '(select StatusID from ABET.Status where StatusType = \'Student Outcome\' and StatusName = ?), ? '
+                . ', (SELECT ProgramID FROM ABET.Program WHERE PNameShort =?), '
+                . '?,'
+                . '?);';
+        $result = $dao->query($query, $request->get('SOCode'), $request->get('StatusName'), $request->get('description'), $request->get('pnameShort'), $request->get('dateActivated'), $request->get('dateDeactivated'));
+        echo json_encode($result);
+    }
+
+    public function deleteStudentOutcome($request) {
+        $dao = new ABETDAO();
+        $query = 'delete from StudentOutcome where SOCode = ? AND Program_ProgramID = (select ProgramID from Program where PNameShort = ?);';
+        $result = $dao->query($query, $request->get('SOCode'), $request->get('pnameShort'));
+        echo json_encode($result);
+    }
+
+    public function updateStudentOutcome($request) {
+        $dao = new ABETDAO();
+        $query = 'update StudentOutcome set SOCode = ?, Description = ?, DateActivated = ?, DateDeactivated = ?, StatusID = (select StatusID from Status where StatusName = ? AND StatusType = \'Student Outcome\') where SOCode = ? AND Program_ProgramID = (select ProgramID from Program where PNameShort = ?);';
+        $result = $dao->query($query, $request->get('SOCode'), $request->get('description'), $request->get('dateActivated'), $request->get('dateDeactivated'), $request->get('StatusName'), $request->get('oldSOCode'), $request->get('pnameShort'));
+        echo json_encode($result);
+    }
+
+    function getSO($request) {
+        $dao = new ABETDAO();
+        $query = 'select SOCode, StatusName, StudentOutcome.Description, StudentOutcome.DateActivated, StudentOutcome.DateDeactivated from StudentOutcome JOIN Status ON StudentOutcome.StatusID = Status.StatusID where Program_ProgramID = (select ProgramID from Program where PNameShort = ?);';
+        $rows = $dao->query($query, $request->get('PName'));
+        $so = [];
+        if ($rows != false) {
+            foreach ($rows as $row) {
+                $so[] = [
+                    "SOCode" => $row["SOCode"],
+                    "StatusName" => $row["StatusName"],
+                    "Description" => $row["Description"],
+                    "dateActivated" => $row["DateActivated"],
+                    "dateDeactivated" => $row["DateDeactivated"]
+                ];
+            }
+        }
+        echo json_encode($so);
+    }
+
+    /*
+      public function addCLOAnswer($request) {
+      $dao = new ABETDAO();
+      $query = 'INSERT INTO answer (Answer, Weight_Value, Weight_Name, DateActivated, DateDeactivated, SurveyType_SurveyTypeID, Status_StatusID, StudentOutcome_SOID, Program_ProgramID) '
+      . 'VALUES (?, ?, ?, ?, ?, (select SurveyTypeID from SurveyType where SurveyName = ?), (select StatusID from Status where StatusType = \'Survey\' AND StatusName = ?), (select SOID from studentoutcome where SOCode = ?), (select ProgramID from Program where PNameShort = ?));';
+      $result = $dao->query($query, $request->get('Answer'), $request->get('weightValue'), $request->get('weightName'), $request->get('dateActivated'), $request->get('dateDeactivated'), 'CLO-Based', $request->get('statusName'), $request->get('SOCOde'), $request->get('pname'));
+      echo json_encode($result);
+      }
+     */
+
+    public function getCLOAnswers($request) {
+        $dao = new ABETDAO();
+        $query = 'select weight_Name, weight_Value, DateActivated, DateDeactivated, StatusName from answer A, Status S where Program_ProgramID = (select ProgramID from Program where PNameShort = ?) AND A.Status_StatusID = S.StatusID AND A.SurveyType_SurveyTypeID = (select SurveyTypeID from SurveyType where SurveyName = ?)';
+        $rows = $dao->query($query, $request->get('pname'), 'CLO-Based');
+        $answers = [];
+        if ($rows != false) {
+            foreach ($rows as $row) {
+                $answers[] = [
+                    "StatusName" => $row["StatusName"],
+                    "weightName" => $row["weight_Name"],
+                    "weightValue" => $row["weight_Value"],
+                    "dateActivated" => $row["DateActivated"],
+                    "dateDeactivated" => $row["DateDeactivated"]
+                ];
+            }
+        }
+        echo json_encode($answers);
+    }
+
+    public function addCLOAnswer($request) {
+        $dao = new ABETDAO();
+        $query = 'insert into answer (Weight_Value, Weight_Name, DateActivated, DateDeactivated, SurveyType_SurveyTypeID, Status_StatusID, Program_ProgramID) values '
+                . '(?, ?, ?, ?, (select SurveyTypeID from SurveyType where SurveyName = ?), (select StatusID from Status where StatusType = "Survey" AND StatusName = ?), (select ProgramID from Program where PNameShort = ?))';
+        $rows = $dao->query($query, $request->get('weightValue'), $request->get('weightName'), $request->get('dateActivated'), $request->get('dateDeactivated'), 'CLO-Based', $request->get('statusName'), $request->get('pname'));
+        echo json_encode($rows);
+    }
+
+    public function deleteCLOAnswer($request) {
+        $dao = new ABETDAO();
+        $query = 'delete from Answer where Weight_Name = ? AND Weight_Value = ? AND SurveyType_SurveyTypeID = (select SurveyTypeID from SurveyType where SurveyName = ?) AND Program_ProgramID = (select ProgramID from Program where PNameShort = ?)';
+        $rows = $dao->query($query, $request->get('weightName'), $request->get('weightValue'), 'CLO-Based', $request->get('pname'));
+        echo json_encode($rows);
+    }
+
+    public function getPCAnswers($request) {
+        $dao = new ABETDAO();
+        $query = 'select weight_Name, weight_Value, A.DateActivated, A.DateDeactivated, StatusName, PCNum, SOCode  from answer A, Status S, StudentOutcome SO where A.Program_ProgramID = (select ProgramID from Program where PNameShort = ?) AND A.Status_StatusID = S.StatusID AND A.SurveyType_SurveyTypeID = (select SurveyTypeID from SurveyType where SurveyName = ?) AND SO.SOID = A.StudentOutcome_SOID';
+        $rows = $dao->query($query, $request->get('pname'), 'Rubrics-Based');
+        $answers = [];
+        if ($rows != false) {
+            foreach ($rows as $row) {
+                $answers[] = [
+                    "PC" => $row["PCNum"],
+                    "StatusName" => $row["StatusName"],
+                    "weightName" => $row["weight_Name"],
+                    "weightValue" => $row["weight_Value"],
+                    "dateActivated" => $row["DateActivated"],
+                    "dateDeactivated" => $row["DateDeactivated"]
+                ];
+            }
+        }
+        echo json_encode($answers);
+    }
+
+    public function addPCAnswer($request) {
+        $dao = new ABETDAO();
+        $query = 'insert into answer (Weight_Value, Weight_Name, DateActivated, DateDeactivated, SurveyType_SurveyTypeID, Status_StatusID, Program_ProgramID) values '
+                . '(?, ?, ?, ?, (select SurveyTypeID from SurveyType where SurveyName = ?), (select StatusID from Status where StatusType = "Survey" AND StatusName = ?), (select ProgramID from Program where PNameShort = ?))';
+        $rows = $dao->query($query, $request->get('weightValue'), $request->get('weightName'), $request->get('dateActivated'), $request->get('dateDeactivated'), 'Rubrics-Based', $request->get('statusName'), $request->get('pname'));
+        echo json_encode($rows);
+    }
+
+    public function deletePCAnswer($request) {
+        $dao = new ABETDAO();
+        $query = 'delete from Answer where Weight_Name = ? AND Weight_Value = ? AND SurveyType_SurveyTypeID = (select SurveyTypeID from SurveyType where SurveyName = ?) AND Program_ProgramID = (select ProgramID from Program where PNameShort = ?)';
+        $rows = $dao->query($query, $request->get('weightName'), $request->get('weightValue'), 'Rubrics-Based', $request->get('pname'));
+        echo json_encode($rows);
+    }
+
+    public function getExitAnswers($request) {
+        $dao = new ABETDAO();
+        $query = 'select weight_Name, weight_Value, DateActivated, DateDeactivated, StatusName from answer A, Status S where Program_ProgramID = (select ProgramID from Program where PNameShort = ?) AND A.Status_StatusID = S.StatusID AND A.SurveyType_SurveyTypeID = (select SurveyTypeID from SurveyType where SurveyName = ?)';
+        $rows = $dao->query($query, $request->get('pname'), 'Exit-Based');
+        $answers = [];
+        if ($rows != false) {
+            foreach ($rows as $row) {
+                $answers[] = [
+                    "StatusName" => $row["StatusName"],
+                    "weightName" => $row["weight_Name"],
+                    "weightValue" => $row["weight_Value"],
+                    "dateActivated" => $row["DateActivated"],
+                    "dateDeactivated" => $row["DateDeactivated"]
+                ];
+            }
+        }
+        echo json_encode($answers);
+    }
+
+    public function addExitAnswer($request) {
+        $dao = new ABETDAO();
+        $query = 'insert into answer (Weight_Value, Weight_Name, DateActivated, DateDeactivated, SurveyType_SurveyTypeID, Status_StatusID, Program_ProgramID) values '
+                . '(?, ?, ?, ?, (select SurveyTypeID from SurveyType where SurveyName = ?), (select StatusID from Status where StatusType = "Survey" AND StatusName = ?), (select ProgramID from Program where PNameShort = ?))';
+        $rows = $dao->query($query, $request->get('weightValue'), $request->get('weightName'), $request->get('dateActivated'), $request->get('dateDeactivated'), 'Exit-Based', $request->get('statusName'), $request->get('pname'));
+        echo json_encode($rows);
+    }
+
+    public function deleteExitAnswer($request) {
+        $dao = new ABETDAO();
+        $query = 'delete from Answer where Weight_Name = ? AND Weight_Value = ? AND SurveyType_SurveyTypeID = (select SurveyTypeID from SurveyType where SurveyName = ?) AND Program_ProgramID = (select ProgramID from Program where PNameShort = ?)';
+        $rows = $dao->query($query, $request->get('weightName'), $request->get('weightValue'), 'Exit-Based', $request->get('pname'));
+        echo json_encode($rows);
+    }
+
+    public function getEmpAnswers($request) {
+        $dao = new ABETDAO();
+        $query = 'select weight_Name, weight_Value, DateActivated, DateDeactivated, StatusName from answer A, Status S where Program_ProgramID = (select ProgramID from Program where PNameShort = ?) AND A.Status_StatusID = S.StatusID AND A.SurveyType_SurveyTypeID = (select SurveyTypeID from SurveyType where SurveyName = ?)';
+        $rows = $dao->query($query, $request->get('pname'), 'Employer-Based');
+        $answers = [];
+        if ($rows != false) {
+            foreach ($rows as $row) {
+                $answers[] = [
+                    "StatusName" => $row["StatusName"],
+                    "weightName" => $row["weight_Name"],
+                    "weightValue" => $row["weight_Value"],
+                    "dateActivated" => $row["DateActivated"],
+                    "dateDeactivated" => $row["DateDeactivated"]
+                ];
+            }
+        }
+        echo json_encode($answers);
+    }
+
+    public function addEmpAnswer($request) {
+        $dao = new ABETDAO();
+        $query = 'insert into answer (Weight_Value, Weight_Name, DateActivated, DateDeactivated, SurveyType_SurveyTypeID, Status_StatusID, Program_ProgramID) values '
+                . '(?, ?, ?, ?, (select SurveyTypeID from SurveyType where SurveyName = ?), (select StatusID from Status where StatusType = "Survey" AND StatusName = ?), (select ProgramID from Program where PNameShort = ?))';
+        $rows = $dao->query($query, $request->get('weightValue'), $request->get('weightName'), $request->get('dateActivated'), $request->get('dateDeactivated'), 'Employer-Based', $request->get('statusName'), $request->get('pname'));
+        echo json_encode($rows);
+    }
+
+    public function deleteEmpAnswer($request) {
+        $dao = new ABETDAO();
+        $query = 'delete from Answer where Weight_Name = ? AND Weight_Value = ? AND SurveyType_SurveyTypeID = (select SurveyTypeID from SurveyType where SurveyName = ?) AND Program_ProgramID = (select ProgramID from Program where PNameShort = ?)';
+        $rows = $dao->query($query, $request->get('weightName'), $request->get('weightValue'), 'Employer-Based', $request->get('pname'));
+        echo json_encode($rows);
     }
 
     public function getRubrics($request) {
@@ -269,7 +452,7 @@ class Action_Coordinator {
                 . 'AND P.PNAMESHORT = ? '
                 . 'AND C.COURSECODE = ? '
                 . 'GROUP BY SOCODE;';
-        $rows = $dao->query($query, $request->get('semester'), $request->get('pnameShort'), $request->get('courseCode') );
+        $rows = $dao->query($query, $request->get('semester'), $request->get('pnameShort'), $request->get('courseCode'));
         $rawData = [];
         foreach ($rows as $row) {
             $rawData[] = [
@@ -282,10 +465,50 @@ class Action_Coordinator {
                 "Anwser" => $row["answer"],
                 "weightName" => $row["Weight_Value"],
                 "weightValue" => $row["Weight_Name"],
-                
             ];
         }
         return json_encode($rawData);
+    }
+
+    function getCLOResponse($request) {
+        $dao = new ABETDAO();
+        $query = 'SET @sql = NULL; SELECT GROUP_CONCAT(DISTINCT CONCAT("MAX(IF(QuestionText = """, QuestionText,""", Weight_Name, NULL)) AS Question_", OrderNo)) INTO @sql 
+            FROM ABET.SEMESTER SEM, ABET.Section SEC, ABET.Student_Section SS, ABET.Student STU, ABET.StudentQA SQA, ABET.QA QA, ABET.Answer A, ABET.QUESTION Q, ABET.StudentOutcome SO, 
+            ABET.SurveyType ST, ABET.Course C, ABET.Program P, ABET.Faculty F 
+            WHERE SEM.SEMESTERNUM = ? AND SEC.FACULTYID = F.FACULTYID AND F.EMAIL = ? AND SEM.SEMESTERID = SEC.SEMESTERID AND SEC.SECTIONID = SS.SECTIONID 
+            AND SS.STUDENT_STUDENTID = STU.STUDENTID AND SS.SSID = SQA.STUDENT_SECTION_SSID AND SQA.QA_QAID = QA.QAID AND QA.Answer_AID = A.AID AND QA.Question_QID = Q.QID 
+            AND Q.STUDENTOUTCOME_SOID = SO.SOID AND Q.SURVEYTYPEID = ST.SURVEYTYPEID 
+            AND ST.SURVEYNAME = ? AND Q.COURSE_COURSEID = C.COURSEID AND C.PROGRAMID = P.PROGRAMID AND P.PNAMESHORT = ? AND C.COURSECODE = ? ;
+            SET @sql = CONCAT(\'SELECT SUID, \', @sql, \' FROM ABET.SEMESTER SEM, ABET.Section SEC, ABET.Student_Section SS, ABET.Student STU, 
+            ABET.StudentQA SQA, ABET.QA QA, ABET.Answer A, ABET.QUESTION Q, ABET.StudentOutcome SO, ABET.SurveyType ST, ABET.Course C, ABET.Program P 
+            WHERE SEM.SEMESTERNUM = ? AND SEM.SEMESTERID = SEC.SEMESTERID AND SEC.SECTIONID = SS.SECTIONID AND SS.STUDENT_STUDENTID = STU.STUDENTID 
+            AND SS.SSID = SQA.STUDENT_SECTION_SSID AND SQA.QA_QAID = QA.QAID AND QA.Answer_AID = A.AID AND QA.Question_QID = Q.QID 
+            AND Q.STUDENTOUTCOME_SOID = SO.SOID AND Q.SURVEYTYPEID = ST.SURVEYTYPEID AND ST.SURVEYNAME = ? 
+            AND Q.COURSE_COURSEID = C.COURSEID AND C.PROGRAMID = P.PROGRAMID AND P.PNAMESHORT = ? AND C.COURSECODE = ? GROUP BY SUID\'); 
+            prepare stmt from @sql; 
+            execute stmt;
+            deallocate prepare stmt;';
+        $rows = $dao->query($query, $request->get("semester"), $request->get("femail"), 'CLO-Based', $request->get("pname"), $request->get("courseCode"), $request->get("semester"), 'CLO-Based', $request->get("pname"), $request->get("courseCode"));
+        echo json_encode($rows);
+    }
+
+    function display($request) {
+        // $request->get("semester"), $request->get("femail"), 'CLO-Based', $request->get("pname"), $request->get("courseCode"), $request->get("semester"), 'CLO-Based', $request->get("pname"), $request->get("courseCode")
+        // $request->get('Answer'), $request->get('weightValue'), $request->get('weightName'), $request->get('dateActivated'), $request->get('dateDeactivated'), 'CLO-Based', $request->get('statusName'), $request->get('SOCOde'), $request->get('pname')
+        $request->set('pname', 'ICS');
+        $request->set('courseCode', '102');
+        $request->set('femail', 'saleh');
+        $request->set('semester', '152');
+        $request->set('statusName', 'Active');
+        $request->set('weightName', 'Strongly Disagree');
+        $request->set('weightValue', '0');
+        $request->set('Answer', 'Strongly Disagree');
+        //$request->set('description', 'Second SO');
+        $request->set('dateActivated', '2010-01-02');
+        $request->set('dateDeactivated', '2011-02-06');
+        $request->set('SOCode', 'a');
+
+        $this->deleteEmpAnswer($request);
     }
 
 }
