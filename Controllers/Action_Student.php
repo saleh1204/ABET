@@ -46,7 +46,7 @@ class Action_Student {
 
     function getCourses($request) {
         $dao = new ABETDAO();
-        $query = 'SELECT `program`.`PNameShort`, `course`.`CourseCode`, `semester`.`SemesterNum`, `student`.`SUID` '
+        $query = 'SELECT `program`.`PNameShort`, `course`.`CourseCode`, `semester`.`SemesterNum`, `student`.`SUID`, `Section`.`SectionNum`'
                 . 'FROM `program` JOIN `course` ON `course`.`ProgramID` = `program`.`ProgramID` '
                 . 'JOIN `section` ON `section`.`CourseID` = `course`.`CourseID` '
                 . 'JOIN `semester` ON `section`.`SemesterID` = `semester`.`SemesterID` '
@@ -59,7 +59,8 @@ class Action_Student {
             $courses[] = [
                 "pnameShort" => $row["PNameShort"],
                 "courseCode" => $row["CourseCode"],
-                "semester" => $row["SemesterNum"]
+                "semester" => $row["SemesterNum"], 
+                "section" => $row["SectionNum"]
             ];
         }
         echo json_encode($courses);

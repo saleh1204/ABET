@@ -25,9 +25,11 @@ function btnClick()
         var PName = getPName(cname);
         var cc = getCourseCode(cname);
         var tt = getTerm(cname);
+        var sc = getSection(cname);
         document.cookie = "PName =" + PName;
         document.cookie = "CCode =" + cc;
         document.cookie = "Term =" + tt;
+        document.cookie = "Section =" + sc;
         window.location = 'studentsurvey.html';
         return false;
     });
@@ -39,6 +41,16 @@ function getPName(cname) {
     return cname.substring(0, x);
 }
 function getCourseCode(cname) {
+    //var c = cname.substring();
+    // return cname.substring(cname.lastIndexOf("-") + 1);
+    var x = cname.indexOf("-") + 1;
+    cname = cname.substring(x);
+    x = cname.indexOf("-") + 1;
+    cname = cname.substring(x);
+    x = cname.indexOf("-");
+    return cname.substring(0, x);
+}
+function getSection(cname) {
     return cname.substring(cname.lastIndexOf("-") + 1);
 }
 function getTerm(cname) {
@@ -66,7 +78,7 @@ function getCourses(SUID) {
                 for (var i = 0; i < data.length; i++)
                 {
                     // T152-ICS-324
-                    courses[i] = "T" + data[i].semester + "-" + data[i].pnameShort + "-" + data[i].courseCode;
+                    courses[i] = "T" + data[i].semester + "-" + data[i].pnameShort + "-" + data[i].courseCode + "-" + data[i].section;
 
                     x.append('<button style = "text-align: center; color: blue; font-size: 16;" type="button" class="list-group-item" value = "' + courses[i] + '">' + courses[i] + '</button>');
 

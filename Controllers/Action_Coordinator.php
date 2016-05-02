@@ -472,7 +472,23 @@ class Action_Coordinator {
 
     function getCLOResponse($request) {
         $dao = new ABETDAO();
-        $query = 'SET @sql = NULL; SELECT GROUP_CONCAT(DISTINCT CONCAT("MAX(IF(QuestionText = """, QuestionText,""", Weight_Name, NULL)) AS Question_", OrderNo)) INTO @sql 
+        $columns = "SELECT GROUP_CONCAT(DISTINCT CONCAT('MAX(IF(QuestionText = ''',QuestionText,''', Weight_Name, NULL)) AS Question_',OrderNo)) INTO @sql 
+            FROM ABET.SEMESTER SEM, ABET.Section SEC, ABET.Student_Section SS, ABET.Student STU, ABET.StudentQA SQA, ABET.QA QA, ABET.Answer A, ABET.QUESTION Q, ABET.StudentOutcome SO, 
+            ABET.SurveyType ST, ABET.Course C, ABET.Program P, ABET.Faculty F 
+            WHERE SEM.SEMESTERNUM = ? AND SEC.FACULTYID = F.FACULTYID AND F.EMAIL = ? AND SEM.SEMESTERID = SEC.SEMESTERID AND SEC.SECTIONID = SS.SECTIONID 
+            AND SS.STUDENT_STUDENTID = STU.STUDENTID AND SS.SSID = SQA.STUDENT_SECTION_SSID AND SQA.QA_QAID = QA.QAID AND QA.Answer_AID = A.AID AND QA.Question_QID = Q.QID 
+            AND Q.STUDENTOUTCOME_SOID = SO.SOID AND Q.SURVEYTYPEID = ST.SURVEYTYPEID 
+            AND ST.SURVEYNAME = ? AND Q.COURSE_COURSEID = C.COURSEID AND C.PROGRAMID = P.PROGRAMID AND P.PNAMESHORT = ? AND C.COURSECODE = ? ;";
+        $query1 = "SET @sql = CONCAT(\'SELECT SUID, \', " . $columns . ", \' FROM ABET.SEMESTER SEM, ABET.Section SEC, ABET.Student_Section SS, ABET.Student STU, 
+            ABET.StudentQA SQA, ABET.QA QA, ABET.Answer A, ABET.QUESTION Q, ABET.StudentOutcome SO, ABET.SurveyType ST, ABET.Course C, ABET.Program P 
+            WHERE SEM.SEMESTERNUM = ? AND SEM.SEMESTERID = SEC.SEMESTERID AND SEC.SECTIONID = SS.SECTIONID AND SS.STUDENT_STUDENTID = STU.STUDENTID 
+            AND SS.SSID = SQA.STUDENT_SECTION_SSID AND SQA.QA_QAID = QA.QAID AND QA.Answer_AID = A.AID AND QA.Question_QID = Q.QID 
+            AND Q.STUDENTOUTCOME_SOID = SO.SOID AND Q.SURVEYTYPEID = ST.SURVEYTYPEID AND ST.SURVEYNAME = ? 
+            AND Q.COURSE_COURSEID = C.COURSEID AND C.PROGRAMID = P.PROGRAMID AND P.PNAMESHORT = ? AND C.COURSECODE = ? GROUP BY SUID\'); 
+            prepare stmt from @sql; 
+            execute stmt;
+            deallocate prepare stmt;";
+        $query = 'SET @sql = NULL; SELECT GROUP_CONCAT(DISTINCT CONCAT("MAX(IF(QuestionText = """, QuestionText,""", Replace(Weight_Name, “ “, “_”), NULL)) AS Question_", OrderNo)) INTO @sql 
             FROM ABET.SEMESTER SEM, ABET.Section SEC, ABET.Student_Section SS, ABET.Student STU, ABET.StudentQA SQA, ABET.QA QA, ABET.Answer A, ABET.QUESTION Q, ABET.StudentOutcome SO, 
             ABET.SurveyType ST, ABET.Course C, ABET.Program P, ABET.Faculty F 
             WHERE SEM.SEMESTERNUM = ? AND SEC.FACULTYID = F.FACULTYID AND F.EMAIL = ? AND SEM.SEMESTERID = SEC.SEMESTERID AND SEC.SECTIONID = SS.SECTIONID 
@@ -488,7 +504,35 @@ class Action_Coordinator {
             prepare stmt from @sql; 
             execute stmt;
             deallocate prepare stmt;';
-        $rows = $dao->query($query, $request->get("semester"), $request->get("femail"), 'CLO-Based', $request->get("pname"), $request->get("courseCode"), $request->get("semester"), 'CLO-Based', $request->get("pname"), $request->get("courseCode"));
+        $rows = $dao->query($query1, $request->get("semester"), $request->get("femail"), 'CLO-Based', $request->get("pname"), $request->get("courseCode"), $request->get("semester"), 'CLO-Based', $request->get("pname"), $request->get("courseCode"));
+        echo json_encode($rows);
+    }
+
+    public function test($request) {
+        $dao = new ABETDAO();
+        //$query = "select weight_name from abet.answer natural join abet.program where pnameshort = ?";
+        $query1 = "select questiontext from program P, course C, question Q, SurveyType S "
+                . "where  P.ProgramID = C.ProgramID AND C.CourseID = Q.Course_CourseID AND Q.SurveyTypeID = S.SurveyTypeID "
+                . "AND pnameshort = ? AND coursecode = ? AND SurveyName = ?";
+        $rows = $dao->query($query1, $request->get("pname"), $request->get("courseCode"), 'CLO-Based');
+        // $data = [];
+        $columns = "";
+        // echo json_encode($rows);
+        $i = 0;
+        for ($i = 0; $i < count($rows); $i++) {
+            $columns = $columns . "MAX(IF(QuestionText = '" . $rows[$i]["questiontext"] . "', Weight_Name, NULL)) AS Question_" . ($i + 1) . ""; //$row["questiontext"];
+            if ($i < count($rows) - 1) {
+                $columns = $columns . ", ";
+            }
+        }
+
+        $query2 = 'SELECT SUID, ' . ($columns) . ' FROM ABET.SEMESTER SEM, ABET.Section SEC, ABET.Student_Section SS, ABET.Student STU, 
+            ABET.StudentQA SQA, ABET.QA QA, ABET.Answer A, ABET.QUESTION Q, ABET.StudentOutcome SO, ABET.SurveyType ST, ABET.Course C, ABET.Program P 
+            WHERE SEM.SEMESTERNUM = ? AND SEM.SEMESTERID = SEC.SEMESTERID AND SEC.SECTIONID = SS.SECTIONID AND SS.STUDENT_STUDENTID = STU.STUDENTID 
+            AND SS.SSID = SQA.STUDENT_SECTION_SSID AND SQA.QA_QAID = QA.QAID AND QA.Answer_AID = A.AID AND QA.Question_QID = Q.QID 
+            AND Q.STUDENTOUTCOME_SOID = SO.SOID AND Q.SURVEYTYPEID = ST.SURVEYTYPEID AND ST.SURVEYNAME = ? 
+            AND Q.COURSE_COURSEID = C.COURSEID AND C.PROGRAMID = P.PROGRAMID AND P.PNAMESHORT = ? AND C.COURSECODE = ? GROUP BY SUID;';
+        $rows = $dao->query($query2, $request->get('semester'), 'CLO-Based', $request->get('pname'), $request->get('courseCode'));
         echo json_encode($rows);
     }
 
@@ -508,7 +552,7 @@ class Action_Coordinator {
         $request->set('dateDeactivated', '2011-02-06');
         $request->set('SOCode', 'a');
 
-        $this->deleteEmpAnswer($request);
+        $this->test($request);
     }
 
 }

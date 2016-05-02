@@ -6,8 +6,6 @@ require_once 'ABETDAO.php';
 
 class Action_Faculty {
 
-    
-
     public function addQA($request) {
         $dao = new ABETDAO();
         $query = 'insert into abet.QA (Question_QID, Answer_AID, Status_StatusID) values (' .
@@ -16,6 +14,57 @@ class Action_Faculty {
                 . '(select StatusID from abet.status where StatusType = \'' . $request->get('statusType') . '\' and statusname = \'' . $request->get('statusName') . '\')'
                 . ');';
         $dao->excuteQuery($query);
+    }
+
+    public function addComment($request) {
+        $dao = new ABETDAO();
+        $query1 = 'select SectionID from Section where SectionNum = ? AND CourseID = (select CourseID from Course where courseCode = ? AND ProgramID = (select ProgramID from Program where PNameShort = ?)) AND FacultyID = (select FacultyID from Faculty where email = ?)';
+        $result1 = $dao->query($query1, $request->get('sectionNum'), $request->get('courseCode'), $request->get('pname'), $request->get('email'));
+        // echo json_encode($result1) . '<br />';
+        // 
+        $query2 = 'select QID from Question where QuestionText = ? AND Course_CourseID = (select CourseID from Course where CourseCode = ? AND ProgramID = (select ProgramID from Program where PNameShort = ?)) AND SurveyTypeID = (Select SurveyTypeID from SurveyType where SurveyName = ?)';
+        $result2 = $dao->query($query2, $request->get('questionText'), $request->get('courseCode'), $request->get('pname'), $request->get('surveyName'));
+        //echo json_encode($result2) . '<br />';
+        $query = 'insert into Comment (Weakness, Actions, Section_SectionID, Question_QID) VALUES ('
+                . '?, '
+                . '?, '
+                . '?, '
+                . '? '
+                . ')';
+        $result = $dao->query($query, $request->get('weakness'), $request->get('actions'), $result1[0]['SectionID'], $result2[0]['QID']);
+        echo json_encode($result);
+    }
+
+    public function getComments($request) {
+        $dao = new ABETDAO();
+        $query = 'select Weakness, Actions, QuestionText from Comment C, Question Q '
+                . 'where Q.QID = C.Question_QID '
+                . 'AND Q.SurveyTypeID = (select SurveyTypeID from SurveyType where SurveyName = ?)'
+                . 'AND C.Section_SectionID = (select SectionID from Section where SectionNum = ? AND CourseID = (select CourseID from Course where courseCode = ? AND ProgramID = (select ProgramID from Program where PNameShort = ?)) AND FacultyID = (select FacultyID from Faculty where email = ?));';
+        $rows = $dao->query($query, $request->get('surveyName'), $request->get('sectionNum'), $request->get('courseCode'), $request->get('pname'), $request->get('email'));
+        echo json_encode($rows);
+    }
+
+    public function deleteComment($request) {
+        $dao = new ABETDAO();
+        $query1 = 'select SectionID from Section where SectionNum = ? AND CourseID = (select CourseID from Course where courseCode = ? AND ProgramID = (select ProgramID from Program where PNameShort = ?)) AND FacultyID = (select FacultyID from Faculty where email = ?)';
+        $result1 = $dao->query($query1, $request->get('sectionNum'), $request->get('courseCode'), $request->get('pname'), $request->get('email'));
+        $query2 = 'select QID from Question where QuestionText = ? AND Course_CourseID = (select CourseID from Course where CourseCode = ? AND ProgramID = (select ProgramID from Program where PNameShort = ?)) AND SurveyTypeID = (Select SurveyTypeID from SurveyType where SurveyName = ?)';
+        $result2 = $dao->query($query2, $request->get('questionText'), $request->get('courseCode'), $request->get('pname'), $request->get('surveyName'));
+        $query = 'delete from Comment where Weakness = ? AND Actions = ? AND Section_SectionID = ? AND Question_QID = ?';
+        $result = $dao->query($query, $request->get("weakness"), $request->get("actions"), $result1[0]['SectionID'], $result2[0]['QID']);
+        echo json_encode($result);
+    }
+
+    function updateComment($request) {
+        $dao = new ABETDAO();
+        $query1 = 'select SectionID from Section where SectionNum = ? AND CourseID = (select CourseID from Course where courseCode = ? AND ProgramID = (select ProgramID from Program where PNameShort = ?)) AND FacultyID = (select FacultyID from Faculty where email = ?)';
+        $result1 = $dao->query($query1, $request->get('sectionNum'), $request->get('courseCode'), $request->get('pname'), $request->get('email'));
+        $query2 = 'select QID from Question where QuestionText = ? AND Course_CourseID = (select CourseID from Course where CourseCode = ? AND ProgramID = (select ProgramID from Program where PNameShort = ?)) AND SurveyTypeID = (Select SurveyTypeID from SurveyType where SurveyName = ?)';
+        $result2 = $dao->query($query2, $request->get('questionText'), $request->get('courseCode'), $request->get('pname'), $request->get('surveyName'));
+        $query = 'update Comment set weakness = ?, actions = ? where Weakness = ? AND Actions = ? AND Section_SectionID = ? AND Question_QID = ?';
+        $result = $dao->query($query, $request->get("newWeakness"), $request->get("newActions"), $request->get("weakness"), $request->get("actions"), $result1[0]['SectionID'], $result2[0]['QID']);
+        echo json_encode($result);
     }
 
     public function addStudentSection($request) {
@@ -91,7 +140,7 @@ class Action_Faculty {
 
     public function getAllCourses($request) {
         $dao = new ABETDAO();
-        $query = 'SELECT PNameShort, CourseCode, SEM.SemesterNum, F.FacultyName '
+        $query = 'SELECT PNameShort, CourseCode, SEM.SemesterNum, F.FacultyName, SEC.SectionNum '
                 . 'FROM Faculty F, Section SEC, Semester SEM, Course C, Program P '
                 . 'WHERE C.CourseID = SEC.CourseID '
                 . 'AND Email = ? '
@@ -105,7 +154,8 @@ class Action_Faculty {
                 "pnameShort" => $row["PNameShort"],
                 "courseCode" => $row["CourseCode"],
                 "Faculty" => $row["FacultyName"],
-                "semester" => $row["SemesterNum"]
+                "semester" => $row["SemesterNum"],
+                "section" => $row["SectionNum"]
             ];
         }
         echo json_encode($courses);
@@ -383,21 +433,24 @@ class Action_Faculty {
     function display($request) {
         //echo 'Hello <br>';
         // $request->get('suid'), $request->get('semester'), $request->get('courseCode'), $request->get('pname'), $request->get('courseCode'), $request->get('pname'),  $request->get('weightAnswer'), $request->get('Question'));
-        $request->set("orderNo", '6');
-        $request->set("Question", 'Hello, Test2');
+        // $request->get('weakness'),$request->get('actions'), $request->get('sectionNum'), $request->get('courseCode'), $request->get('pname'), $request->get('email'), $request->get('questionText'), $request->get('courseCode'), $request->get('pname'),$request->get('SoCode'), $request->get('pname')
+        //$request->set("orderNo", '6');
+        $request->set("questionText", 'Testing Surveys');
+        $request->set("actions", 'Nothing');
+        $request->set("weakness", 'Everything');
         $request->set("semester", '152');
-        $request->set("weightAnswer", 'Agree');
-        $request->set('suid', '201154810');
-        
+        //$request->set("weightAnswer", 'Agree');
+        $request->set('SoCode', 'a');
+
         // $request->set("statusType", 'Survey');
         // $request->set("statusName", 'Active');
-        // $request->set("SurveyName", 'Rubrics-Based');
+        $request->set("surveyName", 'CLO-Based');
         $request->set("pname", 'ICS');
         $request->set("courseCode", '102');
-        //$request->set("SOCode", 'a');
+        $request->set("sectionNum", '1');
         $request->set("email", 'saleh');
 
-        $this->getAllCourses($request);
+        $this->addComment($request);
     }
 
 }
