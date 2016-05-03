@@ -9,38 +9,43 @@ $(document).ready(function () {
             cmd: "getStudentAnswers",
             semester: getCookie('Term'),
             courseCode: getCookie('CCode'),
-            pnameShort: getCookie('PName'),
-            surveyType: "Rubrics-Based"
+            pname: getCookie('PName'),
+            email: getCookie('email'),
+            surveyType: "Rubrics-Based",
+            sectionNum: getCookie('Section')
         };
+        //alert('GREAT');
         $.getJSON("../index.php", parameters).done(
                 function (data, textStatus, jqXHR)
                 {
-                    $("#tbody tr").remove();
-                    var col1 = ["Stduent ID1", "Stduent ID3", "Stduent ID2"];
-                    var col2 = ["4", "3", "2"];
-                    var col3 = ["4", "3", "2"];
-                    var col4 = ["4", "3", "2"];
-                    var col5 = ["4", "3", "2"];
-                    /*************************************
-                     SELECT * FROM TABLE, TABLE, TABLE
-                     THIS SELECT NEEDS ALL COOKIES
-                     This is the RAW DATA select statement for CLO
-                     *************************************
-                     */
-                    var tb = $('#tbody');
-                    var i = 0;
-                    for (i = 0; i < col2.length; i++) {
-                        var tr = $('<tr>').appendTo(tb);
-                        tr.append('<td class = "sr">' + (i + 1) + '</td>');
-                        // PUT A FOR LOOP THAT IS BASED ON THE RECORD LENGTH
-                        // THIS CAN'T BE DONE WITHOUT DATABASE CONNECTION
-                        tr.append('<td class = "col1" style = "text-align: center;">' + col1[i] + '</td>');
-                        tr.append('<td class = "col2" style = "text-align: center;">' + col2[i] + '</td>');
-                        tr.append('<td class = "col3" style = "text-align: center;">' + col3[i] + '</td>');
-                        tr.append('<td class = "col4" style = "text-align: center;">' + col4[i] + '</td>');
-                        tr.append('<td class = "col5" style = "text-align: center;">' + col5[i] + '</td>');
-                        tr.append('<td style = "text-align: center;">' + '<button class="btn btn-default" ><i class="glyphicon glyphicon-edit"></i>Edit</button>' + '<button class="btn btn-default" name = "del' + i + '" ><i class="glyphicon glyphicon-remove\"></i>Delete</button>' + '</td>');
+                    var myTable = $("#example").empty();
+                    myTable.append("<thead>");
+
+                    var th = $('<tr>').appendTo(myTable);
+                    th.append("<th> # </th> <th> SUID </th>");
+                    for (var k = 0; k < data[0].count; k++)
+                    {
+                        th.append("<th> Question " + (k + 1) + " Answer </th>");
                     }
+                    th.append("</tr>");
+                    myTable.append("</thead>");
+
+                    myTable.append("<tbody>");
+
+                    for (var j = 0; j < data.length; j++)
+                    {
+                        var tr = $('<tr>').appendTo(myTable);
+                        tr.append('<td class = "sr">' + (j + 1) + '</td>');
+                        tr.append("<td> " + data[j].SUID + "</td>");
+                        for (var k = 0; k < data[j].count; k++)
+                        {
+                            tr.append("<td> " + data[j].answers[k] + "</td>");
+
+                        }
+                        tr.append("</tr>");
+                    }
+
+                    myTable.append("</tbody>");
                     $('#example').dataTable();
                     $('#example-keytable').DataTable({
                         keys: true

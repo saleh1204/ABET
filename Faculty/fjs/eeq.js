@@ -1,3 +1,4 @@
+var isUpdate = false;
 $(document).ready(function () {
     $("#inputC2A").val("");
     $("#inputC3A").val("");
@@ -32,73 +33,80 @@ $(document).ready(function () {
                     console.log(errorThrown.toString());
                 });
 
-
+        var s2 = $('#inputC4A');
+        s2.empty();
+        //alert('hey');
+        var s1L = ["Active", "Inactive"];
+        for (var i = 0; i < s1L.length; i++) {
+            s2.append('<option value = "' + s1L[i] + '">' + s1L[i] + '</option>');
+        }
+    }
+    function generateTable() {
+        // flush the table
         var parameters = {
-            grp: "DBA",
-            cmd: "getStatus"
+            grp: "Faculty",
+            cmd: "getEmpQuestions",
+            semester: getCookie('Term'),
+            courseCode: getCookie('CCode'),
+            pnameShort: getCookie('PName')
         };
         $.getJSON("../index.php", parameters).done(
                 function (data, textStatus, jqXHR)
                 {
-
-                    var s2 = $('#inputC4A');
-                    s2.empty();
-                    var s1L = [];
-                    for (var i = 0; i < data.length; i++)
+                    $("#tbody tr").remove();
+                    var col1 = [];//["1", "2", "3", "4"];
+                    var col2 = [];//["Question 1 text", "Question 2 text", "Question 3 text", "Question text 4"];
+                    var col3 = [];//["a", "b", "c", "d"];
+                    var col4 = [];//["Active", "Active", "Inactive", "Inactive"];
+                    /*************************************
+                     SELECT * FROM TABLE, TABLE, TABLE
+                     THIS SELECT NEEDS ALL COOKIES
+                     *************************************
+                     */
+                    var i = 0;
+                    // alert(data);
+                    for (i = 0; i < data.length; i++)
                     {
-                        s1L[i] = data[i].StatusType;
-                        //alert(data[i].StatusType);
-                        //alert
+                        col1[i] = data[i].order;
+                        col2[i] = data[i].question;
+                        col3[i] = data[i].SOCode;
+                        col4[i] = data[i].status;
+                        // alert(i);
                     }
-                    for (var i = 0; i < s1L.length; i++) {
-                        s2.append('<option value = "' + s1L[i] + '">' + s1L[i] + '</option>');
+                    var tb = $('#tbody');
+
+                    for (i = 0; i < col2.length; i++) {
+                        var tr = $('<tr>').appendTo(tb);
+                        tr.append('<td class = "col1">' + col1[i] + '</td>');
+                        tr.append('<td class = "col2" style = "text-align: center;">' + col2[i] + '</td>');
+                        tr.append('<td class = "col3" style = "text-align: center;">' + col3[i] + '</td>');
+                        tr.append('<td class = "col4" style = "text-align: center;">' + col4[i] + '</td>');
+                        tr.append('<td style = "text-align: center;">' + '<button class="btn btn-default" ><i class="glyphicon glyphicon-edit"></i>Edit</button>' + '<button class="btn btn-default" name = "del' + i + '" ><i class="glyphicon glyphicon-remove\"></i>Delete</button>' + '</td>');
                     }
-                    // s1.val('');
-                }).fail(
+                    $('#example').dataTable();
+                    $('#example-keytable').DataTable({
+                        keys: true
+                    });
+                    $('#example-responsive').DataTable();
+                    $('#example-scroller').DataTable({
+                        ajax: "./js/datatables/json/scroller-demo.json",
+                        deferRender: true,
+                        scrollY: 380,
+                        scrollCollapse: true,
+                        scroller: true
+                    });
+                    var table = $('#example-fixed-header').DataTable({
+                        fixedHeader: true
+                    });
+                    TableManageButtons.init();
+                }
+        ).fail(
                 function (jqXHR, textStatus, errorThrown)
                 {
                     // log error to browser's console
                     console.log(errorThrown.toString());
+                    //return cl;
                 });
-    }
-    function generateTable() {
-        // flush the table
-        $("#tbody tr").remove();
-        var col1 = ["1", "2", "3", "4"];
-        var col2 = ["Question 1 text", "Question 2 text", "Question 3 text", "Question text 4"];
-        var col3 = ["a", "b", "c", "d"];
-        var col4 = ["Active", "Active", "Inactive", "Inactive"];
-        /*************************************
-         SELECT * FROM TABLE, TABLE, TABLE
-         THIS SELECT NEEDS ALL COOKIES
-         *************************************
-         */
-        var tb = $('#tbody');
-        var i = 0;
-        for (i = 0; i < col2.length; i++) {
-            var tr = $('<tr>').appendTo(tb);
-            tr.append('<td class = "col1">' + col1[i] + '</td>');
-            tr.append('<td class = "col2" style = "text-align: center;">' + col2[i] + '</td>');
-            tr.append('<td class = "col3" style = "text-align: center;">' + col3[i] + '</td>');
-            tr.append('<td class = "col4" style = "text-align: center;">' + col4[i] + '</td>');
-            tr.append('<td style = "text-align: center;">' + '<button class="btn btn-default" ><i class="glyphicon glyphicon-edit"></i>Edit</button>' + '<button class="btn btn-default" name = "del' + i + '" ><i class="glyphicon glyphicon-remove\"></i>Delete</button>' + '</td>');
-        }
-        $('#example').dataTable();
-        $('#example-keytable').DataTable({
-            keys: true
-        });
-        $('#example-responsive').DataTable();
-        $('#example-scroller').DataTable({
-            ajax: "./js/datatables/json/scroller-demo.json",
-            deferRender: true,
-            scrollY: 380,
-            scrollCollapse: true,
-            scroller: true
-        });
-        var table = $('#example-fixed-header').DataTable({
-            fixedHeader: true
-        });
-        TableManageButtons.init();
     }
     var $col1;
     var $col2;
@@ -118,12 +126,32 @@ $(document).ready(function () {
             // DELETE THE RECORD FROM DATABSE PLEASE
             // THIS DELETE WILL USE ALL THE VALUES IN THE COOKIES INCLUDING: EMAIL, SEMESTER, PNAMESHORT, COURSECODE
             // IN ADDITION TO COL1, COL2
+            var parameters = {
+                grp: "Faculty",
+                cmd: "deleteQuestion",
+                surveyType: 'Employer-Based',
+                questionText: $col2,
+                pnameShort: getCookie('PName'),
+                courseCode: getCookie('CCode'),
+                SOCode: $col3
+
+            };
+
+            $.getJSON("../index.php", parameters).done(function (data, textStatus, jqXHR) {
+                generateTable();
+            }
+            ).fail(function (jqXHR, textStatus, errorThrown)
+            {
+                // log error to browser's console
+                console.log(textStatus + "\n" + errorThrown.toString());
+
+            });
         } else { // it is an update
             document.getElementById("inputC1A").value = $col1;
             document.getElementById("inputC2A").value = $col2;
             $("#inputC3A").val($col3);
             $("#inputC4A").val($col4);
-
+            isUpdate = true;
 
 
         }
@@ -143,12 +171,43 @@ $(document).ready(function () {
          INSERT STATEMENT GOES HERE
          **************************
          */
-        document.getElementById("inputC1A").value = "";
-        document.getElementById("inputC2A").value = "";
-        $("#inputC3A").val('');
-        $("#inputC4A").val("");
-        generateTable();
+        if (isUpdate)
+        {
+            
+            isUpdate = false;
+        }
+        else
+        {
+            var parameters = {
+                grp: "Faculty",
+                cmd: "addQuestion",
+                orderNo: newC1,
+                questionText: newC2,
+                SurveyName: 'Employer-Based',
+                statusName: newC4,
+                statusType: 'Survey',
+                pnameShort: getCookie('PName'),
+                courseCode: getCookie('CCode'),
+                SOCode: newC3
 
+            };
+
+            $.getJSON("../index.php", parameters).done(function (data, textStatus, jqXHR) {
+                alert("Added Successfully!!!");
+                generateTable();
+            }
+            ).fail(function (jqXHR, textStatus, errorThrown)
+            {
+                // log error to browser's console
+                console.log(textStatus + "\n" + errorThrown.toString());
+
+            });
+            document.getElementById("inputC1A").value = "";
+            document.getElementById("inputC2A").value = "";
+            $("#inputC3A").val('');
+            $("#inputC4A").val("");
+            //generateTable();
+        }
     });
     $("#demo-form2").on('click', '#cancel', function () {
 

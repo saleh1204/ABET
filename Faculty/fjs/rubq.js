@@ -32,34 +32,42 @@ $(document).ready(function () {
                     console.log(errorThrown.toString());
                 });
 
-
-        var parameters = {
-            grp: "DBA",
-            cmd: "getStatus"
-        };
-        $.getJSON("../index.php", parameters).done(
-                function (data, textStatus, jqXHR)
-                {
-
-                    var s2 = $('#inputC4A');
-                    s2.empty();
-                    var s1L = [];
-                    for (var i = 0; i < data.length; i++)
-                    {
-                        s1L[i] = data[i].StatusType;
-                        //alert(data[i].StatusType);
-                        //alert
-                    }
-                    for (var i = 0; i < s1L.length; i++) {
-                        s2.append('<option value = "' + s1L[i] + '">' + s1L[i] + '</option>');
-                    }
-                    // s1.val('');
-                }).fail(
-                function (jqXHR, textStatus, errorThrown)
-                {
-                    // log error to browser's console
-                    console.log(errorThrown.toString());
-                });
+        var s2 = $('#inputC4A');
+        s2.empty();
+        //alert('hey');
+        var s1L = ["Active", "Inactive"];
+        for (var i = 0; i < s1L.length; i++) {
+            s2.append('<option value = "' + s1L[i] + '">' + s1L[i] + '</option>');
+        }
+        /*
+         var parameters = {
+         grp: "DBA",
+         cmd: "getStatus"
+         };
+         $.getJSON("../index.php", parameters).done(
+         function (data, textStatus, jqXHR)
+         {
+         
+         var s2 = $('#inputC4A');
+         s2.empty();
+         var s1L = [];
+         for (var i = 0; i < data.length; i++)
+         {
+         s1L[i] = data[i].StatusType;
+         //alert(data[i].StatusType);
+         //alert
+         }
+         for (var i = 0; i < s1L.length; i++) {
+         s2.append('<option value = "' + s1L[i] + '">' + s1L[i] + '</option>');
+         }
+         // s1.val('');
+         }).fail(
+         function (jqXHR, textStatus, errorThrown)
+         {
+         // log error to browser's console
+         console.log(errorThrown.toString());
+         });
+         */
     }
     function generateTable() {
         var parameters = {

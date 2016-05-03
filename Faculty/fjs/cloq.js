@@ -187,13 +187,13 @@ $(document).ready(function () {
         // $dao->query($query, $request->get('orderNo'), $request->get('questionText'), $request->get('SurveyName'), $request->get('statusName'), $request->get('statusType'), $request->get('SOCode'), $request->get('courseCode'), $request->get('pnameShort'));
         /*
          *   $request->set("orderNo", '6');
-        $request->set("questionText", 'Hello, Test2');
-        $request->set("statusType", 'Survey');
-        $request->set("statusName", 'Active');
-        $request->set("SurveyName", 'CLO-Based');
-        $request->set("pnameShort", 'ICS');
-        $request->set("courseCode", '102');
-        $request->set("SOCode", 'a');
+         $request->set("questionText", 'Hello, Test2');
+         $request->set("statusType", 'Survey');
+         $request->set("statusName", 'Active');
+         $request->set("SurveyName", 'CLO-Based');
+         $request->set("pnameShort", 'ICS');
+         $request->set("courseCode", '102');
+         $request->set("SOCode", 'a');
          */
         var parameters = {
             grp: "Faculty",

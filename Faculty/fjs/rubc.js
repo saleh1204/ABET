@@ -201,6 +201,7 @@ $(document).ready(function () {
         }
         else
         {
+            //alert('updated');
             var parameters = {
                 grp: "Faculty",
                 cmd: "addComment",
