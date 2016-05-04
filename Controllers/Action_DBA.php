@@ -259,7 +259,7 @@ class Action_DBA {
 
     public function getSemesters($request) {
         $dao = new ABETDAO();
-        $query = 'SELECT * FROM abet.Semester;';
+        $query = 'SELECT * FROM abet.Semester order by semesternum;';
         $rows = $dao->query($query);
         $semesters = [];
         if ($rows != false) {

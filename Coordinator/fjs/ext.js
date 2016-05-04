@@ -41,35 +41,57 @@ $(document).ready(function () {
 
     function generateTable() {
         // flush the table
-        $("#tbody tr").remove();
-        // THESE VALUES WILL COME FROM A SELECT
-        var col1 = ["a", "b", "c", "d"];
-        var col2 = ["3.8125", "3.8056", "3.9167", "2.99"];
-        var tb = $('#tbody');
-        for (var i = 0; i < col1.length; i++) {
-            var tr = $('<tr>').appendTo(tb);
-            tr.append('<td class = "col1">' + (i + 1) + '</td>');
-            tr.append('<td class = "col1">' + col1[i] + '</td>');
-            tr.append('<td class = "col2" style = "text-align: center;">' + col2[i] + '</td>');
+        var parameters1 = {
+            grp: "Coordinator",
+            cmd: "getPCReport",
+            beginTerm: newC2,
+            endTerm: newC3,
+            SOCode: newC1,
+            pname: getCookie('PName')
+        };
+        $.getJSON("../index.php", parameters1).done(
+                function (data, textStatus, jqXHR)
+                {
+                    $("#tbody tr").remove();
+                    // THESE VALUES WILL COME FROM A SELECT
+                    var col1 = [];//["a", "b", "c", "d"];
+                    var col2 = [];//["3.8125", "3.8056", "3.9167", "2.99"];
+                    for (var j=0; j<data.length; j++)
+                    {
+                        
+                    }
+                    var tb = $('#tbody');
+                    for (var i = 0; i < col1.length; i++) {
+                        var tr = $('<tr>').appendTo(tb);
+                        tr.append('<td class = "col1">' + (i + 1) + '</td>');
+                        tr.append('<td class = "col1">' + col1[i] + '</td>');
+                        tr.append('<td class = "col2" style = "text-align: center;">' + col2[i] + '</td>');
 
-        }
+                    }
 
-        $('#example').dataTable();
-        $('#example-keytable').DataTable({
-            keys: true
-        });
-        $('#example-responsive').DataTable();
-        $('#example-scroller').DataTable({
-            ajax: "./js/datatables/json/scroller-demo.json",
-            deferRender: true,
-            scrollY: 380,
-            scrollCollapse: true,
-            scroller: true
-        });
-        var table = $('#example-fixed-header').DataTable({
-            fixedHeader: true
-        });
-        TableManageButtons.init();
+                    $('#example').dataTable();
+                    $('#example-keytable').DataTable({
+                        keys: true
+                    });
+                    $('#example-responsive').DataTable();
+                    $('#example-scroller').DataTable({
+                        ajax: "./js/datatables/json/scroller-demo.json",
+                        deferRender: true,
+                        scrollY: 380,
+                        scrollCollapse: true,
+                        scroller: true
+                    });
+                    var table = $('#example-fixed-header').DataTable({
+                        fixedHeader: true
+                    });
+                    TableManageButtons.init();
+                }).fail(
+                function (jqXHR, textStatus, errorThrown)
+                {
+                    // log error to browser's console
+                    console.log(errorThrown.toString());
+                    //return cl;
+                });
     }
 
     $("#demo-form2").on('click', '#save', function () {

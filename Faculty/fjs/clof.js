@@ -1,5 +1,8 @@
 $(document).ready(function () {
+    addQuestionTexts();
+    addAnswerValues();
     generateTable();
+
     $('#coursedetails').text('T' + getCookie('Term') + '-' + getCookie('PName') + '-' + getCookie('CCode'));
     $('#username').text(getCookie('email'));
     function generateTable() {
@@ -20,7 +23,7 @@ $(document).ready(function () {
                 {
                     var myTable = $("#example").empty();
                     myTable.append("<thead>");
-                    
+
                     var th = $('<tr>').appendTo(myTable);
                     th.append("<th> # </th> <th> SUID </th>");
                     for (var k = 0; k < data[0].count; k++)
@@ -171,21 +174,130 @@ $(document).ready(function () {
         document.getElementById("inputC4A").value = "";
         document.getElementById("inputC5A").value = "";
     });
-    function getCookie(cname) {
-        var name = cname + "=";
-        var ca = document.cookie.split(';');
-        for (var i = 0; i < ca.length; i++) {
-            var c = ca[i];
-            while (c.charAt(0) == ' ') {
-                c = c.substring(1);
-            }
-            if (c.indexOf(name) == 0) {
-                return c.substring(name.length, c.length);
-            }
-        }
-        return "";
-    }
+
 
 
 
 });
+function getCookie(cname) {
+    var name = cname + "=";
+    var ca = document.cookie.split(';');
+    for (var i = 0; i < ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0) == ' ') {
+            c = c.substring(1);
+        }
+        if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length);
+        }
+    }
+    return "";
+}
+function addQuestionTexts()
+{
+    // $request->get("courseCode"), $request->get("pname"), $request->get("surveyName"), $request->get("statusName"), 'Active'
+    var parameters = {
+        grp: "Faculty",
+        cmd: "getDynamicQuestion",
+        semester: getCookie('Term'),
+        courseCode: getCookie('CCode'),
+        pname: getCookie('PName'),
+        email: getCookie('email'),
+        surveyName: "CLO-Based",
+        statusName: "Survey",
+        sectionNum: getCookie('Section')
+    };
+    //alert('GREAT');
+    $.getJSON("../index.php", parameters).done(
+            function (data, textStatus, jqXHR)
+            {
+                //alert('Questions Loaded');
+                var questionDiv = $("#questions div").empty();
+                questionDiv = $("#questions");
+                for (var i = 0; i < data.length; i++) {
+                    questionDiv.append('<div class="form-group">');
+                    questionDiv.append('<label class="control-label col-md-3 col-sm-3 col-xs-12" for="first-name">' + data[i].questiontext + '<span class="required">*</span>');
+                    questionDiv.append('</label>');
+                    questionDiv.append('<div class="col-md-6 col-sm-6 col-xs-12">');
+                    questionDiv.append('<input type="text" id="inputC' + (i + 2) + 'A" required="required" class="form-control col-md-7 col-xs-12" >');
+                    questionDiv.append('</div></div>');
+                }
+            }).fail(
+            function (jqXHR, textStatus, errorThrown)
+            {
+                // log error to browser's console
+                console.log(errorThrown.toString());
+                //return cl;
+            });
+    /*
+     * 
+     document.writeln('<div class="form-group">');
+     document.writeln('<label class="control-label col-md-3 col-sm-3 col-xs-12" for="first-name">Question' + (i + 1) + ' Answer <span class="required">*</span>');
+     document.writeln('</label>');
+     document.writeln('<div class="col-md-6 col-sm-6 col-xs-12">');
+     document.writeln('<input type="text" id="inputC' + (i + 2) + 'A" required="required" class="form-control col-md-7 col-xs-12" >');
+     document.writeln('</div></div>');
+     */
+}
+
+function addAnswerValues()
+{
+    var parameters = {
+        grp: "Faculty",
+        cmd: "getDynamicAnswers",
+        semester: getCookie('Term'),
+        courseCode: getCookie('CCode'),
+        pname: getCookie('PName'),
+        email: getCookie('email'),
+        surveyName: "CLO-Based",
+        statusName: "Survey",
+        sectionNum: getCookie('Section')
+    };
+    //alert('GREAT');
+    $.getJSON("../index.php", parameters).done(
+            function (data, textStatus, jqXHR)
+            {
+                //alert('Answers Loaded');
+                // var answersDiv = $("#answers").empty();
+                // answersDiv.append('<table style = "width: 50%; margin-left: auto; margin-right: auto;" id="myTable">');
+                var answers = $("#myTable").empty();
+                //answers = $("#answers");
+                //answers.append("<table id='myTable'>");
+
+                var myTemp = $('<tr style = "text-align: center;">').appendTo(answers);
+                //myTemp.append('<tr style = "text-align: center;">');
+                for (var i = 0; i < data.length; i++) {
+                    myTemp.append('<td>' + data[i].weight_name + '</td>');
+                }
+                myTemp.append('</tr>');
+                var myTemp1 = $('<tr style = "text-align: center;">').appendTo(answers);
+                //myTemp.append('<tr style="text-align: center;">');
+                for (var i = 0; i < data.length; i++) {
+                    myTemp1.append('<td style="padding-right:5em">' + data[i].weight_value + '</td>');
+                }
+                myTemp1.append('</tr>');
+                answers.append('</table>');
+            }).fail(
+            function (jqXHR, textStatus, errorThrown)
+            {
+                // log error to browser's console
+                console.log(errorThrown.toString());
+                //return cl;
+            });
+    /*
+     * 
+     document.writeln('<table style = "width: 50%; margin-left: auto; margin-right: auto;" id="myTable">');
+     
+     document.writeln('<tr style = "text-align: center;">');
+     for (var j = 0; j < v.length; j++) {
+     document.writeln('<td >' + a[j] + '</td>');
+     }
+     document.writeln('</tr>');
+     document.writeln('<tr style="text-align: center;">');
+     for (var j = 0; j < v.length; j++) {
+     document.writeln('<td>' + v[j] + '</td>');
+     }
+     document.writeln('</tr>');
+     document.writeln('</table>');
+     */
+}

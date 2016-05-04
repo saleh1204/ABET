@@ -182,42 +182,46 @@
                                                     <input type="text" id="inputC1A" required="required" class="form-control col-md-7 col-xs-12" >
                                                 </div>
                                             </div>
-
-                                            <script type="text/javascript">
-                                                // AJAX TO KNOW THE NUMBER OF Active QUESTIONS
-                                                var numQ = 4;
-                                                for (var i = 0; i < numQ; i++) {
-                                                    document.writeln('<div class="form-group">');
-                                                    document.writeln('<label class="control-label col-md-3 col-sm-3 col-xs-12" for="first-name">Question' + (i + 1) + ' Answer <span class="required">*</span>');
-                                                    document.writeln('</label>');
-                                                    document.writeln('<div class="col-md-6 col-sm-6 col-xs-12">');
-                                                    document.writeln('<input type="text" id="inputC' + (i + 2) + 'A" required="required" class="form-control col-md-7 col-xs-12" >');
-                                                    document.writeln('</div></div>');
-                                                }
-                                            </script>
+                                            <div id="questions">
+                                                <div>
+                                                    <script type="text/javascript">
+                                                        // AJAX TO KNOW THE NUMBER OF Active QUESTIONS
+                                                        var numQ = 4;
+                                                        for (var i = 0; i < numQ; i++) {
+                                                            document.writeln('<div class="form-group">');
+                                                            document.writeln('<label class="control-label col-md-3 col-sm-3 col-xs-12" for="first-name">Question' + (i + 1) + ' Answer <span class="required">*</span>');
+                                                            document.writeln('</label>');
+                                                            document.writeln('<div class="col-md-6 col-sm-6 col-xs-12">');
+                                                            document.writeln('<input type="text" id="inputC' + (i + 2) + 'A" required="required" class="form-control col-md-7 col-xs-12" >');
+                                                            document.writeln('</div></div>');
+                                                        }
+                                                    </script>
+                                                </div>
+                                            </div>
                                             <h4 style="visibility: hidden;">h3</h4>
 
+                                            <div id="answers">
+                                                <script type="text/javascript">
+                                                    // AJAX TO KNOW THE ANSWER WITH THEIR WEIGHTS
+                                                    var a = ["Agree", "Neutral", "Disagree"];
+                                                    var v = ["3", "2", "1"];
+                                                    document.writeln('<table style = "width: 50%; margin-left: auto; margin-right: auto;" id="myTable">');
 
-                                            <script type="text/javascript">
-                                                // AJAX TO KNOW THE ANSWER WITH THEIR WEIGHTS
-                                                var a = ["Agree", "Neutral", "Disagree"];
-                                                var v = ["3", "2", "1"];
-                                                document.writeln('<table style = "width: 50%; margin-left: auto; margin-right: auto;" id="myTable">');
-
-                                                document.writeln('<tr style = "text-align: center;">');
-                                                for (var j = 0; j < v.length; j++) {
-                                                    document.writeln('<td >' + a[j] + '</td>');
-                                                }
-                                                document.writeln('</tr>');
-                                                document.writeln('<tr style="text-align: center;">');
-                                                for (var j = 0; j < v.length; j++) {
-                                                    document.writeln('<td>' + v[j] + '</td>');
-                                                }
-                                                document.writeln('</tr>');
-                                                document.writeln('</table>');
+                                                    document.writeln('<tr style = "text-align: center;">');
+                                                    for (var j = 0; j < v.length; j++) {
+                                                        document.writeln('<td >' + a[j] + '</td>');
+                                                    }
+                                                    document.writeln('</tr>');
+                                                    document.writeln('<tr style="text-align: center;">');
+                                                    for (var j = 0; j < v.length; j++) {
+                                                        document.writeln('<td>' + v[j] + '</td>');
+                                                    }
+                                                    document.writeln('</tr>');
+                                                    document.writeln('</table>');
 
 
-                                            </script>
+                                                </script>
+                                            </div>
 
                                             <h3 style="visibility: hidden;">h3</h3>
                                             <div class="ln_solid"></div>
@@ -324,7 +328,7 @@
         <!-- textarea resize -->
         <script src="js/textarea/autosize.min.js"></script>
         <script>
-                    autosize($('.resizable_textarea'));
+                            autosize($('.resizable_textarea'));
         </script>
         <!-- Autocomplete -->
         <script type="text/javascript" src="js/autocomplete/countries.js"></script>
@@ -332,38 +336,38 @@
         <!-- pace -->
         <script src="js/pace/pace.min.js"></script>
         <script type="text/javascript">
-                    $(function () {
-                        'use strict';
-                        var countriesArray = $.map(countries, function (value, key) {
-                            return {
-                                value: value,
-                                data: key
-                            };
-                        });
-                        // Initialize autocomplete with custom appendTo:
-                        $('#autocomplete-custom-append').autocomplete({
-                            lookup: countriesArray,
-                            appendTo: '#autocomplete-container'
-                        });
-                    });
+                            $(function () {
+                                'use strict';
+                                var countriesArray = $.map(countries, function (value, key) {
+                                    return {
+                                        value: value,
+                                        data: key
+                                    };
+                                });
+                                // Initialize autocomplete with custom appendTo:
+                                $('#autocomplete-custom-append').autocomplete({
+                                    lookup: countriesArray,
+                                    appendTo: '#autocomplete-container'
+                                });
+                            });
         </script>
         <script src="js/custom.js"></script>
 
 
         <!-- select2 -->
         <script>
-                    $(document).ready(function () {
-                        $(".select2_single").select2({
-                            placeholder: "Select a state",
-                            allowClear: true
-                        });
-                        $(".select2_group").select2({});
-                        $(".select2_multiple").select2({
-                            maximumSelectionLength: 4,
-                            placeholder: "With Max Selection limit 4",
-                            allowClear: true
-                        });
-                    });
+                            $(document).ready(function () {
+                                $(".select2_single").select2({
+                                    placeholder: "Select a state",
+                                    allowClear: true
+                                });
+                                $(".select2_group").select2({});
+                                $(".select2_multiple").select2({
+                                    maximumSelectionLength: 4,
+                                    placeholder: "With Max Selection limit 4",
+                                    allowClear: true
+                                });
+                            });
         </script>
         <!-- /select2 -->
         <!-- input tags -->
@@ -520,37 +524,37 @@
         <!-- pace -->
         <script src="js/pace/pace.min.js"></script>
         <script>
-      var handleDataTableButtons = function () {
-          "use strict";
-          0 !== $("#datatable-buttons").length && $("#datatable-buttons").DataTable({
-              dom: "Bfrtip",
-              buttons: [{
-                      extend: "copy",
-                      className: "btn-sm"
-                  }, {
-                      extend: "csv",
-                      className: "btn-sm"
-                  }, {
-                      extend: "excel",
-                      className: "btn-sm"
-                  }, {
-                      extend: "pdf",
-                      className: "btn-sm"
-                  }, {
-                      extend: "print",
-                      className: "btn-sm"
-                  }],
-              responsive: !0
-          })
-      },
-              TableManageButtons = function () {
-                  "use strict";
-                  return {
-                      init: function () {
-                          handleDataTableButtons()
-                      }
-                  }
-              }();
+            var handleDataTableButtons = function () {
+                "use strict";
+                0 !== $("#datatable-buttons").length && $("#datatable-buttons").DataTable({
+                    dom: "Bfrtip",
+                    buttons: [{
+                            extend: "copy",
+                            className: "btn-sm"
+                        }, {
+                            extend: "csv",
+                            className: "btn-sm"
+                        }, {
+                            extend: "excel",
+                            className: "btn-sm"
+                        }, {
+                            extend: "pdf",
+                            className: "btn-sm"
+                        }, {
+                            extend: "print",
+                            className: "btn-sm"
+                        }],
+                    responsive: !0
+                })
+            },
+                    TableManageButtons = function () {
+                        "use strict";
+                        return {
+                            init: function () {
+                                handleDataTableButtons()
+                            }
+                        }
+                    }();
         </script>
         <script type="text/javascript">
             $(document).ready(function () {
