@@ -78,14 +78,16 @@ $(document).ready(function () {
         var newC1 = document.getElementById("inputC1A").value;
         var newC2 = document.getElementById("inputC2A").value;
         var newC3 = document.getElementById("inputC3A").value;
-        //alert('Great');
+        alert('Great');
         var parameters1 = {
             grp: "Coordinator",
             cmd: "getPCReport",
             beginTerm: newC2,
             endTerm: newC3,
             SOCode: newC1,
-            pname: getCookie('PName')
+            pname: getCookie('PName'),
+            surveyName: 'Rubrics-Based',
+            value: 3
         };
         $.getJSON("../index.php", parameters1).done(
                 function (data, textStatus, jqXHR)

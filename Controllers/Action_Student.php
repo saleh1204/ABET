@@ -3,33 +3,6 @@
 require_once 'ABETDAO.php';
 
 class Action_Student {
-    /*
-      public function getSurvey($request) {
-      $dao = new ABETDAO();
-
-      $query = '';
-      $result = $dao->query($query);
-      echo json_encode($result);
-      }
-
-      public function getAllSurveys($request) {
-      $dao = new ABETDAO();
-
-      $query = '';
-      $result = $dao->excuteQuery($query);
-      echo json_encode($result);
-      }
-     */
-
-    /*
-      public function addStudentQA($request) {
-      $dao = new ABETDAO();
-      $query = 'insert into ABET.StudentQA (QA_QAID, Student_Section_SSID) values (' . $request->get('qaid') . ',' .
-      ', ' . $request->get('ssid') . ');';
-      $result = $dao->query($query);
-      echo json_encode($result);
-      }
-     */
 
     function getCourses($request) {
         $dao = new ABETDAO();
@@ -56,7 +29,22 @@ class Action_Student {
     public function addStudentQA1($request) {
         $dao = new ABETDAO();
         $query = "INSERT INTO ABET.STUDENTQA (STUDENT_SECTION_SSID, QA_QAID) VALUES (
-                (SELECT SS.SSID 
+                (?),
+                (SELECT QAID FROM ABET.QA QA, ABET.QUESTION Q, ABET.ANSWER A, ABET.SURVEYTYPE 	SUT,  ABET.COURSE C, ABET.PROGRAM P
+                WHERE QA.QUESTION_QID = Q.QID
+                AND QA.ANSWER_AID = A.AID
+                AND Q.COURSE_COURSEID = C.COURSEID
+                AND C.PROGRAMID = P.PROGRAMID
+                AND A.Program_ProgramID = P.ProgramID
+                AND Q.SURVEYTYPEID = SUT.SURVEYTYPEID
+                AND SUT.SURVEYNAME = 'CLO-Based'
+                AND C.COURSECODE = ?
+                AND P.PNAMESHORT = ?
+                AND A.WEIGHT_NAME = ?
+                AND Q.QuestionText = ?)
+                );";
+        $rows = '';
+        $tmpQuery = 'SELECT SS.SSID 
                 FROM ABET.PROGRAM P, ABET.COURSE C, ABET.SECTION SEC, ABET.STUDENT STU, ABET.STUDENT_SECTION SS 
                 WHERE P.PROGRAMID = C.PROGRAMID 
                 AND C.COURSEID = SEC.COURSEID 
@@ -65,21 +53,14 @@ class Action_Student {
                 AND STU.SUID = ? 
                 AND C.COURSECODE = ? 
                 AND P.PNAMESHORT = ? 
-                AND SEC.SectionNum = ?),
-                (SELECT QAID FROM ABET.QA QA, ABET.QUESTION Q, ABET.ANSWER A, ABET.SURVEYTYPE 	SUT,  ABET.COURSE C, ABET.PROGRAM P
-                WHERE QA.QUESTION_QID = Q.QID
-                AND QA.ANSWER_AID = A.AID
-                AND Q.COURSE_COURSEID = C.COURSEID
-                AND C.PROGRAMID = P.PROGRAMID
-                AND Q.SURVEYTYPEID = SUT.SURVEYTYPEID
-                AND SUT.SURVEYNAME = 'CLO-Based'
-                AND C.COURSECODE = ?
-                AND P.PNAMESHORT = ?
-                AND A.WEIGHT_NAME = ?
-                AND Q.QuestionText = ?));";
-        $rows = '';
+                AND SEC.SectionNum = ?';
+        $tmpRows = $dao->query($tmpQuery, $request->get("ID"), $request->get("courseCode"), $request->get("pname"), $request->get("section"));
+        //echo json_encode($tmpRows) . '<br />';
+
         for ($i = 0; $i < count($request->get("answers")); $i++) {
-            $rows = $dao->query($query, $request->get("ID"), $request->get("courseCode"), $request->get("pname"), $request->get("section"), $request->get("courseCode"), $request->get("pname"), $request->get("answers")[$i], $request->get("questions")[$i]);
+            $rows = $dao->query($query, $tmpRows[0]["SSID"], $request->get("courseCode"), $request->get("pname"), $request->get("answers")[$i], $request->get("questions")[$i]);
+            ##print_r($rows);
+           // echo '<br />';
         }
 
         $query1 = 'UPDATE student_section SET isCLOFilled = 1 '
@@ -94,12 +75,12 @@ class Action_Student {
     }
 
     function display($request) {
-        $request->set("ID", "studentcourses");
-        $request->set("pname", "ICS");
-        $request->set("courseCode", "102");
-        $request->set("section", "1");
-        $answers[] = ['Agree', 'Agree'];
-        $questions[] = ['Hello, Test2', 'Testing Surveys'];
+        $request->set("ID", "201154810");
+        $request->set("pname", "COE");
+        $request->set("courseCode", "309");
+        $request->set("section", "4");
+        $answers[] = ['Agree']; 
+        $questions[] = ['Ability to do something'];
         $request->set("answers", $answers);
         $request->set("questions", $questions);
         $this->addStudentQA1($request);

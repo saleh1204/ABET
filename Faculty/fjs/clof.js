@@ -5,76 +5,7 @@ $(document).ready(function () {
 
     $('#coursedetails').text('T' + getCookie('Term') + '-' + getCookie('PName') + '-' + getCookie('CCode'));
     $('#username').text(getCookie('email'));
-    function generateTable() {
-        // flush the table
-        var parameters = {
-            grp: "Faculty",
-            cmd: "getStudentAnswers",
-            semester: getCookie('Term'),
-            courseCode: getCookie('CCode'),
-            pname: getCookie('PName'),
-            email: getCookie('email'),
-            surveyType: "CLO-Based",
-            sectionNum: getCookie('Section')
-        };
-        //alert('GREAT');
-        $.getJSON("../index.php", parameters).done(
-                function (data, textStatus, jqXHR)
-                {
-                    var myTable = $("#example").empty();
-                    myTable.append("<thead>");
 
-                    var th = $('<tr>').appendTo(myTable);
-                    th.append("<th> # </th> <th> SUID </th>");
-                    for (var k = 0; k < data[0].count; k++)
-                    {
-                        th.append("<th> Question " + (k + 1) + " Answer </th>");
-                    }
-                    th.append("</tr>");
-                    myTable.append("</thead>");
-
-                    myTable.append("<tbody>");
-
-                    for (var j = 0; j < data.length; j++)
-                    {
-                        var tr = $('<tr>').appendTo(myTable);
-                        tr.append('<td class = "sr">' + (j + 1) + '</td>');
-                        tr.append("<td> " + data[j].SUID + "</td>");
-                        for (var k = 0; k < data[j].count; k++)
-                        {
-                            tr.append("<td> " + data[j].answers[k] + "</td>");
-
-                        }
-                        tr.append("</tr>");
-                    }
-
-                    myTable.append("</tbody>");
-                    $('#example').dataTable();
-                    $('#example-keytable').DataTable({
-                        keys: true
-                    });
-                    $('#example-responsive').DataTable();
-                    $('#example-scroller').DataTable({
-                        ajax: "./js/datatables/json/scroller-demo.json",
-                        deferRender: true,
-                        scrollY: 380,
-                        scrollCollapse: true,
-                        scroller: true
-                    });
-                    var table = $('#example-fixed-header').DataTable({
-                        fixedHeader: true
-                    });
-                    TableManageButtons.init();
-                }
-        ).fail(
-                function (jqXHR, textStatus, errorThrown)
-                {
-                    // log error to browser's console
-                    console.log(errorThrown.toString());
-                    //return cl;
-                });
-
-    }
 
     var $col1;
     var $col2;
@@ -126,17 +57,23 @@ $(document).ready(function () {
     $("#demo-form2").on('click', '#save', function () {
         alert("save 1");
         // LOOP HERE WITH ARRAY OF SIZE = (RECORD LENGTH) TO STORE VARIABLES
+        /*
         var newC1 = document.getElementById("inputC1A").value;
         var newC2 = document.getElementById("inputC2A").value;
         var newC3 = document.getElementById("inputC3A").value;
         var newC4 = document.getElementById("inputC4A").value;
         var newC5 = document.getElementById("inputC4A").value;
         alert(newC1 + " " + newC2 + " " + newC3);
+        
         /**************************
          DELETE GOES HERE (in case of update just to be safe)
          INSERT STATEMENT GOES HERE
          **************************
          */
+        var answers = $(".answerIN");
+        var questions = $(".questionLB");
+        alert('Answers ' + answers[0].value());
+        alert('Question: ' + questions[0]);
         var parameters = {
             grp: "Faculty",
             cmd: "addStudentAnswers",
@@ -179,6 +116,77 @@ $(document).ready(function () {
 
 
 });
+
+function generateTable() {
+    // flush the table
+    var parameters = {
+        grp: "Faculty",
+        cmd: "getStudentAnswers",
+        semester: getCookie('Term'),
+        courseCode: getCookie('CCode'),
+        pname: getCookie('PName'),
+        email: getCookie('email'),
+        surveyType: "CLO-Based",
+        sectionNum: getCookie('Section')
+    };
+    //alert('GREAT');
+    $.getJSON("../index.php", parameters).done(
+            function (data, textStatus, jqXHR)
+            {
+                var myTable = $("#example").empty();
+                myTable.append("<thead>");
+
+                var th = $('<tr>').appendTo(myTable);
+                th.append("<th> # </th> <th> SUID </th>");
+                for (var k = 0; k < data[0].count; k++)
+                {
+                    th.append("<th> Question " + (k + 1) + " Answer </th>");
+                }
+                th.append("</tr>");
+                myTable.append("</thead>");
+
+                myTable.append("<tbody>");
+
+                for (var j = 0; j < data.length; j++)
+                {
+                    var tr = $('<tr>').appendTo(myTable);
+                    tr.append('<td class = "sr">' + (j + 1) + '</td>');
+                    tr.append("<td> " + data[j].SUID + "</td>");
+                    for (var k = 0; k < data[j].count; k++)
+                    {
+                        tr.append("<td> " + data[j].answers[k] + "</td>");
+
+                    }
+                    tr.append("</tr>");
+                }
+
+                myTable.append("</tbody>");
+                $('#example').dataTable();
+                $('#example-keytable').DataTable({
+                    keys: true
+                });
+                $('#example-responsive').DataTable();
+                $('#example-scroller').DataTable({
+                    ajax: "./js/datatables/json/scroller-demo.json",
+                    deferRender: true,
+                    scrollY: 380,
+                    scrollCollapse: true,
+                    scroller: true
+                });
+                var table = $('#example-fixed-header').DataTable({
+                    fixedHeader: true
+                });
+                TableManageButtons.init();
+            }
+    ).fail(
+            function (jqXHR, textStatus, errorThrown)
+            {
+                // log error to browser's console
+                console.log(errorThrown.toString());
+                //return cl;
+            });
+
+} 
 function getCookie(cname) {
     var name = cname + "=";
     var ca = document.cookie.split(';');
@@ -211,15 +219,15 @@ function addQuestionTexts()
     $.getJSON("../index.php", parameters).done(
             function (data, textStatus, jqXHR)
             {
-                //alert('Questions Loaded');
+                //alert('Questions Loaded'); id="inputC' + (i + 2) + 'A"
                 var questionDiv = $("#questions div").empty();
                 questionDiv = $("#questions");
                 for (var i = 0; i < data.length; i++) {
                     questionDiv.append('<div class="form-group">');
-                    questionDiv.append('<label class="control-label col-md-3 col-sm-3 col-xs-12" for="first-name">' + data[i].questiontext + '<span class="required">*</span>');
+                    questionDiv.append('<label class="control-label col-md-3 col-sm-3 col-xs-12 questionLB" for="question">' + data[i].questiontext + '<span class="required">*</span>');
                     questionDiv.append('</label>');
                     questionDiv.append('<div class="col-md-6 col-sm-6 col-xs-12">');
-                    questionDiv.append('<input type="text" id="inputC' + (i + 2) + 'A" required="required" class="form-control col-md-7 col-xs-12" >');
+                    questionDiv.append('<input type="text" required="required" class="form-control col-md-7 col-xs-12 answerIN" >');
                     questionDiv.append('</div></div>');
                 }
             }).fail(

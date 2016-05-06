@@ -582,8 +582,11 @@ class Action_Faculty {
         $rows = $dao->query($query, $request->get('semester'), $request->get('femail'), $request->get('surveyName'), $request->get('pname'), $request->get('courseCode'));
         //echo json_encode($rows[0]);
         $answerStr = implode(" ", $rows[0]);
-        echo '<br />' . $answerStr;
-        $query1 = "SELECT Q.orderno, socode, QuestionText, " . $answerStr . ", avg(weight_value) FROM ABET.SEMESTER SEM, ABET.Section SEC, ABET.Student_Section SS, ABET.Student STU, 
+        $tmpQuery = 'select distinct weight_name from answer a, program p where a.program_programid = p.programid and p.pnameshort = ?';
+        $tmpRows = $dao->query($tmpQuery, $request->get('pname'));
+       // echo json_encode($tmpRows);
+       // echo '<br />' . $answerStr . '<br /> <br />';
+        $query1 = "SELECT Q.orderno, socode, QuestionText, " . $answerStr . ", avg(weight_value) as avg FROM ABET.SEMESTER SEM, ABET.Section SEC, ABET.Student_Section SS, ABET.Student STU, 
             ABET.StudentQA SQA, ABET.QA QA, ABET.Answer A, ABET.QUESTION Q, ABET.StudentOutcome SO,
             ABET.SurveyType ST, ABET.Course C, ABET.Program P, ABET.faculty f
             WHERE SEM.SEMESTERNUM = ?
@@ -605,20 +608,38 @@ class Action_Faculty {
             AND C.COURSECODE = ? GROUP BY questiontext;";
         // CHANGE SURVEY NAME
         $rows1 = $dao->query($query1, $request->get('semester'), $request->get('femail'), $request->get('surveyName'), $request->get('pname'), $request->get('courseCode'));
-        /*
-          $summary = [];
-          if ($rows != false) {
-          foreach ($rows as $row) {
-          $summary[] = [
-          "SUID" => $row["SUID"],
-          "Question1Answer" //
-          ];
-          }
-          }
-         * 
-         */
+        $answerNames = [];
+        for ($j = 0; $j < count($tmpRows); $j++) {
+            $answerNames[$j] = $tmpRows[$j]["weight_name"];
+        }
+        $summary = [];
+        if ($rows1 != false) {
+            foreach ($rows1 as $row) {
+                $answerCount = [];
+                for ($i = 0; $i < count($answerNames); $i++) {
+                    $tmpStr = str_replace(" ", "_", $answerNames[$i]);
+                    if (isset($row[$tmpStr])) {
+                        $answerCount[$i] = $row[$tmpStr];
+                    } else {
+                        $answerCount[$i] = 0;
+                    }
+                }
+                $summary[] = [
+                    "Order" => $row["orderno"],
+                    "Question" => $row["QuestionText"],
+                    "SOCode" => $row["socode"],
+                    "avg" => $row["avg"],
+                    "answersValues" => $answerCount,
+                    "answerNames" => $answerNames, 
+                    "NumberAnswers" => count($answerNames),
+                    
+                ];
+            }
+        }
 
-        echo '<br />' . json_encode($rows1);
+       // echo json_encode($rows1, JSON_NUMERIC_CHECK) . '<br /> <br />';
+        
+        echo json_encode($summary, JSON_PRETTY_PRINT);
     }
 
     function deleteQuestion($request) {
@@ -694,17 +715,17 @@ class Action_Faculty {
         // $request->get('suid'), $request->get('semester'), $request->get('courseCode'), $request->get('pname'), $request->get('courseCode'), $request->get('pname'),  $request->get('weightAnswer'), $request->get('Question'));
         // $request->get('weakness'),$request->get('actions'), $request->get('sectionNum'), $request->get('courseCode'), $request->get('pname'), $request->get('email'), $request->get('questionText'), $request->get('courseCode'), $request->get('pname'),$request->get('SoCode'), $request->get('pname')
         // $request->get('suid'), $request->get('semester'), $request->get('femail'), $request->get('courseCode'), $request->get('pname'), $request->get('courseCode'), $request->get('pname'), $request->get('weightValue'), $request->get('Question')
-        $request->set("orderNo", '21');
-        $request->set("Question", 'Ability to Program');
-        $request->set("suid", '201154810');
+        //$request->set("orderNo", '21');
+        //$request->set("Question", 'Ability to Program');
+        //$request->set("suid", '201154810');
         //$request->set("weakness", 'Everything');
-       // $request->set("semester", '152');
-        $request->set("weightValue", '4');
+        // $request->set("semester", '152');
+        //$request->set("weightValue", '4');
 //        $request->set('SOCode', 'a');
         $request->set('semester', '152');
         $request->set("statusType", 'Survey');
         $request->set("statusName", 'Active');
-        $request->set("surveyType", 'CLO-Based');
+        $request->set("surveyName", 'CLO-Based');
         $request->set("pname", 'ICS');
         $request->set("courseCode", '102');
         $request->set("sectionNum", '1');

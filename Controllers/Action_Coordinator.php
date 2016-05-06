@@ -569,7 +569,7 @@ class Action_Coordinator {
             AND P.PNAMESHORT = ?
             AND SO.SOCODE = ? 
             GROUP BY ( Q.pcnum);";
-        $rows = $dao->query($query, $request->get('value'), $request->get('beginTerm'), $request->get('beginTerm'), $request->get('surveyName'), $request->get('pname'), $request->get('SOCode'));
+        $rows = $dao->query($query, $request->get('value'), $request->get('beginTerm'), $request->get('endTerm'), $request->get('surveyName'), $request->get('pname'), $request->get('SOCode'));
         echo json_encode($rows);
     }
 
@@ -767,13 +767,13 @@ class Action_Coordinator {
         $request->set('dateActivated', '2010-01-02');
         $request->set('dateDeactivated', '2011-02-06');
         $request->set('SOCode', 'a');
-        $request->set('surveyName', 'CLO-Based');
+        $request->set('surveyName', 'Rubrics-Based');
         $request->set('beginTerm', '152');
         $request->set('endTerm', '152');
         $request->set('value', '1');
 
 
-        $this->getReport($request);
+        $this->getPCReport($request);
     }
 
 }
