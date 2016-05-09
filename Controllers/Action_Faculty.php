@@ -173,7 +173,7 @@ class Action_Faculty {
                 . 'AND Email = ? '
                 . 'AND F.FacultyID = SEC.FacultyID '
                 . 'AND C.PROGRAMID = P.PROGRAMID '
-                . 'AND SEM.SemesterID = SEC.SemesterID ';
+                . 'AND SEM.SemesterID = SEC.SemesterID order by semesternum, pnameshort, coursecode, sectionnum';
         $rows = $dao->query($query, $request->get('email'));
         $courses = [];
         foreach ($rows as $row) {
@@ -537,22 +537,88 @@ class Action_Faculty {
 
     function addStudentAnswers($request) {
         $dao = new ABETDAO();
-        $query = 'INSERT INTO ABET.STUDENTQA (STUDENT_SECTION_SSID, QA_QAID) VALUES ( 
-            (SELECT SSID FROM ABET.PROGRAM P, ABET.COURSE C, ABET.SECTION SEC, ABET.FACULTY F, ABET.SEMESTER SEM, ABET.STUDENT STU, ABET.STUDENT_SECTION SS 
-            WHERE P.PROGRAMID = C.PROGRAMID AND C.COURSEID = SEC.COURSEID AND SEC.FACULTYID = F.FACULTYID 
-            AND SEC.SEMESTERID = SEM.SEMESTERID AND SEC.SECTIONID = SS.SECTIONID AND SS.STUDENT_STUDENTID = STU.STUDENTID 
-            AND STU.SUID = ? AND SEM.SEMESTERNUM = ? AND F.EMAIL = ? AND C.COURSECODE = ? AND P.PNAMESHORT = ?), 
-            (SELECT QAID FROM ABET.QA QA, ABET.QUESTION Q, ABET.ANSWER A, ABET.SURVEYTYPE SUT,  ABET.COURSE C, ABET.PROGRAM P 
-            WHERE QA.QUESTION_QID = Q.QID AND QA.ANSWER_AID = A.AID  AND Q.COURSE_COURSEID = C.COURSEID AND C.PROGRAMID = P.PROGRAMID
-            AND Q.SURVEYTYPEID = SUT.SURVEYTYPEID AND SUT.SURVEYNAME = \'CLO-Based\' AND C.COURSECODE = ? AND P.PNAMESHORT = ? AND A.weight_value = ? AND Q.QUESTIONTEXT = ?));';
-        $rows = $dao->query($query, $request->get('suid'), $request->get('semester'), $request->get('femail'), $request->get('courseCode'), $request->get('pname'), $request->get('courseCode'), $request->get('pname'), $request->get('weightValue'), $request->get('Question'));
+        $query = "INSERT INTO ABET.STUDENTQA (STUDENT_SECTION_SSID, QA_QAID) VALUES (
+                (?),
+                (SELECT QAID FROM ABET.QA QA, ABET.QUESTION Q, ABET.ANSWER A, ABET.SURVEYTYPE 	SUT,  ABET.COURSE C, ABET.PROGRAM P
+                WHERE QA.QUESTION_QID = Q.QID
+                AND QA.ANSWER_AID = A.AID
+                AND Q.COURSE_COURSEID = C.COURSEID
+                AND C.PROGRAMID = P.PROGRAMID
+                AND A.Program_ProgramID = P.ProgramID
+                AND Q.SURVEYTYPEID = SUT.SURVEYTYPEID
+                AND SUT.SURVEYNAME = ?
+                AND C.COURSECODE = ?
+                AND P.PNAMESHORT = ?
+                AND A.weight_value = ?
+                AND Q.QuestionText = ?)
+                );";
+        $rows = '';
+        $tmpQuery = 'SELECT SS.SSID 
+                FROM ABET.PROGRAM P, ABET.COURSE C, ABET.SECTION SEC, ABET.STUDENT STU, ABET.STUDENT_SECTION SS 
+                WHERE P.PROGRAMID = C.PROGRAMID 
+                AND C.COURSEID = SEC.COURSEID 
+                AND SEC.SECTIONID = SS.SECTIONID 
+                AND SS.STUDENT_STUDENTID = STU.STUDENTID 
+                AND STU.SUID = ? 
+                AND C.COURSECODE = ? 
+                AND P.PNAMESHORT = ? 
+                AND SEC.SectionNum = ?';
+        $tmpRows = $dao->query($tmpQuery, $request->get("ID"), $request->get("courseCode"), $request->get("pname"), $request->get("section"));
+        for ($i = 0; $i < count($request->get("answers")); $i++) {
+            $rows = $dao->query($query, $tmpRows[0]["SSID"], $request->get("surveyName"), $request->get("courseCode"), $request->get("pname"), $request->get("answers")[$i], $request->get("questions")[$i]);
+        }
+        if ($request->get('surveyName') == 'CLO-Based') {
+            $query1 = 'UPDATE student_section SET isCLOFilled = 1 '
+                    . 'WHERE Student_StudentID = (select StudentID from Student where SUID = ?) '
+                    . 'AND SectionID = (select SectionID from Section where sectionNum = ? '
+                    . 'AND CourseID = (select CourseID from Course where CourseCode = ? '
+                    . 'AND ProgramID = (select ProgramID from Program where PNameShort = ?)));';
+            $rows = $dao->query($query1, $request->get("ID"), $request->get("section"), $request->get("courseCode"), $request->get("pname"));
+        }
         echo json_encode($rows);
     }
 
     function deleteStudentAnswers($request) {
         $dao = new ABETDAO();
-        $query = '';
-        $rows = $dao->query($query);
+        $query = "delete from ABET.STUDENTQA where STUDENT_SECTION_SSID = ?
+                AND QA_QAID = (
+                SELECT QAID FROM ABET.QA QA, ABET.QUESTION Q, ABET.ANSWER A, ABET.SURVEYTYPE SUT, ABET.COURSE C, ABET.PROGRAM P
+                WHERE QA.QUESTION_QID = Q.QID
+                AND QA.ANSWER_AID = A.AID
+                AND Q.COURSE_COURSEID = C.COURSEID
+                AND C.PROGRAMID = P.PROGRAMID
+                AND A.Program_ProgramID = P.ProgramID
+                AND Q.SURVEYTYPEID = SUT.SURVEYTYPEID
+                AND SUT.SURVEYNAME = ?
+                AND C.COURSECODE = ?
+                AND P.PNAMESHORT = ?
+                AND A.weight_name = ?
+                AND Q.QuestionText = ?
+                );";
+        $rows = '';
+        $tmpQuery = 'SELECT SS.SSID 
+                FROM ABET.PROGRAM P, ABET.COURSE C, ABET.SECTION SEC, ABET.STUDENT STU, ABET.STUDENT_SECTION SS 
+                WHERE P.PROGRAMID = C.PROGRAMID 
+                AND C.COURSEID = SEC.COURSEID 
+                AND SEC.SECTIONID = SS.SECTIONID 
+                AND SS.STUDENT_STUDENTID = STU.STUDENTID 
+                AND STU.SUID = ? 
+                AND C.COURSECODE = ? 
+                AND P.PNAMESHORT = ? 
+                AND SEC.SectionNum = ?';
+        $tmpRows = $dao->query($tmpQuery, $request->get("ID"), $request->get("courseCode"), $request->get("pname"), $request->get("section"));
+        for ($i = 0; $i < count($request->get("answers")); $i++) {
+            $rows = $dao->query($query, $tmpRows[0]["SSID"], $request->get('surveyName'), $request->get("courseCode"), $request->get("pname"), $request->get("answers")[$i], $request->get("questions")[$i]);
+        }
+        //$rows = $dao->query($query);
+        if ($request->get('surveyName') == "CLO-Based") {
+            $query1 = 'UPDATE student_section SET isCLOFilled = 0 '
+                    . 'WHERE Student_StudentID = (select StudentID from Student where SUID = ?) '
+                    . 'AND SectionID = (select SectionID from Section where sectionNum = ? '
+                    . 'AND CourseID = (select CourseID from Course where CourseCode = ? '
+                    . 'AND ProgramID = (select ProgramID from Program where PNameShort = ?)));';
+            $rows = $dao->query($query1, $request->get("ID"), $request->get("section"), $request->get("courseCode"), $request->get("pname"));
+        }
         echo json_encode($rows);
     }
 
@@ -584,8 +650,8 @@ class Action_Faculty {
         $answerStr = implode(" ", $rows[0]);
         $tmpQuery = 'select distinct weight_name from answer a, program p where a.program_programid = p.programid and p.pnameshort = ?';
         $tmpRows = $dao->query($tmpQuery, $request->get('pname'));
-       // echo json_encode($tmpRows);
-       // echo '<br />' . $answerStr . '<br /> <br />';
+        // echo json_encode($tmpRows);
+        // echo '<br />' . $answerStr . '<br /> <br />';
         $query1 = "SELECT Q.orderno, socode, QuestionText, " . $answerStr . ", avg(weight_value) as avg FROM ABET.SEMESTER SEM, ABET.Section SEC, ABET.Student_Section SS, ABET.Student STU, 
             ABET.StudentQA SQA, ABET.QA QA, ABET.Answer A, ABET.QUESTION Q, ABET.StudentOutcome SO,
             ABET.SurveyType ST, ABET.Course C, ABET.Program P, ABET.faculty f
@@ -630,20 +696,28 @@ class Action_Faculty {
                     "SOCode" => $row["socode"],
                     "avg" => $row["avg"],
                     "answersValues" => $answerCount,
-                    "answerNames" => $answerNames, 
+                    "answerNames" => $answerNames,
                     "NumberAnswers" => count($answerNames),
-                    
                 ];
             }
         }
 
-       // echo json_encode($rows1, JSON_NUMERIC_CHECK) . '<br /> <br />';
-        
+        // echo json_encode($rows1, JSON_NUMERIC_CHECK) . '<br /> <br />';
+
         echo json_encode($summary, JSON_PRETTY_PRINT);
     }
 
     function deleteQuestion($request) {
         $dao = new ABETDAO();
+        $query = 'delete from Question where QuestionText = ? and Course_CourseID = (select CourseID from Course where courseCode = ? AND ProgramID = (select ProgramID from Program where PNameShort = ?)) ;';
+        $rows = $dao->query($query, $request->get('questionText'), $request->get('courseCode'), $request->get('pnameShort'));
+        echo json_encode($rows);
+    }
+
+    function updateQuestion($request) {
+        $dao = new ABETDAO();
+        // TO-DO Mustafa
+        // Modify the following query to do update instead of deleteing
         $query = 'delete from Question where QuestionText = ? and Course_CourseID = (select CourseID from Course where courseCode = ? AND ProgramID = (select ProgramID from Program where PNameShort = ?)) ;';
         $rows = $dao->query($query, $request->get('questionText'), $request->get('courseCode'), $request->get('pnameShort'));
         echo json_encode($rows);

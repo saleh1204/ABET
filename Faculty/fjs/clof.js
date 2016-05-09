@@ -1,3 +1,4 @@
+var numQuestions = 0;
 $(document).ready(function () {
     addQuestionTexts();
     addAnswerValues();
@@ -7,34 +8,40 @@ $(document).ready(function () {
     $('#username').text(getCookie('email'));
 
 
-    var $col1;
-    var $col2;
-    var $col3;
-    var $col4;
-    var $col5;
+    var $col1 = '';
     $('#example').on('click', 'button', function () {
         var $row = $(this).closest('tr');
         // PUT AN ARRAY BASED ON THE RECORD LENGTH
         // LOOP TO INITIALIZE THE ARRAY
         $col1 = $row.find(".col1").text();
-        $col2 = $row.find(".col2").text();
-        $col3 = $row.find(".col3").text();
-        $col4 = $row.find(".col4").text();
-        $col5 = $row.find(".col5").text();
+        var Sanswers = [];
+        var Squestions = [];
+        alert("Delete4");
         if ($(this).text().length === 6) {
-// DELETE THE RECORD FROM DATABSE PLEASE
-// THIS DELETE WILL USE ALL THE VALUES IN THE COOKIES INCLUDING: EMAIL, SEMESTER, PNAMESHORT, COURSECODE
-// IN ADDITION TO COL1, COL2,....
+            for (var i = 0; i < numQuestions; i++)
+            {
+                Squestions[i] = $("#question" + i).html();
+               // alert(Squestions[i]);
+                Sanswers[i] = $row.find(".col" + (i + 2)).text();
+               // alert(Sanswers[i]);
+            }
+            // DELETE THE RECORD FROM DATABSE PLEASE
+            // TO-DO 
+            // Check why Delete Does not work
             var parameters = {
                 grp: "Faculty",
                 cmd: "deleteStudentAnswers",
-                surveyType: 'CLO-Based',
-                SUID: $col1,
-                pnameShort: getCookie('PName'),
+                pname: getCookie('PName'),
                 courseCode: getCookie('CCode'),
+                ID: $col1,
+                surveyName: 'CLO-Based',
+                section: getCookie('Section'),
+                answers: Sanswers,
+                questions: Squestions
             };
 
             $.getJSON("../index.php", parameters).done(function (data, textStatus, jqXHR) {
+                alert('Success');
                 generateTable();
             }
             ).fail(function (jqXHR, textStatus, errorThrown)
@@ -43,62 +50,66 @@ $(document).ready(function () {
                 console.log(textStatus + "\n" + errorThrown.toString());
 
             });
-        } else { // it is an update
 
-// LOOP HERE
-            document.getElementById("inputC1A").value = $col1;
-            document.getElementById("inputC2A").value = $col2;
-            document.getElementById("inputC3A").value = $col3;
-            document.getElementById("inputC4A").value = $col4;
-            document.getElementById("inputC5A").value = $col5;
         }
         generateTable();
+        $col1 = '';
     });
     $("#demo-form2").on('click', '#save', function () {
-        alert("save 1");
-        // LOOP HERE WITH ARRAY OF SIZE = (RECORD LENGTH) TO STORE VARIABLES
-        /*
+
         var newC1 = document.getElementById("inputC1A").value;
-        var newC2 = document.getElementById("inputC2A").value;
-        var newC3 = document.getElementById("inputC3A").value;
-        var newC4 = document.getElementById("inputC4A").value;
-        var newC5 = document.getElementById("inputC4A").value;
-        alert(newC1 + " " + newC2 + " " + newC3);
-        
-        /**************************
-         DELETE GOES HERE (in case of update just to be safe)
+        /*
+         /**************************
+         
          INSERT STATEMENT GOES HERE
          **************************
          */
-        var answers = $(".answerIN");
-        var questions = $(".questionLB");
-        alert('Answers ' + answers[0].value());
-        alert('Question: ' + questions[0]);
+        var questionAnswered = true;
+        var questions = [];
+        var answers = [];
+        for (var i = 0; i < numQuestions; i++)
+        {
+            questions[i] = $("#question" + i).html();
+            answers[i] = $("#answer" + i).val();
+            $("#answer" + i).val("");
+            //alert("Question: " + questions[i] + " Answer: " + answers[i]);
+            if (answers[i] == "")
+            {
+                alert("Please Answer all questions");
+                questionAnswered = false;
+                break;
+            }
+        }
+        if (newC1 == "")
+        {
+            questionsAnswered = false;
+            alert("Please Add Student ID");
+        }
         var parameters = {
             grp: "Faculty",
             cmd: "addStudentAnswers",
-            questionText: newC2,
-            SurveyName: 'CLO-Based',
-            statusType: 'Survey',
-            pnameShort: getCookie('PName'),
+            pname: getCookie('PName'),
             courseCode: getCookie('CCode'),
+            ID: newC1,
+            surveyName: 'CLO-Based',
+            section: getCookie('Section'),
+            answers: answers,
+            questions: questions
         };
-
-        $.getJSON("../index.php", parameters).done(function (data, textStatus, jqXHR) {
-            alert("Added Successfully!!!");
-            generateTable();
-        }
-        ).fail(function (jqXHR, textStatus, errorThrown)
+        if (questionAnswered)
         {
-            // log error to browser's console
-            console.log(textStatus + "\n" + errorThrown.toString());
+            $.getJSON("../index.php", parameters).done(function (data, textStatus, jqXHR) {
+                alert("Added Successfully!!!");
+                generateTable();
+            }
+            ).fail(function (jqXHR, textStatus, errorThrown)
+            {
+                // log error to browser's console
+                console.log(textStatus + "\n" + errorThrown.toString());
 
-        });
+            });
+        }
         document.getElementById("inputC1A").value = "";
-        document.getElementById("inputC2A").value = "";
-        document.getElementById("inputC3A").value = "";
-        document.getElementById("inputC4A").value = "";
-        document.getElementById("inputC5A").value = "";
         generateTable();
     });
     $("#demo-form2").on('click', '#cancel', function () {
@@ -142,21 +153,23 @@ function generateTable() {
                 {
                     th.append("<th> Question " + (k + 1) + " Answer </th>");
                 }
-                th.append("</tr>");
+                th.append("<th> Actions </th></tr>");
                 myTable.append("</thead>");
 
                 myTable.append("<tbody>");
 
                 for (var j = 0; j < data.length; j++)
                 {
+
                     var tr = $('<tr>').appendTo(myTable);
                     tr.append('<td class = "sr">' + (j + 1) + '</td>');
-                    tr.append("<td> " + data[j].SUID + "</td>");
+                    tr.append("<td class='col1'> " + data[j].SUID + "</td>");
                     for (var k = 0; k < data[j].count; k++)
                     {
-                        tr.append("<td> " + data[j].answers[k] + "</td>");
+                        tr.append("<td class='col" + (k + 2) + "'> " + data[j].answers[k] + "</td>");
 
                     }
+                    tr.append('<td>' + '<button class="btn btn-default"  ><i class="glyphicon glyphicon-remove\"></i>Delete</button>' + '</td>');
                     tr.append("</tr>");
                 }
 
@@ -186,7 +199,7 @@ function generateTable() {
                 //return cl;
             });
 
-} 
+}
 function getCookie(cname) {
     var name = cname + "=";
     var ca = document.cookie.split(';');
@@ -224,28 +237,18 @@ function addQuestionTexts()
                 questionDiv = $("#questions");
                 for (var i = 0; i < data.length; i++) {
                     questionDiv.append('<div class="form-group">');
-                    questionDiv.append('<label class="control-label col-md-3 col-sm-3 col-xs-12 questionLB" for="question">' + data[i].questiontext + '<span class="required">*</span>');
+                    questionDiv.append('<label id ="question' + i + '" class="control-label col-md-3 col-sm-3 col-xs-12" for="question">' + data[i].questiontext);
                     questionDiv.append('</label>');
                     questionDiv.append('<div class="col-md-6 col-sm-6 col-xs-12">');
-                    questionDiv.append('<input type="text" required="required" class="form-control col-md-7 col-xs-12 answerIN" >');
+                    questionDiv.append('<input id="answer' + i + '" type="text" required="required" class="form-control col-md-7 col-xs-12" >');
                     questionDiv.append('</div></div>');
                 }
+                numQuestions = data.length;
             }).fail(
             function (jqXHR, textStatus, errorThrown)
             {
-                // log error to browser's console
                 console.log(errorThrown.toString());
-                //return cl;
             });
-    /*
-     * 
-     document.writeln('<div class="form-group">');
-     document.writeln('<label class="control-label col-md-3 col-sm-3 col-xs-12" for="first-name">Question' + (i + 1) + ' Answer <span class="required">*</span>');
-     document.writeln('</label>');
-     document.writeln('<div class="col-md-6 col-sm-6 col-xs-12">');
-     document.writeln('<input type="text" id="inputC' + (i + 2) + 'A" required="required" class="form-control col-md-7 col-xs-12" >');
-     document.writeln('</div></div>');
-     */
 }
 
 function addAnswerValues()
@@ -265,21 +268,13 @@ function addAnswerValues()
     $.getJSON("../index.php", parameters).done(
             function (data, textStatus, jqXHR)
             {
-                //alert('Answers Loaded');
-                // var answersDiv = $("#answers").empty();
-                // answersDiv.append('<table style = "width: 50%; margin-left: auto; margin-right: auto;" id="myTable">');
                 var answers = $("#myTable").empty();
-                //answers = $("#answers");
-                //answers.append("<table id='myTable'>");
-
                 var myTemp = $('<tr style = "text-align: center;">').appendTo(answers);
-                //myTemp.append('<tr style = "text-align: center;">');
                 for (var i = 0; i < data.length; i++) {
                     myTemp.append('<td>' + data[i].weight_name + '</td>');
                 }
                 myTemp.append('</tr>');
                 var myTemp1 = $('<tr style = "text-align: center;">').appendTo(answers);
-                //myTemp.append('<tr style="text-align: center;">');
                 for (var i = 0; i < data.length; i++) {
                     myTemp1.append('<td style="padding-right:5em">' + data[i].weight_value + '</td>');
                 }
@@ -288,24 +283,6 @@ function addAnswerValues()
             }).fail(
             function (jqXHR, textStatus, errorThrown)
             {
-                // log error to browser's console
                 console.log(errorThrown.toString());
-                //return cl;
             });
-    /*
-     * 
-     document.writeln('<table style = "width: 50%; margin-left: auto; margin-right: auto;" id="myTable">');
-     
-     document.writeln('<tr style = "text-align: center;">');
-     for (var j = 0; j < v.length; j++) {
-     document.writeln('<td >' + a[j] + '</td>');
-     }
-     document.writeln('</tr>');
-     document.writeln('<tr style="text-align: center;">');
-     for (var j = 0; j < v.length; j++) {
-     document.writeln('<td>' + v[j] + '</td>');
-     }
-     document.writeln('</tr>');
-     document.writeln('</table>');
-     */
 }

@@ -70,6 +70,8 @@ $(document).ready(function () {
             document.getElementById("inputC1U").value = $col1;
             document.getElementById("inputC2U").value = $col2;
             document.getElementById("inputC3U").value = $col3;
+            // TO-DO Mustafa
+            // check why update does not work
             $('#update').unbind().click(function () {
                 var newC1 = document.getElementById("inputC1U").value;
                 var newC2 = document.getElementById("inputC2U").value;

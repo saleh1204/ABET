@@ -1,3 +1,4 @@
+var isUpdate = false;
 $(document).ready(function () {
     $("#inputC5A").val("");
     $('#PName').text(getCookie('PName') + '-Program');
@@ -124,7 +125,7 @@ $(document).ready(function () {
             document.getElementById("inputC2A").value = $col2;
             document.getElementById("inputC3A").value = $col3;
             document.getElementById("inputC4A").value = $col4;
-
+            isUpdate = true;
             $("#inputC5A").val($col5);
 
 
@@ -133,37 +134,64 @@ $(document).ready(function () {
         generateTable();
     });
     $("#demo-form2").on('click', '#save', function () {
-        alert("save 1");
+        //alert("save 1");
         var newC1 = document.getElementById("inputC1A").value;
         var newC2 = document.getElementById("inputC2A").value;
         var newC3 = document.getElementById("inputC3A").value;
         var newC4 = document.getElementById("inputC4A").value;
         var newC5 = document.getElementById("inputC5A").value;
-        alert(newC1 + " " + newC2 + " " + newC3 + newC5);
+        //alert(newC1 + " " + newC2 + " " + newC3 + newC5);
         /**************************
          DELETE GOES HERE (in case of update just to be safe)
          INSERT STATEMENT GOES HERE
          **************************
          */
-        var parameters = {
-            grp: "Coordinator",
-            cmd: "addExitAnswer",
-            statusName: newC5,
-            dateActivated: newC3,
-            dateDeactivated: newC4,
-            weightName: newC1,
-            weightValue: newC2,
-            pname: getCookie('PName'),
-        };
-        $.getJSON("../index.php", parameters).done(function (data, textStatus, jqXHR) {
-            alert("Added Successfully!!!");
-            generateTable();
-        }
-        ).fail(function (jqXHR, textStatus, errorThrown)
+        if (isUpdate)
         {
+            var parameters = {
+                grp: "Coordinator",
+                cmd: "updateExitAnswer",
+                statusName: newC5,
+                dateActivated: newC3,
+                dateDeactivated: newC4,
+                weightName: $col1,
+                weightValue: $col2,
+                newWeightName: newC1,
+                newWeightValue: newC2,
+                pname: getCookie('PName'),
+            };
+            $.getJSON("../index.php", parameters).done(function (data, textStatus, jqXHR) {
+                //alert("Updated Successfully!!!");
+                generateTable();
+            }
+            ).fail(function (jqXHR, textStatus, errorThrown)
+            {
+                console.log(textStatus + "\n" + errorThrown.toString());
+            });
+            isUpdate = false;
+        }
+        else
+        {
+            var parameters = {
+                grp: "Coordinator",
+                cmd: "addExitAnswer",
+                statusName: newC5,
+                dateActivated: newC3,
+                dateDeactivated: newC4,
+                weightName: newC1,
+                weightValue: newC2,
+                pname: getCookie('PName'),
+            };
+            $.getJSON("../index.php", parameters).done(function (data, textStatus, jqXHR) {
+                //alert("Added Successfully!!!");
+                generateTable();
+            }
+            ).fail(function (jqXHR, textStatus, errorThrown)
+            {
 // log error to browser's console
-            console.log(textStatus + "\n" + errorThrown.toString());
-        });
+                console.log(textStatus + "\n" + errorThrown.toString());
+            });
+        }
         document.getElementById("inputC1A").value = "";
         document.getElementById("inputC2A").value = "";
         document.getElementById("inputC3A").value = "";
@@ -175,7 +203,7 @@ $(document).ready(function () {
     });
     $("#demo-form2").on('click', '#cancel', function () {
 
-        alert("cancel");
+        //alert("cancel");
         document.getElementById("inputC1A").value = "";
         document.getElementById("inputC2A").value = "";
         document.getElementById("inputC3A").value = "";

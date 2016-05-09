@@ -1,3 +1,4 @@
+var isUpdate = false;
 $(document).ready(function () {
     $("#inputC2A").val("");
     $("#inputC3A").val("");
@@ -173,6 +174,7 @@ $(document).ready(function () {
         } else { // it is an update
             document.getElementById("inputC1A").value = $col1;
             document.getElementById("inputC2A").value = $col2;
+            isUpdate = true;
             $("#inputC3A").val($col3);
             $("#inputC4A").val($col4);
         }
@@ -184,41 +186,39 @@ $(document).ready(function () {
         var newC2 = document.getElementById("inputC2A").value;
         var newC3 = document.getElementById("inputC3A").value;
         var newC4 = document.getElementById("inputC4A").value;
-        // $dao->query($query, $request->get('orderNo'), $request->get('questionText'), $request->get('SurveyName'), $request->get('statusName'), $request->get('statusType'), $request->get('SOCode'), $request->get('courseCode'), $request->get('pnameShort'));
-        /*
-         *   $request->set("orderNo", '6');
-         $request->set("questionText", 'Hello, Test2');
-         $request->set("statusType", 'Survey');
-         $request->set("statusName", 'Active');
-         $request->set("SurveyName", 'CLO-Based');
-         $request->set("pnameShort", 'ICS');
-         $request->set("courseCode", '102');
-         $request->set("SOCode", 'a');
-         */
-        var parameters = {
-            grp: "Faculty",
-            cmd: "addQuestion",
-            orderNo: newC1,
-            questionText: newC2,
-            SurveyName: 'CLO-Based',
-            statusName: newC4,
-            statusType: 'Survey',
-            pnameShort: getCookie('PName'),
-            courseCode: getCookie('CCode'),
-            SOCode: newC3
-
-        };
-
-        $.getJSON("../index.php", parameters).done(function (data, textStatus, jqXHR) {
-            //alert("Added Successfully!!!");
-            generateTable();
-        }
-        ).fail(function (jqXHR, textStatus, errorThrown)
+        if (isUpdate)
         {
-            // log error to browser's console
-            console.log(textStatus + "\n" + errorThrown.toString());
+            // TO-Do Mustafa
+            // Do An AJAX Call to update the current question
+            isUpdate = false;
+        }
+        else
+        {
+            var parameters = {
+                grp: "Faculty",
+                cmd: "addQuestion",
+                orderNo: newC1,
+                questionText: newC2,
+                SurveyName: 'CLO-Based',
+                statusName: newC4,
+                statusType: 'Survey',
+                pnameShort: getCookie('PName'),
+                courseCode: getCookie('CCode'),
+                SOCode: newC3
 
-        });
+            };
+
+            $.getJSON("../index.php", parameters).done(function (data, textStatus, jqXHR) {
+                //alert("Added Successfully!!!");
+                generateTable();
+            }
+            ).fail(function (jqXHR, textStatus, errorThrown)
+            {
+                // log error to browser's console
+                console.log(textStatus + "\n" + errorThrown.toString());
+
+            });
+        }
         document.getElementById("inputC1A").value = "";
         document.getElementById("inputC2A").value = "";
         $("#inputC3A").val('');

@@ -158,14 +158,14 @@ $(document).ready(function () {
         generateTable();
     });
     $("#demo-form2").on('click', '#save', function () {
-        alert("save 1");
+        //alert("save 1");
         var newC1 = document.getElementById("inputC1A").value;
         var newC2 = document.getElementById("inputC2A").value;
         var newC3 = document.getElementById("inputC3A").value;
         var newC4 = document.getElementById("inputC4A").value;
 
 
-        alert(newC1 + " " + newC2 + " " + newC3);
+        //alert(newC1 + " " + newC2 + " " + newC3);
         /**************************
          DELETE GOES HERE (in case of update just to be safe)
          INSERT STATEMENT GOES HERE
@@ -193,7 +193,7 @@ $(document).ready(function () {
             };
 
             $.getJSON("../index.php", parameters).done(function (data, textStatus, jqXHR) {
-                alert("Added Successfully!!!");
+                //alert("Added Successfully!!!");
                 generateTable();
             }
             ).fail(function (jqXHR, textStatus, errorThrown)
@@ -211,7 +211,7 @@ $(document).ready(function () {
     });
     $("#demo-form2").on('click', '#cancel', function () {
 
-        alert("cancel");
+        //alert("cancel");
         document.getElementById("inputC1A").value = "";
         document.getElementById("inputC2A").value = "";
         $("#inputC3A").val('');
