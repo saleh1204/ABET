@@ -16,13 +16,13 @@ $(document).ready(function () {
         $col1 = $row.find(".col1").text();
         var Sanswers = [];
         var Squestions = [];
-        alert("Delete4");
+
         if ($(this).text().length === 6) {
             for (var i = 0; i < numQuestions; i++)
             {
-                Squestions[i] = $("#question" + i).html();
+                Squestions[i] = $.trim($("#question" + i).html());
                 // alert(Squestions[i]);
-                Sanswers[i] = $row.find(".col" + (i + 2)).text();
+                Sanswers[i] = $.trim($row.find(".col" + (i + 2)).text());
                 // alert(Sanswers[i]);
             }
             // DELETE THE RECORD FROM DATABSE PLEASE
@@ -31,7 +31,7 @@ $(document).ready(function () {
                 cmd: "deleteStudentAnswers",
                 pname: getCookie('PName'),
                 courseCode: getCookie('CCode'),
-                ID: $col1,
+                ID: $.trim($col1),
                 surveyName: 'Employer-Based',
                 section: getCookie('Section'),
                 answers: Sanswers,
@@ -39,7 +39,7 @@ $(document).ready(function () {
             };
 
             $.getJSON("../index.php", parameters).done(function (data, textStatus, jqXHR) {
-                alert('Success');
+                // alert('Success');
                 generateTable();
             }
             ).fail(function (jqXHR, textStatus, errorThrown)
@@ -143,7 +143,7 @@ function generateTable() {
             function (data, textStatus, jqXHR)
             {
                 var myTable = $("#example").empty();
-                //alert(data.length);
+
                 if (data.length > 0)
                 {
                     myTable.append("<thead>");
@@ -234,17 +234,12 @@ function addQuestionTexts()
     $.getJSON("../index.php", parameters).done(
             function (data, textStatus, jqXHR)
             {
-                alert('Questions Loaded ' + data.length);
-                
+                //alert('Questions Loaded ' + data.length);
+
                 var questionDiv = $("#questions div").empty();
                 questionDiv = $("#questions");
                 for (var i = 0; i < data.length; i++) {
-                    questionDiv.append('<div class="form-group">');
-                    questionDiv.append('<label id ="question' + i + '" class="control-label col-md-3 col-sm-3 col-xs-12" for="question">' + data[i].questiontext);
-                    questionDiv.append('</label>');
-                    questionDiv.append('<div class="col-md-6 col-sm-6 col-xs-12">');
-                    questionDiv.append('<input id="answer' + i + '" type="text" required="required" class="form-control col-md-7 col-xs-12" >');
-                    questionDiv.append('</div></div>');
+                    questionDiv.append($('<div>', {class: 'form-group'}).append($('<label>', {class: 'control-label col-md-3 col-sm-3 col-xs-12', id: "question" + i}).text(data[i].questiontext)).append($('<div>', {class: 'col-md-6 col-sm-6 col-xs-12'}).append($('<input/>', {id: "answer" + i, class: 'form-control col-md-7 col-xs-12', type: 'text'}))));
                 }
                 numQuestions = data.length;
             }).fail(
@@ -271,7 +266,8 @@ function addAnswerValues()
     $.getJSON("../index.php", parameters).done(
             function (data, textStatus, jqXHR)
             {
-                var answers = $("#answers").empty();
+                var answers = $("#answersTable");
+                //answers.empty();
                 var myTemp = $('<tr style = "text-align: center;">').appendTo(answers);
                 for (var i = 0; i < data.length; i++) {
                     myTemp.append('<td>' + data[i].weight_name + '</td>');
@@ -282,7 +278,6 @@ function addAnswerValues()
                     myTemp1.append('<td style="padding-right:5em">' + data[i].weight_value + '</td>');
                 }
                 myTemp1.append('</tr>');
-                answers.append('</table>');
             }).fail(
             function (jqXHR, textStatus, errorThrown)
             {

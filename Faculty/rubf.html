@@ -61,7 +61,7 @@
                     <div class="left_col scroll-view">
 
                         <div class="navbar nav_title" style="border: 0;">
-                            <a href="index.html" class="site_title"> <span>myabet Faculty</span></a>
+                            <a href="../index.html" class="site_title"> <span>myabet Faculty</span></a>
                         </div>
                         <div class="clearfix"></div>
 
@@ -80,33 +80,33 @@
 
                                     </li>
 
-                                    <h3 style="visibility: hidden;">Indirect Assessment</h3>
-                                    <h3 >Course Learning Outcomes</h3>
-                                    <h3 style="visibility: hidden;">Indirect Assessment</h3>
+                                    <li><h3 style="visibility: hidden;">Indirect Assessment</h3></li>
+                                    <li><h3 >Course Learning Outcomes</h3></li>
+                                    <li><h3 style="visibility: hidden;">Indirect Assessment</h3></li>
 
                                     <li><a href="cloq.html">Questions</a></li>
                                     <li><a href="clof.html">Response</a></li>
                                     <li><a href="clos.html">Summary</a></li>
                                     <li><a href="cloc.html">Comments</a></li>
 
-                                    <h3 style="visibility: hidden;">Indirect Assessment</h3>
-                                    <h3 >Direct Assessment</h3>
-                                    <h3 style="visibility: hidden;">Indirect Assessment</h3>
-                                    <li><a href="rubq.html">Performace Criteria</a></li>
-                                    <li><a href="rubf.html">Performace Criteria Response</a></li>
+                                    <li><h3 style="visibility: hidden;">Indirect Assessment</h3></li>
+                                    <li><h3 >Direct Assessment</h3></li>
+                                    <li><h3 style="visibility: hidden;">Indirect Assessment</h3></li>
+                                    <li><a href="rubq.html">Performance Criteria</a></li>
+                                    <li><a href="rubf.html">Performance Criteria Response</a></li>
                                     <li><a href="rubs.html">Performance Criteria Summary</a></li>
                                     <li><a href="rubc.html">Comments</a></li>
 
-                                    <h3 style="visibility: hidden;">Indirect Assessment</h3>
-                                    <h3 >Employer Evaluation</h3>
-                                    <h3 style="visibility: hidden;">Indirect Assessment</h3>
+                                    <li><h3 style="visibility: hidden;">Indirect Assessment</h3></li>
+                                    <li><h3 >Employer Evaluation</h3></li>
+                                    <li><h3 style="visibility: hidden;">Indirect Assessment</h3></li>
                                     <li><a href="eeq.html">Questions</a></li>
                                     <li><a href="eef.html">Response</a></li>
                                     <li><a href="ees.html">Summary</a></li>
 
-                                    <h3 style="visibility: hidden;">Indirect Assessment</h3>
-                                    <h3 >Exit Survey</h3>
-                                    <h3 style="visibility: hidden;">Indirect Assessment</h3>
+                                    <li><h3 style="visibility: hidden;">Indirect Assessment</h3></li>
+                                    <li><h3 >Exit Survey</h3></li>
+                                    <li><h3 style="visibility: hidden;">Indirect Assessment</h3></li>
                                     <li><a href="esq.html">Questions</a></li>
                                     <li><a href="esf.html">Response</a></li>
                                     <li><a href="ess.html">Summary</a></li>
@@ -136,7 +136,7 @@
                                         <span class=" fa fa-angle-down"></span>
                                     </a>
                                     <ul class="dropdown-menu dropdown-usermenu pull-right">
-                                        <li><a href="facultycourses.html"><i class="fa fa-sign-out pull-right"></i> Log Out</a>
+                                        <li><a href="../index.html"><i class="fa fa-sign-out pull-right"></i> Log Out</a>
                                         </li>
                                     </ul>
                                 </li>
@@ -324,7 +324,7 @@
         <!-- textarea resize -->
         <script src="js/textarea/autosize.min.js"></script>
         <script>
-                    autosize($('.resizable_textarea'));
+                            autosize($('.resizable_textarea'));
         </script>
         <!-- Autocomplete -->
         <script type="text/javascript" src="js/autocomplete/countries.js"></script>
@@ -332,38 +332,38 @@
         <!-- pace -->
         <script src="js/pace/pace.min.js"></script>
         <script type="text/javascript">
-                    $(function () {
-                        'use strict';
-                        var countriesArray = $.map(countries, function (value, key) {
-                            return {
-                                value: value,
-                                data: key
-                            };
-                        });
-                        // Initialize autocomplete with custom appendTo:
-                        $('#autocomplete-custom-append').autocomplete({
-                            lookup: countriesArray,
-                            appendTo: '#autocomplete-container'
-                        });
-                    });
+                            $(function () {
+                                'use strict';
+                                var countriesArray = $.map(countries, function (value, key) {
+                                    return {
+                                        value: value,
+                                        data: key
+                                    };
+                                });
+                                // Initialize autocomplete with custom appendTo:
+                                $('#autocomplete-custom-append').autocomplete({
+                                    lookup: countriesArray,
+                                    appendTo: '#autocomplete-container'
+                                });
+                            });
         </script>
         <script src="js/custom.js"></script>
 
 
         <!-- select2 -->
         <script>
-                    $(document).ready(function () {
-                        $(".select2_single").select2({
-                            placeholder: "Select a state",
-                            allowClear: true
-                        });
-                        $(".select2_group").select2({});
-                        $(".select2_multiple").select2({
-                            maximumSelectionLength: 4,
-                            placeholder: "With Max Selection limit 4",
-                            allowClear: true
-                        });
-                    });
+                            $(document).ready(function () {
+                                $(".select2_single").select2({
+                                    placeholder: "Select a state",
+                                    allowClear: true
+                                });
+                                $(".select2_group").select2({});
+                                $(".select2_multiple").select2({
+                                    maximumSelectionLength: 4,
+                                    placeholder: "With Max Selection limit 4",
+                                    allowClear: true
+                                });
+                            });
         </script>
         <!-- /select2 -->
         <!-- input tags -->
@@ -520,37 +520,37 @@
         <!-- pace -->
         <script src="js/pace/pace.min.js"></script>
         <script>
-      var handleDataTableButtons = function () {
-          "use strict";
-          0 !== $("#datatable-buttons").length && $("#datatable-buttons").DataTable({
-              dom: "Bfrtip",
-              buttons: [{
-                      extend: "copy",
-                      className: "btn-sm"
-                  }, {
-                      extend: "csv",
-                      className: "btn-sm"
-                  }, {
-                      extend: "excel",
-                      className: "btn-sm"
-                  }, {
-                      extend: "pdf",
-                      className: "btn-sm"
-                  }, {
-                      extend: "print",
-                      className: "btn-sm"
-                  }],
-              responsive: !0
-          })
-      },
-              TableManageButtons = function () {
-                  "use strict";
-                  return {
-                      init: function () {
-                          handleDataTableButtons()
-                      }
-                  }
-              }();
+            var handleDataTableButtons = function () {
+                "use strict";
+                0 !== $("#datatable-buttons").length && $("#datatable-buttons").DataTable({
+                    dom: "Bfrtip",
+                    buttons: [{
+                            extend: "copy",
+                            className: "btn-sm"
+                        }, {
+                            extend: "csv",
+                            className: "btn-sm"
+                        }, {
+                            extend: "excel",
+                            className: "btn-sm"
+                        }, {
+                            extend: "pdf",
+                            className: "btn-sm"
+                        }, {
+                            extend: "print",
+                            className: "btn-sm"
+                        }],
+                    responsive: !0
+                })
+            },
+                    TableManageButtons = function () {
+                        "use strict";
+                        return {
+                            init: function () {
+                                handleDataTableButtons()
+                            }
+                        }
+                    }();
         </script>
         <script type="text/javascript">
             $(document).ready(function () {

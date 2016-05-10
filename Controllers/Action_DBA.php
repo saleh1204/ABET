@@ -192,7 +192,7 @@ class Action_DBA {
 
     public function updateCourse($request) {
         $dao = new ABETDAO();
-        $query = 'UPDATE ABET.Course SET CourseCode = (?),  CourseName = (?), CourseCredit = (?), DateActivated = (?),DateDeactivated = (?), ProgramID = (Select Program from ABET.Program where PNameShort = ?) WHERE ProgramID = (Select Program from ABET.Program where PNameShort = ?) AND courseCode = (?);';
+        $query = 'UPDATE ABET.Course SET CourseCode = (?),  CourseName = (?), CourseCredit = (?), DateActivated = (?),DateDeactivated = (?), ProgramID = (Select ProgramID from ABET.Program where PNameShort = ?) WHERE ProgramID = (Select ProgramID from ABET.Program where PNameShort = ?) AND courseCode = (?);';
         $result = $dao->query($query, $request->get('newCourseCode'), $request->get('courseName'), $request->get('courseCredit'), $request->get('dateActivated'), $request->get('dateDeactivated'), $request->get('newPNameShort'), $request->get('oldPNameShort'), $request->get('oldcourseCode'));
         $encoded = json_encode($result);
         echo $encoded;
@@ -212,6 +212,39 @@ class Action_DBA {
         $result = $dao->query($query, $request->get('facultyName'), $request->get('facultyEmail'), $request->get('DNameShort'));
         $encoded = json_encode($result);
         echo $encoded;
+    }
+
+    public function getCoordinators($request) {
+        $dao = new ABETDAO();
+        $query = 'SELECT * FROM program RIGHT JOIN faculty ON faculty.Program_ProgramID = program.ProgramID';
+        $rows = $dao->query($query);
+        $faculty = [];
+        if ($rows != false) {
+            foreach ($rows as $row) {
+                $faculty[] = [
+                    "FacultyID" => $row["FacultyID"],
+                    "FacultyName" => $row["FacultyName"],
+                    "Email" => $row["Email"],
+                    "PName" => $row["PNameShort"]
+                ];
+            }
+        }
+        $encoded = json_encode($faculty);
+        echo $encoded;
+    }
+
+    public function addCoordinator($request) {
+        $dao = new ABETDAO();
+        $query = 'UPDATE ABET.Faculty SET Program_ProgramID = (select ProgramID from Program where PNameShort = ?) WHERE FacultyName = (?) AND Email = (?);';
+        $rows = $dao->query($query, $request->get("PName"), $request->get("fName"), $request->get("femail"));
+        echo json_encode($rows);
+    }
+
+    public function deleteCoordinator($request) {
+        $dao = new ABETDAO();
+        $query = 'UPDATE ABET.Faculty SET Program_ProgramID = null WHERE FacultyName = (?) AND Email = (?);';
+        $rows = $dao->query($query, $request->get("fName"), $request->get("femail"));
+        echo json_encode($rows);
     }
 
     public function getFaculties($request) {
@@ -361,8 +394,8 @@ class Action_DBA {
 
     public function updateStatus($request) {
         $dao = new ABETDAO();
-        $query = 'UPDATE ABET.Status SET StatusType = (?), StatusName = (?), Description = ? where StatusName = ?;';
-        $result = $dao->query($query, $request->get('statusType'), $request->get('statusName'), $request->get('description'), $request->get('oldStatusName'));
+        $query = 'UPDATE ABET.Status SET StatusType = (?), StatusName = (?), Description = ? where StatusName = ? AND StatusType = ?;';
+        $result = $dao->query($query, $request->get('statusType'), $request->get('statusName'), $request->get('description'), $request->get('oldStatusName'), $request->get('oldStatusType'));
         $encoded = json_encode($result);
         echo $encoded;
     }
@@ -534,7 +567,7 @@ class Action_DBA {
         $request->set("courseCredit", 3);
         $request->set("datedeActivated", "2011-02-03");
         $request->set("datedeDeactivated", "2011-02-03");
-        return $this->getStatus($request);
+        return $this->getCoordinators($request);
     }
 
 }

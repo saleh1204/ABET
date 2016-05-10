@@ -61,7 +61,7 @@
                     <div class="left_col scroll-view">
 
                         <div class="navbar nav_title" style="border: 0;">
-                            <a href="index.html" class="site_title"> <span>myabet Faculty</span></a>
+                            <a href="../index.html" class="site_title"> <span>myabet Faculty</span></a>
                         </div>
                         <div class="clearfix"></div>
 
@@ -80,33 +80,33 @@
 
                                     </li>
 
-                                    <h3 style="visibility: hidden;">Indirect Assessment</h3>
-                                    <h3 >Course Learning Outcomes</h3>
-                                    <h3 style="visibility: hidden;">Indirect Assessment</h3>
+                                    <li><h3 style="visibility: hidden;">Indirect Assessment</h3></li>
+                                    <li><h3 >Course Learning Outcomes</h3></li>
+                                    <li><h3 style="visibility: hidden;">Indirect Assessment</h3></li>
 
                                     <li><a href="cloq.html">Questions</a></li>
                                     <li><a href="clof.html">Response</a></li>
                                     <li><a href="clos.html">Summary</a></li>
                                     <li><a href="cloc.html">Comments</a></li>
 
-                                    <h3 style="visibility: hidden;">Indirect Assessment</h3>
-                                    <h3 >Direct Assessment</h3>
-                                    <h3 style="visibility: hidden;">Indirect Assessment</h3>
-                                    <li><a href="rubq.html">Performace Criteria</a></li>
-                                    <li><a href="rubf.html">Performace Criteria Response</a></li>
+                                    <li><h3 style="visibility: hidden;">Indirect Assessment</h3></li>
+                                    <li><h3 >Direct Assessment</h3></li>
+                                    <li><h3 style="visibility: hidden;">Indirect Assessment</h3></li>
+                                    <li><a href="rubq.html">Performance Criteria</a></li>
+                                    <li><a href="rubf.html">Performance Criteria Response</a></li>
                                     <li><a href="rubs.html">Performance Criteria Summary</a></li>
                                     <li><a href="rubc.html">Comments</a></li>
 
-                                    <h3 style="visibility: hidden;">Indirect Assessment</h3>
-                                    <h3 >Employer Evaluation</h3>
-                                    <h3 style="visibility: hidden;">Indirect Assessment</h3>
+                                    <li><h3 style="visibility: hidden;">Indirect Assessment</h3></li>
+                                    <li><h3 >Employer Evaluation</h3></li>
+                                    <li><h3 style="visibility: hidden;">Indirect Assessment</h3></li>
                                     <li><a href="eeq.html">Questions</a></li>
                                     <li><a href="eef.html">Response</a></li>
                                     <li><a href="ees.html">Summary</a></li>
 
-                                    <h3 style="visibility: hidden;">Indirect Assessment</h3>
-                                    <h3 >Exit Survey</h3>
-                                    <h3 style="visibility: hidden;">Indirect Assessment</h3>
+                                    <li><h3 style="visibility: hidden;">Indirect Assessment</h3></li>
+                                    <li><h3 >Exit Survey</h3></li>
+                                    <li><h3 style="visibility: hidden;">Indirect Assessment</h3></li>
                                     <li><a href="esq.html">Questions</a></li>
                                     <li><a href="esf.html">Response</a></li>
                                     <li><a href="ess.html">Summary</a></li>
@@ -114,11 +114,6 @@
                             </div>
 
                         </div>
-                        <!-- /sidebar menu -->
-
-                        <!-- /menu footer buttons -->
-
-                        <!-- /menu footer buttons -->
                     </div>
                 </div>
 
@@ -136,7 +131,7 @@
                                         <span class=" fa fa-angle-down"></span>
                                     </a>
                                     <ul class="dropdown-menu dropdown-usermenu pull-right">
-                                        <li><a href="../facultyLogin.html"><i class="fa fa-sign-out pull-right"></i> Log Out</a>
+                                        <li><a href="../index.html"><i class="fa fa-sign-out pull-right"></i> Log Out</a>
                                         </li>
                                     </ul>
                                 </li>
@@ -182,43 +177,14 @@
                                                     <input type="text" id="inputC1A" required="required" class="form-control col-md-7 col-xs-12" >
                                                 </div>
                                             </div>
+                                            <div id="questions">
 
-                                            <script type="text/javascript">
-                                                // AJAX TO KNOW THE NUMBER OF Active QUESTIONS
-                                                var numQ = 4;
-                                                for (var i = 0; i < numQ; i++) {
-                                                    document.writeln('<div class="form-group">');
-                                                    document.writeln('<label class="control-label col-md-3 col-sm-3 col-xs-12" for="first-name">Question' + (i + 1) + ' Answer <span class="required">*</span>');
-                                                    document.writeln('</label>');
-                                                    document.writeln('<div class="col-md-6 col-sm-6 col-xs-12">');
-                                                    document.writeln('<input type="text" id="inputC' + (i + 2) + 'A" required="required" class="form-control col-md-7 col-xs-12" >');
-                                                    document.writeln('</div></div>');
-                                                }
-                                            </script>
+                                            </div>
                                             <h4 style="visibility: hidden;">h3</h4>
 
-
-                                            <script type="text/javascript">
-                                                // AJAX TO KNOW THE ANSWER WITH THEIR WEIGHTS
-                                                // DON'T CONFUSE WEGITH_VALUE WITH WEIGHT_NAME
-                                                var a = ["V.Good", "Good", "Fair"];
-                                                var v = ["3", "2", "1"];
-                                                document.writeln('<table style = "width: 50%; margin-left: auto; margin-right: auto;">');
-
-                                                document.writeln('<tr style = "text-align: center;">');
-                                                for (var j = 0; j < v.length; j++) {
-                                                    document.writeln('<td >' + a[j] + '</td>');
-                                                }
-                                                document.writeln('</tr>');
-                                                document.writeln('<tr style="text-align: center;">');
-                                                for (var j = 0; j < v.length; j++) {
-                                                    document.writeln('<td>' + v[j] + '</td>');
-                                                }
-                                                document.writeln('</tr>');
-                                                document.writeln('</table>');
-
-
-                                            </script>
+                                            <div id="answers">
+                                                <table id="answersTable" style = "width: 50%; margin-left: auto; margin-right: auto;"></table>
+                                            </div>
 
                                             <h3 style="visibility: hidden;">h3</h3>
                                             <div class="ln_solid"></div>
@@ -241,13 +207,6 @@
                                                 <tr>
                                                     <th  style="text-align: center;">#</th>
                                                     <th style="text-align: center;">Student ID</th>
-                                            <script type="text/javascript">
-                                                // AJAX TO KNOW NUMQ
-                                                var numQ = 4;
-                                                for (var i = 0; i < numQ; i++) {
-                                                    document.writeln('<th> Question ' + (i + 1) + ' Answer</th>');
-                                                }
-                                            </script>
                                             <th style="text-align: center;">actions</th>
 
 
@@ -325,7 +284,7 @@
         <!-- textarea resize -->
         <script src="js/textarea/autosize.min.js"></script>
         <script>
-                    autosize($('.resizable_textarea'));
+                            autosize($('.resizable_textarea'));
         </script>
         <!-- Autocomplete -->
         <script type="text/javascript" src="js/autocomplete/countries.js"></script>
@@ -333,38 +292,38 @@
         <!-- pace -->
         <script src="js/pace/pace.min.js"></script>
         <script type="text/javascript">
-                    $(function () {
-                        'use strict';
-                        var countriesArray = $.map(countries, function (value, key) {
-                            return {
-                                value: value,
-                                data: key
-                            };
-                        });
-                        // Initialize autocomplete with custom appendTo:
-                        $('#autocomplete-custom-append').autocomplete({
-                            lookup: countriesArray,
-                            appendTo: '#autocomplete-container'
-                        });
-                    });
+                            $(function () {
+                                'use strict';
+                                var countriesArray = $.map(countries, function (value, key) {
+                                    return {
+                                        value: value,
+                                        data: key
+                                    };
+                                });
+                                // Initialize autocomplete with custom appendTo:
+                                $('#autocomplete-custom-append').autocomplete({
+                                    lookup: countriesArray,
+                                    appendTo: '#autocomplete-container'
+                                });
+                            });
         </script>
         <script src="js/custom.js"></script>
 
 
         <!-- select2 -->
         <script>
-                    $(document).ready(function () {
-                        $(".select2_single").select2({
-                            placeholder: "Select a state",
-                            allowClear: true
-                        });
-                        $(".select2_group").select2({});
-                        $(".select2_multiple").select2({
-                            maximumSelectionLength: 4,
-                            placeholder: "With Max Selection limit 4",
-                            allowClear: true
-                        });
-                    });
+                            $(document).ready(function () {
+                                $(".select2_single").select2({
+                                    placeholder: "Select a state",
+                                    allowClear: true
+                                });
+                                $(".select2_group").select2({});
+                                $(".select2_multiple").select2({
+                                    maximumSelectionLength: 4,
+                                    placeholder: "With Max Selection limit 4",
+                                    allowClear: true
+                                });
+                            });
         </script>
         <!-- /select2 -->
         <!-- input tags -->
@@ -521,37 +480,37 @@
         <!-- pace -->
         <script src="js/pace/pace.min.js"></script>
         <script>
-      var handleDataTableButtons = function () {
-          "use strict";
-          0 !== $("#datatable-buttons").length && $("#datatable-buttons").DataTable({
-              dom: "Bfrtip",
-              buttons: [{
-                      extend: "copy",
-                      className: "btn-sm"
-                  }, {
-                      extend: "csv",
-                      className: "btn-sm"
-                  }, {
-                      extend: "excel",
-                      className: "btn-sm"
-                  }, {
-                      extend: "pdf",
-                      className: "btn-sm"
-                  }, {
-                      extend: "print",
-                      className: "btn-sm"
-                  }],
-              responsive: !0
-          })
-      },
-              TableManageButtons = function () {
-                  "use strict";
-                  return {
-                      init: function () {
-                          handleDataTableButtons()
-                      }
-                  }
-              }();
+            var handleDataTableButtons = function () {
+                "use strict";
+                0 !== $("#datatable-buttons").length && $("#datatable-buttons").DataTable({
+                    dom: "Bfrtip",
+                    buttons: [{
+                            extend: "copy",
+                            className: "btn-sm"
+                        }, {
+                            extend: "csv",
+                            className: "btn-sm"
+                        }, {
+                            extend: "excel",
+                            className: "btn-sm"
+                        }, {
+                            extend: "pdf",
+                            className: "btn-sm"
+                        }, {
+                            extend: "print",
+                            className: "btn-sm"
+                        }],
+                    responsive: !0
+                })
+            },
+                    TableManageButtons = function () {
+                        "use strict";
+                        return {
+                            init: function () {
+                                handleDataTableButtons()
+                            }
+                        }
+                    }();
         </script>
         <script type="text/javascript">
             $(document).ready(function () {

@@ -5,13 +5,24 @@ $(document).ready(function () {
 
     function generateTable() {
         // flush the table
+        /*
+         * 
+         grp: "Faculty",
+         cmd: "getSummary",
+         surveyName: "CLO-Based",
+         semester: getCookie('Term'),
+         courseCode: getCookie('CCode'),
+         pname: getCookie('PName'),
+         femail: getCookie('email')
+         */
         var parameters = {
             grp: "Faculty",
             cmd: "getSummary",
             surveyType: "Exit-Based",
             semester: getCookie('Term'),
             courseCode: getCookie('CCode'),
-            pnameShort: getCookie('PName')
+            pnameShort: getCookie('PName'),
+            femail: getCookie('email')
         };
         $.getJSON("../index.php", parameters).done(
                 function (data, textStatus, jqXHR)

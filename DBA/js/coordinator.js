@@ -1,19 +1,20 @@
 $(document).ready(function () {
 
     generateTable();
+    getProgramsNames();
     function generateTable() {
         // flush the table
         var parameters = {
             grp: "DBA",
-            cmd: "getEmployers"
+            cmd: "getCoordinators"
         };
         $.getJSON("../index.php", parameters).done(function (data, textStatus, jqXHR)
         {
 
 
-            var col1 = []; 
-            var col2 = []; 
-            var col3 = []; 
+            var col1 = [];
+            var col2 = [];
+            var col3 = [];
             /*************************************
              SELECT * FROM TABLE JOIN TABLE
              *************************************
@@ -21,9 +22,9 @@ $(document).ready(function () {
             for (i = 0; i < data.length; i++)
             {
 
-                col1[i] = data[i].empName;
-                col2[i] = data[i].email;
-                col3[i] = data[i].password;
+                col1[i] = data[i].FacultyName;
+                col2[i] = data[i].Email;
+                col3[i] = data[i].PName;
             }
             $("#tbody tr").remove();
             /*************************************
@@ -48,12 +49,13 @@ $(document).ready(function () {
         var $col2 = $row.find(".col2").text();
         var $col3 = $row.find(".col3").text();
         if ($(this).text().length === 6) {
-            alert("delete: " + $col1 + $col2 + $col3);
+            //alert("delete: " + $col1 + $col2 + $col3);
             // DELETE THE RECORD FROM DATABSE PLEASE
             var parameters = {
                 grp: "DBA",
-                cmd: "deleteEmployer",
-                name: $col1
+                cmd: "deleteCoordinator",
+                fName: $col1,
+                femail: $col2
             };
             $.getJSON("../index.php", parameters).done(function (data, textStatus, jqXHR) {
                 //alert("Deleted Successfully!!! "+ data);
@@ -66,21 +68,24 @@ $(document).ready(function () {
             });
             s
         } else { // it is an update
-            document.getElementById("inputC1U").value = $col1;
-            document.getElementById("inputC2U").value = $col2;
-            document.getElementById("inputC3U").value = $col3;
+            //alert('update1');
+            $("#inputC1U").text($col1);
+            $("#inputC2U").text($col2);
+            $("#inputC3U").val($col3);
+            //document.getElementById("inputC1U").value = $col1;
+            //document.getElementById("inputC2U").value = $col2;
+            //document.getElementById("inputC3U").value = $col3;
             $('#update').unbind().click(function () {
-                var newC1 = document.getElementById("inputC1U").value;
-                var newC2 = document.getElementById("inputC2U").value;
-                var newC3 = document.getElementById("inputC3U").value;
+                var newC1 = $("#inputC1U").text();
+                var newC2 = $("#inputC2U").text();
+                var newC3 = $("#inputC3U").val();
                 // THE UPDATE STATEMENT GOES HERE
                 var parameters = {
                     grp: "DBA",
-                    cmd: "updateEmployer",
-                    oldName: $col1,
-                    newName: newC1,
-                    email: newC2,
-                    password: newC3
+                    cmd: "addCoordinator",
+                    fName: newC1,
+                    femail: newC2,
+                    PName: newC3
                 };
                 $.getJSON("../index.php", parameters).done(function (data, textStatus, jqXHR) {
                     //alert("Updated Successfully!!!");
@@ -95,38 +100,26 @@ $(document).ready(function () {
         }
         generateTable();
     });
-    $('#addR').click(function () {
-    });
-    $('#save').click(function () {
-        //alert("INSIDE SAVE");
-        var newC1 = document.getElementById("inputC1A").value;
-        var newC2 = document.getElementById("inputC2A").value;
-        var newC3 = document.getElementById("inputC3A").value;
-        /**************************
-         INSERT STATEMENT GOES HERE
-         **************************
-         */
-
-        var parameters = {
-            grp: "DBA",
-            cmd: "addEmployer",
-            empName: newC1,
-            email: newC2,
-            password: newC3
-
-        };
-        $.getJSON("../index.php", parameters).done(function (data, textStatus, jqXHR) {
-            //alert("Added Successfully!!!");
-            generateTable();
-        }
-        ).fail(function (jqXHR, textStatus, errorThrown)
-        {
-            // log error to browser's console
-            console.log(textStatus + "\n" + errorThrown.toString());
-        });
-        document.getElementById("inputC1A").value = "";
-        document.getElementById("inputC2A").value = "";
-        document.getElementById("inputC3A").value = "";
-        generateTable();
-    });
 });
+
+function getProgramsNames()
+{
+    var parameters = {
+        grp: "DBA",
+        cmd: "getPrograms"
+    };
+    $.getJSON("../index.php", parameters).done(
+            function (data, textStatus, jqXHR)
+            {
+                var x = $("#inputC3U");
+                x.empty();
+                for (var i = 0; i < data.length; i++)
+                {
+                    x.append('<option value="' + data[i].PNameShort + '">' + data[i].PNameShort + '</option>');
+                }
+            }).fail(
+            function (jqXHR, textStatus, errorThrown)
+            {
+                console.log(errorThrown.toString());
+            });
+}

@@ -81,6 +81,7 @@ $(document).ready(function () {
                     grp: "DBA",
                     cmd: "updateStatus",
                     oldStatusName: $col2,
+                    oldStatusType: $col1,
                     statusName: newC2,
                     statusType: newC1,
                     description: newC3

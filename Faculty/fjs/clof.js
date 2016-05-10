@@ -239,12 +239,7 @@ function addQuestionTexts()
                 var questionDiv = $("#questions div").empty();
                 questionDiv = $("#questions");
                 for (var i = 0; i < data.length; i++) {
-                    questionDiv.append('<div class="form-group">');
-                    questionDiv.append('<label id ="question' + i + '" class="control-label col-md-3 col-sm-3 col-xs-12" for="question">' + data[i].questiontext);
-                    questionDiv.append('</label>');
-                    questionDiv.append('<div class="col-md-6 col-sm-6 col-xs-12">');
-                    questionDiv.append('<input id="answer' + i + '" type="text" required="required" class="form-control col-md-7 col-xs-12" >');
-                    questionDiv.append('</div></div>');
+questionDiv.append($('<div>',{class:'form-group'}).append($('<label>',{class:'control-label col-md-3 col-sm-3 col-xs-12',id:"question"+i}).text(data[i].questiontext)).append($('<div>',{class:'col-md-6 col-sm-6 col-xs-12'}).append($('<input/>',{id:"answer"+i,class:'form-control col-md-7 col-xs-12',type:'text'}))));
                 }
                 numQuestions = data.length;
             }).fail(

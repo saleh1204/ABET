@@ -57,7 +57,7 @@ $(document).ready(function () {
                         tr.append('<td class = "col5" style = "text-align: center;">' + col5[i] + '</td>');
                         tr.append('<td style = "text-align: center;">' + '<button class="btn btn-default" ><i class="glyphicon glyphicon-edit"></i>Edit</button>' + '<button class="btn btn-default" name = "del' + i + '" ><i class="glyphicon glyphicon-remove\"></i>Delete</button>' + '</td>');
                     }
-                    $('#example').dataTable();
+                    $('#example').dataTable({"order":[[2,"desc"]]});
                     $('#example-keytable').DataTable({
                         keys: true
                     });
