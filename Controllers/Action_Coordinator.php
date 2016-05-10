@@ -98,7 +98,7 @@ class Action_Coordinator {
                   AND A.SURVEYTYPE_SURVEYTYPEID = ST.SURVEYTYPEID 
                   AND A.STATUS_STATUSID = STA.STATUSID 
                   AND P.PNAMESHORT = ?
-                  AND ST.SURVEYNAME = 'Rubrics-Based';";
+                  AND ST.SURVEYNAME = 'Rubrics-Based' order by SOCODE, PCNUM, WEIGHT_VALUE;";
         $rows = $dao->query($query, $request->get("pname"));
         $answers = [];
         if ($rows != false) {
@@ -138,8 +138,25 @@ class Action_Coordinator {
 
     public function deletePCAnswer($request) {
         $dao = new ABETDAO();
-        $query = 'delete from Answer where Weight_Name = ? AND Weight_Value = ? AND SurveyType_SurveyTypeID = (select SurveyTypeID from SurveyType where SurveyName = ?) AND Program_ProgramID = (select ProgramID from Program where PNameShort = ?)';
-        $rows = $dao->query($query, $request->get('weightName'), $request->get('weightValue'), 'Rubrics-Based', $request->get('pname'));
+        $query = 'delete from Answer '
+                . 'where Weight_Name = ? AND Weight_Value = ? '
+                . 'AND SurveyType_SurveyTypeID = (select SurveyTypeID from SurveyType where SurveyName = ?) '
+                . 'AND Program_ProgramID = (select ProgramID from Program where PNameShort = ?) '
+                . 'AND StudentOutcome_SOID = (select SOID from abet.studentoutcome, abet.program where socode = ? and pnameshort = ? and Program_ProgramID = ProgramID) '
+                . 'AND PCNum = ?';
+        $rows = $dao->query($query, $request->get('weightName'), $request->get('weightValue'), 'Rubrics-Based', $request->get('pname'), $request->get('SOCode'), $request->get('pname'), $request->get('pcnum'));
+        echo json_encode($rows);
+    }
+
+    public function updatePCAnswer($request) {
+        $dao = new ABETDAO();
+        $query = 'update Answer set Weight_Name = ?, Weight_Value = ?, StudentOutcome_SOID = (select SOID from abet.studentoutcome, abet.program where socode = ? and pnameshort = ? and Program_ProgramID = ProgramID), DateActivated = ?, DateDeactivated = ? '
+                . 'where Weight_Name = ? AND Weight_Value = ? '
+                . 'AND SurveyType_SurveyTypeID = (select SurveyTypeID from SurveyType where SurveyName = ?) '
+                . 'AND Program_ProgramID = (select ProgramID from Program where PNameShort = ?) '
+                . 'AND StudentOutcome_SOID = (select SOID from abet.studentoutcome, abet.program where socode = ? and pnameshort = ? and Program_ProgramID = ProgramID) '
+                . 'AND PCNum = ?';
+        $rows = $dao->query($query, $request->get('weightName'), $request->get('weightValue'), $request->get('pname'), $request->get('SOCode'), $request->get('dateActivated'), $request->get('dateDeactivated'), $request->get('oldWeightName'), $request->get('oldWeightValue'), 'Rubrics-Based', $request->get('pname'), $request->get('oldSOCode'), $request->get('pname'), $request->get('pcnum'));
         echo json_encode($rows);
     }
 
@@ -595,55 +612,57 @@ class Action_Coordinator {
         echo json_encode($rows);
     }
 
+    /*
+      function getCLOReport($request) {
+      $dao = new ABETDAO();
+      $query1 = "SELECT distinct weight_value
+      FROM ABET.SEMESTER SEM, ABET.Section SEC, ABET.Student_Section SS, ABET.Student STU,
+      ABET.StudentQA SQA, ABET.QA QA, ABET.Answer A, ABET.QUESTION Q, ABET.StudentOutcome SO,
+      ABET.SurveyType ST, ABET.Course C, ABET.Program P, ABET.Faculty F
+      WHERE SEM.SEMESTERNUM = ?
+      AND SEC.FACULTYID = F.FACULTYID
+      AND F.EMAIL = ?
+      AND SEM.SEMESTERID = SEC.SEMESTERID
+      AND SEC.SECTIONID = SS.SECTIONID
+      AND SS.STUDENT_STUDENTID = STU.STUDENTID
+      AND SS.SSID = SQA.STUDENT_SECTION_SSID
+      AND SQA.QA_QAID = QA.QAID
+      AND QA.Answer_AID = A.AID
+      AND QA.Question_QID = Q.QID
+      AND Q.STUDENTOUTCOME_SOID = SO.SOID
+      AND Q.SURVEYTYPEID = ST.SURVEYTYPEID
+      AND ST.SURVEYNAME = ?
+      AND Q.COURSE_COURSEID = C.COURSEID
+      AND C.PROGRAMID = P.PROGRAMID
+      AND P.PNAMESHORT = ?
+      AND C.COURSECODE = ?;";
+      $rows = $dao->query($query1, $request->get('semester'), $request->get('femail'), $request->get('surveyName'), $request->get('pname'), $request->get('courseCode'));
+      echo json_encode($rows[0]) . '<br /> <br />';
+      $answerStr = implode(" ", $rows[0]);
+      $query2 = "SELECT orderno, socode, QuestionText, " . $answerStr . " , avg(weight_value) FROM ABET.SEMESTER SEM, ABET.Section SEC, ABET.Student_Section SS, ABET.Student STU, ABET.StudentQA SQA, ABET.QA QA, ABET.Answer A, ABET.QUESTION Q, ABET.StudentOutcome SO,
+      ABET.SurveyType ST, ABET.Course C, ABET.Program P
+      WHERE SEM.SEMESTERNUM = ?
+      AND SEM.SEMESTERID = SEC.SEMESTERID
+      AND SEC.SECTIONID = SS.SECTIONID
+      AND SS.STUDENT_STUDENTID = STU.STUDENTID
+      AND SS.SSID = SQA.STUDENT_SECTION_SSID
+      AND SQA.QA_QAID = QA.QAID
+      AND QA.Answer_AID = A.AID
+      AND QA.Question_QID = Q.QID
+      AND Q.STUDENTOUTCOME_SOID = SO.SOID
+      AND Q.SURVEYTYPEID = ST.SURVEYTYPEID
+      AND ST.SURVEYNAME = ?
+      AND Q.COURSE_COURSEID = C.COURSEID
+      AND C.PROGRAMID = P.PROGRAMID
+      AND P.PNAMESHORT = ?
+      AND C.COURSECODE = ? GROUP BY questiontext;";
+      $rows2 = $dao->query($query2, $request->get('semester'), $request->get('femail'), $request->get('surveyName'), $request->get('pname'), $request->get('courseCode'));
+
+      echo json_encode($rows2);
+      }
+     */
+
     function getCLOReport($request) {
-        $dao = new ABETDAO();
-        $query1 = "SELECT distinct weight_value
-            FROM ABET.SEMESTER SEM, ABET.Section SEC, ABET.Student_Section SS, ABET.Student STU,
-            ABET.StudentQA SQA, ABET.QA QA, ABET.Answer A, ABET.QUESTION Q, ABET.StudentOutcome SO,
-            ABET.SurveyType ST, ABET.Course C, ABET.Program P, ABET.Faculty F
-            WHERE SEM.SEMESTERNUM = ?
-            AND SEC.FACULTYID = F.FACULTYID
-            AND F.EMAIL = ?
-            AND SEM.SEMESTERID = SEC.SEMESTERID
-            AND SEC.SECTIONID = SS.SECTIONID
-            AND SS.STUDENT_STUDENTID = STU.STUDENTID
-            AND SS.SSID = SQA.STUDENT_SECTION_SSID
-            AND SQA.QA_QAID = QA.QAID
-            AND QA.Answer_AID = A.AID
-            AND QA.Question_QID = Q.QID
-            AND Q.STUDENTOUTCOME_SOID = SO.SOID
-            AND Q.SURVEYTYPEID = ST.SURVEYTYPEID
-            AND ST.SURVEYNAME = ? 
-            AND Q.COURSE_COURSEID = C.COURSEID
-            AND C.PROGRAMID = P.PROGRAMID
-            AND P.PNAMESHORT = ?
-            AND C.COURSECODE = ?;";
-        $rows = $dao->query($query1, $request->get('semester'), $request->get('femail'), $request->get('surveyName'), $request->get('pname'), $request->get('courseCode'));
-        echo json_encode($rows[0]) . '<br /> <br />';
-        $answerStr = implode(" ", $rows[0]);
-        $query2 = "SELECT orderno, socode, QuestionText, " . $answerStr . " , avg(weight_value) FROM ABET.SEMESTER SEM, ABET.Section SEC, ABET.Student_Section SS, ABET.Student STU, ABET.StudentQA SQA, ABET.QA QA, ABET.Answer A, ABET.QUESTION Q, ABET.StudentOutcome SO,
-            ABET.SurveyType ST, ABET.Course C, ABET.Program P
-            WHERE SEM.SEMESTERNUM = ?
-            AND SEM.SEMESTERID = SEC.SEMESTERID
-            AND SEC.SECTIONID = SS.SECTIONID
-            AND SS.STUDENT_STUDENTID = STU.STUDENTID
-            AND SS.SSID = SQA.STUDENT_SECTION_SSID
-            AND SQA.QA_QAID = QA.QAID
-            AND QA.Answer_AID = A.AID
-            AND QA.Question_QID = Q.QID
-            AND Q.STUDENTOUTCOME_SOID = SO.SOID
-            AND Q.SURVEYTYPEID = ST.SURVEYTYPEID
-            AND ST.SURVEYNAME = ?
-            AND Q.COURSE_COURSEID = C.COURSEID
-            AND C.PROGRAMID = P.PROGRAMID
-            AND P.PNAMESHORT = ?
-            AND C.COURSECODE = ? GROUP BY questiontext;";
-        $rows2 = $dao->query($query2, $request->get('semester'), $request->get('femail'), $request->get('surveyName'), $request->get('pname'), $request->get('courseCode'));
-
-        echo json_encode($rows2);
-    }
-
-    function getReport($request) {
         $dao = new ABETDAO();
         $query = "SELECT GROUP_CONCAT(DISTINCT CONCAT('count(IF(weight_value = ''', Weight_value,''', Weight_Value, NULL)) AS ', replace(weight_name, ' ', '_')) order by weight_value desc) 
             FROM ABET.SEMESTER SEM, ABET.Section SEC, ABET.Student_Section SS, ABET.Student STU,
@@ -704,7 +723,7 @@ class Action_Coordinator {
             AND ST.SURVEYNAME = ? 
             AND Q.COURSE_COURSEID = C.COURSEID
             AND C.PROGRAMID = P.PROGRAMID
-            AND P.PNAMESHORT = ?;';
+            AND P.PNAMESHORT = ? order by weight_value desc;';
         $rows2 = $dao->query($query2, $request->get('semester'), $request->get('surveyName'), $request->get('pname'));
         $report = [];
         $count = count($rows2);
@@ -774,11 +793,20 @@ class Action_Coordinator {
     }
 
     function getCLIReport($request) {
-        
+        $dao = new ABETDAO();
+        $query = "SELECT comment.Weakness, comment.Actions, course.CourseCode, semester.SemesterNum "
+                . "FROM section JOIN comment ON comment.Section_SectionID = section.SectionID "
+                . "JOIN course ON section.CourseID = course.CourseID "
+                . "JOIN semester ON section.SemesterID = semester.SemesterID "
+                . "JOIN program ON course.ProgramID = program.ProgramID "
+                . "where pnameshort = ? AND semesternum = ?";
+        $rows = $dao->query($query, $request->get("pname"), $request->get("semester"));
+        echo json_encode($rows);
     }
 
     function display($request) {
         // $request->get('SOCode'), $request->get('pname'), $request->get('pname'), $request->get('pcnum'), $request->get('answer'), $request->get('weightName'), $request->get('weightValue'), $request->get('dateActivated'), $request->get('dateDeactivated'), 'Rubrics-Based', 'Rubrics-Based', $request->get('statusName')
+        // $request->get('weightName'), $request->get('weightValue'), 'Rubrics-Based', $request->get('pname')
         $request->set('pname', 'ICS');
         $request->set('courseCode', '102');
         $request->set('femail', 'saleh');
@@ -792,13 +820,13 @@ class Action_Coordinator {
         $request->set('dateActivated', '2010-01-02');
         $request->set('dateDeactivated', '2011-02-06');
         $request->set('SOCode', 'a');
-        $request->set('surveyName', 'Rubrics-Based');
+        $request->set('surveyName', 'CLO-Based');
         $request->set('beginTerm', '152');
         $request->set('endTerm', '152');
         //$request->set('answer', 'Disagree');
 
 
-        $this->addPCAnswer($request);
+        $this->deletePCAnswer($request);
     }
 
 }

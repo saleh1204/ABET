@@ -23,12 +23,6 @@ $(document).ready(function () {
                 function (data, textStatus, jqXHR)
                 {
                     var s2 = $('#inputC1A');
-                    // AJAX HERE
-                    /*var s2L = ["a", "b"];
-                     for (var i = 0; i < s2L.length; i++) {
-                     s2.append('<option value = "' + s2L[i] + '">' + s2L[i] + '</option>');
-                     }*/
-
                     for (var i = 0; i < data.length; i++) {
                         s2.append('<option value = "' + data[i].SOCode + '">' + data[i].SOCode + '</option>');
                     }
@@ -36,9 +30,7 @@ $(document).ready(function () {
                 }).fail(
                 function (jqXHR, textStatus, errorThrown)
                 {
-                    // log error to browser's console
                     console.log(errorThrown.toString());
-                    //return cl;
                 });
 
 
@@ -136,9 +128,9 @@ $(document).ready(function () {
 
 
 
-
+        //alert($(this).text());
         if ($(this).text().length === 6) {
-            //alert('Delete');
+            //alert('Delete1');
             // DELETE THE RECORD FROM DATABSE PLEASE
             // THIS DELETE WILL USE ALL THE VALUES IN THE COOKIES 
             // $request->get('weightName'), $request->get('weightValue'), 'Rubrics-Based', $request->get('pname')
@@ -146,20 +138,21 @@ $(document).ready(function () {
                 grp: "Coordinator",
                 cmd: "deletePCAnswer",
                 pname: getCookie('PName'),
-                weightName: $col1,
-                weightValue: $col2
-
+                weightName: $col4,
+                weightValue: $col5,
+                pcnum: $col2, 
+                SOCode: $col1
             };
-
+            //alert('Delete2');
             $.getJSON("../index.php", parameters).done(function (data, textStatus, jqXHR) {
                 generateTable();
             }
             ).fail(function (jqXHR, textStatus, errorThrown)
             {
-                // log error to browser's console
-                console.log(textStatus + "\n" + errorThrown.toString());
+                console.log(jqXHR + "\n" + textStatus + "\n" + errorThrown.toString());
 
             });
+
         } else { // it is an update
             document.getElementById("inputC1A").value = $col1;
             document.getElementById("inputC2A").value = $col2;
@@ -195,11 +188,35 @@ $(document).ready(function () {
         if (isUpdate)
         {
             isUpdate = false;
+            var parameters = {
+                grp: "Coordinator",
+                cmd: "updatePCAnswer",
+                oldSOCode: $col1,
+                SOCode: newC1,
+                pcnum: newC2,
+                answer: newC3,
+                statusName: newC8,
+                dateActivated: newC6,
+                dateDeactivated: newC7,
+                weightName: newC4,
+                weightValue: newC5,
+                oldWeightName: $col4,
+                oldWeightValue: $col3,
+                pname: getCookie('PName')
+            };
+            $.getJSON("../index.php", parameters).done(function (data, textStatus, jqXHR) {
+                //alert("Added Successfully!!!");
+                generateTable();
+            }
+            ).fail(function (jqXHR, textStatus, errorThrown)
+            {
+                console.log(textStatus + "\n" + errorThrown.toString());
+            });
         }
         else
         {
             // $request->get('SOCode'), $request->get('pname'), $request->get('pname'), $request->get('pcnum'), $request->get('answer'), $request->get('weightName'), $request->get('weightValue'), $request->get('dateActivated'), $request->get('dateDeactivated'), 'Rubrics-Based', 'Rubrics-Based', $request->get('statusName')
-            alert('Add');
+            //alert('Add');
             var parameters = {
                 grp: "Coordinator",
                 cmd: "addPCAnswer",
@@ -219,7 +236,6 @@ $(document).ready(function () {
             }
             ).fail(function (jqXHR, textStatus, errorThrown)
             {
-// log error to browser's console
                 console.log(textStatus + "\n" + errorThrown.toString());
             });
         }

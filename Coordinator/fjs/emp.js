@@ -66,13 +66,13 @@ $(document).ready(function () {
     }
 
     $("#demo-form2").on('click', '#save', function () {
-        alert("save 1");
+        //alert("save 1");
         var newC1 = document.getElementById("inputC1A").value;
         // USE THESE IN THE SELECT PLUS THE PNAME FROM THE COOKIE
         document.cookie = "Term =" + newC1
 
 
-        alert(newC1);
+        //alert(newC1);
 
         generateTable();
 

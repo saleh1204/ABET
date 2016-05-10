@@ -21,9 +21,9 @@ $(document).ready(function () {
             for (var i = 0; i < numQuestions; i++)
             {
                 Squestions[i] = $("#question" + i).html();
-               // alert(Squestions[i]);
+                // alert(Squestions[i]);
                 Sanswers[i] = $row.find(".col" + (i + 2)).text();
-               // alert(Sanswers[i]);
+                // alert(Sanswers[i]);
             }
             // DELETE THE RECORD FROM DATABSE PLEASE
             var parameters = {
@@ -143,51 +143,55 @@ function generateTable() {
             function (data, textStatus, jqXHR)
             {
                 var myTable = $("#example").empty();
-                myTable.append("<thead>");
-
-                var th = $('<tr>').appendTo(myTable);
-                th.append("<th> # </th> <th> SUID </th>");
-                for (var k = 0; k < data[0].count; k++)
+                //alert(data.length);
+                if (data.length > 0)
                 {
-                    th.append("<th> Question " + (k + 1) + " Answer </th>");
-                }
-                th.append("<th> Actions </th></tr>");
-                myTable.append("</thead>");
+                    myTable.append("<thead>");
 
-                myTable.append("<tbody>");
-
-                for (var j = 0; j < data.length; j++)
-                {
-
-                    var tr = $('<tr>').appendTo(myTable);
-                    tr.append('<td class = "sr">' + (j + 1) + '</td>');
-                    tr.append("<td class='col1'> " + data[j].SUID + "</td>");
-                    for (var k = 0; k < data[j].count; k++)
+                    var th = $('<tr>').appendTo(myTable);
+                    th.append("<th> # </th> <th> SUID </th>");
+                    for (var k = 0; k < data[0].count; k++)
                     {
-                        tr.append("<td class='col" + (k + 2) + "'> " + data[j].answers[k] + "</td>");
-
+                        th.append("<th> Question " + (k + 1) + " Answer </th>");
                     }
-                    tr.append('<td>' + '<button class="btn btn-default"  ><i class="glyphicon glyphicon-remove\"></i>Delete</button>' + '</td>');
-                    tr.append("</tr>");
-                }
+                    th.append("<th> Actions </th></tr>");
+                    myTable.append("</thead>");
 
-                myTable.append("</tbody>");
-                $('#example').dataTable();
-                $('#example-keytable').DataTable({
-                    keys: true
-                });
-                $('#example-responsive').DataTable();
-                $('#example-scroller').DataTable({
-                    ajax: "./js/datatables/json/scroller-demo.json",
-                    deferRender: true,
-                    scrollY: 380,
-                    scrollCollapse: true,
-                    scroller: true
-                });
-                var table = $('#example-fixed-header').DataTable({
-                    fixedHeader: true
-                });
-                TableManageButtons.init();
+                    myTable.append("<tbody>");
+
+                    for (var j = 0; j < data.length; j++)
+                    {
+
+                        var tr = $('<tr>').appendTo(myTable);
+                        tr.append('<td class = "sr">' + (j + 1) + '</td>');
+                        tr.append("<td class='col1'> " + data[j].SUID + "</td>");
+                        for (var k = 0; k < data[j].count; k++)
+                        {
+                            tr.append("<td class='col" + (k + 2) + "'> " + data[j].answers[k] + "</td>");
+
+                        }
+                        tr.append('<td>' + '<button class="btn btn-default"  ><i class="glyphicon glyphicon-remove\"></i>Delete</button>' + '</td>');
+                        tr.append("</tr>");
+                    }
+
+                    myTable.append("</tbody>");
+                    $('#example').dataTable();
+                    $('#example-keytable').DataTable({
+                        keys: true
+                    });
+                    $('#example-responsive').DataTable();
+                    $('#example-scroller').DataTable({
+                        ajax: "./js/datatables/json/scroller-demo.json",
+                        deferRender: true,
+                        scrollY: 380,
+                        scrollCollapse: true,
+                        scroller: true
+                    });
+                    var table = $('#example-fixed-header').DataTable({
+                        fixedHeader: true
+                    });
+                    TableManageButtons.init();
+                }
             }
     ).fail(
             function (jqXHR, textStatus, errorThrown)
@@ -230,7 +234,8 @@ function addQuestionTexts()
     $.getJSON("../index.php", parameters).done(
             function (data, textStatus, jqXHR)
             {
-                //alert('Questions Loaded'); id="inputC' + (i + 2) + 'A"
+                alert('Questions Loaded ' + data.length);
+                
                 var questionDiv = $("#questions div").empty();
                 questionDiv = $("#questions");
                 for (var i = 0; i < data.length; i++) {
@@ -266,7 +271,7 @@ function addAnswerValues()
     $.getJSON("../index.php", parameters).done(
             function (data, textStatus, jqXHR)
             {
-                var answers = $("#myTable").empty();
+                var answers = $("#answers").empty();
                 var myTemp = $('<tr style = "text-align: center;">').appendTo(answers);
                 for (var i = 0; i < data.length; i++) {
                     myTemp.append('<td>' + data[i].weight_name + '</td>');

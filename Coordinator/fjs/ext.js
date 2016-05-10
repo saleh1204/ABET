@@ -6,7 +6,7 @@ $(document).ready(function () {
     $('#username').text(getCookie('email'));
     fillSelect();
     function fillSelect() {
-        alert('there');
+        //alert('there');
         var parameters1 = {
             grp: "DBA",
             cmd: "getSemesters"

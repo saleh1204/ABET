@@ -16,32 +16,35 @@ $(document).ready(function () {
         $col1 = $row.find(".col1").text();
         var Sanswers = [];
         var Squestions = [];
-        alert("Delete4");
+        //alert("Delete4");
         if ($(this).text().length === 6) {
             for (var i = 0; i < numQuestions; i++)
             {
-                Squestions[i] = $("#question" + i).html();
-               // alert(Squestions[i]);
-                Sanswers[i] = $row.find(".col" + (i + 2)).text();
-               // alert(Sanswers[i]);
+                Squestions[i] = $.trim($("#question" + i).html());
+                // alert(Squestions[i]);
+                Sanswers[i] = $.trim($row.find(".col" + (i + 2)).text());
+                // alert(Sanswers[i]);
             }
             // DELETE THE RECORD FROM DATABSE PLEASE
             // TO-DO 
             // Check why Delete Does not work
+            //alert($col1);
             var parameters = {
                 grp: "Faculty",
                 cmd: "deleteStudentAnswers",
                 pname: getCookie('PName'),
                 courseCode: getCookie('CCode'),
-                ID: $col1,
+                ID: $.trim($col1),
                 surveyName: 'CLO-Based',
                 section: getCookie('Section'),
                 answers: Sanswers,
                 questions: Squestions
+
             };
+            console.log(parameters);
 
             $.getJSON("../index.php", parameters).done(function (data, textStatus, jqXHR) {
-                alert('Success');
+                //alert('Success');
                 generateTable();
             }
             ).fail(function (jqXHR, textStatus, errorThrown)

@@ -619,7 +619,7 @@ class Action_Faculty {
                     . 'AND ProgramID = (select ProgramID from Program where PNameShort = ?)));';
             $rows = $dao->query($query1, $request->get("ID"), $request->get("section"), $request->get("courseCode"), $request->get("pname"));
         }
-        echo json_encode($rows);
+        echo json_encode($tmpRows);
     }
 
     function getSummary($request) {

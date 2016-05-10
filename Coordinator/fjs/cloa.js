@@ -15,9 +15,7 @@ $(document).ready(function () {
         s1.val('');
     }
     function generateTable() {
-// flush the table
-// getCLOAnswers
-//alert('here');
+
         var parameters = {
             grp: "Coordinator",
             cmd: "getCLOAnswers",
