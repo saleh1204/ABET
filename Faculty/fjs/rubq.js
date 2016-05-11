@@ -1,3 +1,4 @@
+var isUpdate = false;
 $(document).ready(function () {
     $("#inputC2A").val("");
     $("#inputC3A").val("");
@@ -34,40 +35,10 @@ $(document).ready(function () {
 
         var s2 = $('#inputC4A');
         s2.empty();
-        //alert('hey');
         var s1L = ["Active", "Inactive"];
         for (var i = 0; i < s1L.length; i++) {
             s2.append('<option value = "' + s1L[i] + '">' + s1L[i] + '</option>');
         }
-        /*
-         var parameters = {
-         grp: "DBA",
-         cmd: "getStatus"
-         };
-         $.getJSON("../index.php", parameters).done(
-         function (data, textStatus, jqXHR)
-         {
-         
-         var s2 = $('#inputC4A');
-         s2.empty();
-         var s1L = [];
-         for (var i = 0; i < data.length; i++)
-         {
-         s1L[i] = data[i].StatusType;
-         //alert(data[i].StatusType);
-         //alert
-         }
-         for (var i = 0; i < s1L.length; i++) {
-         s2.append('<option value = "' + s1L[i] + '">' + s1L[i] + '</option>');
-         }
-         // s1.val('');
-         }).fail(
-         function (jqXHR, textStatus, errorThrown)
-         {
-         // log error to browser's console
-         console.log(errorThrown.toString());
-         });
-         */
     }
     function generateTable() {
         var parameters = {
@@ -104,6 +75,7 @@ $(document).ready(function () {
 
                     for (i = 0; i < col2.length; i++) {
                         var tr = $('<tr>').appendTo(tb);
+                        tr.append('<td>' + (i+1) + '</td>');
                         tr.append('<td class = "col1">' + col1[i] + '</td>');
                         tr.append('<td class = "col2" style = "text-align: center;">' + col2[i] + '</td>');
                         tr.append('<td class = "col3" style = "text-align: center;">' + col3[i] + '</td>');
@@ -179,7 +151,7 @@ $(document).ready(function () {
             document.getElementById("inputC2A").value = $col2;
             $("#inputC3A").val($col3);
             $("#inputC4A").val($col4);
-
+            isUpdate = true;
 
 
         }
@@ -191,40 +163,44 @@ $(document).ready(function () {
         var newC2 = document.getElementById("inputC2A").value;
         var newC3 = document.getElementById("inputC3A").value;
         var newC4 = document.getElementById("inputC4A").value;
-
-
-        //alert(newC1 + " " + newC2 + " " + newC3);
         /**************************
          DELETE GOES HERE (in case of update just to be safe)
          INSERT STATEMENT GOES HERE
          **************************
          */
 
-
-        var parameters = {
-            grp: "Faculty",
-            cmd: "addQuestion",
-            orderNo: newC1,
-            questionText: newC2,
-            SurveyName: 'Rubrics-Based',
-            statusName: newC4,
-            statusType: 'Survey',
-            pnameShort: getCookie('PName'),
-            courseCode: getCookie('CCode'),
-            SOCode: newC3
-
-        };
-
-        $.getJSON("../index.php", parameters).done(function (data, textStatus, jqXHR) {
-            alert("Added Successfully!!!");
-            generateTable();
-        }
-        ).fail(function (jqXHR, textStatus, errorThrown)
+        if (isUpdate)
         {
-            // log error to browser's console
-            console.log(textStatus + "\n" + errorThrown.toString());
+            isUpdate = false;
+        }
+        else
+        {
+            var parameters = {
+                grp: "Faculty",
+                cmd: "addQuestionRubrics",
+                orderNo: newC1,
+                rubricsNo: newC1,
+                questionText: newC2,
+                surveyType: 'Rubrics-Based',
+                statusName: newC4,
+                statusType: 'Survey',
+                pnameShort: getCookie('PName'),
+                courseCode: getCookie('CCode'),
+                SOCode: newC3
 
-        });
+            };
+
+            $.getJSON("../index.php", parameters).done(function (data, textStatus, jqXHR) {
+                //alert("Added Successfully!!!");
+                generateTable();
+            }
+            ).fail(function (jqXHR, textStatus, errorThrown)
+            {
+                // log error to browser's console
+                console.log(textStatus + "\n" + errorThrown.toString());
+
+            });
+        }
         document.getElementById("inputC1A").value = "";
         document.getElementById("inputC2A").value = "";
         $("#inputC3A").val('');
@@ -233,8 +209,6 @@ $(document).ready(function () {
 
     });
     $("#demo-form2").on('click', '#cancel', function () {
-
-        alert("cancel");
         document.getElementById("inputC1A").value = "";
         document.getElementById("inputC2A").value = "";
         $("#inputC3A").val('');

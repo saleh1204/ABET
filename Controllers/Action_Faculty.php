@@ -99,27 +99,32 @@ class Action_Faculty {
     // Add Question Rubrics
     public function addQuestionRubrics($request) {
         $dao = new ABETDAO();
-        $query = 'insert into abet.question (RubricsNo, OrderNo, QuestionText, SurveyTypeID, StatusID, StudentOutcome_SOID, Course_CourseID) values ('
+        $query = 'insert into abet.question (pcnum, OrderNo, QuestionText, SurveyTypeID, StatusID, StudentOutcome_SOID, Course_CourseID) values ('
                 . '?, '
                 . '?, '
                 . '?, '
                 . '(select SurveyTypeID from ABET.SurveyType where SurveyName = ?), ' // SurveyType: CLO-Based
-                . '(select StatusID from ABET.Status where StatusName = ?), ' // Active, Inactive
+                . '(select StatusID from ABET.Status where StatusName = ? and StatusType = ?), ' // Active, Inactive
                 . '(select SOID from ABET.StudentOutcome where SOCode = ?), ' // a-k
                 . '(select CourseID from ABET.Course where CourseCode = ? AND ProgramID = (select ProgramID from Program where PNameShort = ?))'
                 . ');';
-        $result = $dao->query($query, $request->get('rubricsNo'), $request->get('orderNo'), $request->get('questionText'), $request->get('surveyType'), $request->get('statusName'), $request->get('SOCode'), $request->get('courseCode'), $request->get('pnameShort'));
+        $result = $dao->query($query, $request->get('rubricsNo'), $request->get('orderNo'), $request->get('questionText'), $request->get('surveyType'), $request->get('statusName'), $request->get('statusType'), $request->get('SOCode'), $request->get('courseCode'), $request->get('pnameShort'));
+        //echo json_encode($result);
         $query2 = 'select AID from Answer where SurveyType_SurveyTypeID = (select SurveyTypeID from SurveyType where SurveyName = ?) '
                 . 'AND Status_StatusID = (select StatusID from ABET.Status where StatusName = ? AND StatusType = ?)';
-        $aids = $dao->query($query2, $request->get('SurveyName'), $request->get('statusName'), $request->get('statusType'));
+        $aids = $dao->query($query2, $request->get('surveyType'), $request->get('statusName'), 'Survey');
+
         $query3 = 'select QID from Question where QuestionText = ? AND Course_CourseID = (select CourseID from Course where courseCode = ? AND ProgramID = (select ProgramID from Program where PNameShort = ?)) AND SurveyTypeID = (select SurveyTypeID from SurveyType where SurveyName = ?)';
-        $qid = $dao->query($query3, $request->get('questionText'), $request->get('courseCode'), $request->get('pnameShort'), $request->get('SurveyName'));
+        $qid = $dao->query($query3, $request->get('questionText'), $request->get('courseCode'), $request->get('pnameShort'), $request->get('surveyType'));
+        //echo json_encode($qid);
         for ($i = 0; $i < count($aids); $i++) {
             $query1 = 'insert into QA (Question_QID, Answer_AID, Status_StatusID) VALUES ('
                     . '(?),(?), (select StatusID from ABET.Status where StatusName = ? AND StatusType = ?));';
-            $dao->query($query1, $qid[0]["QID"], $aids[$i]["AID"], $request->get('statusName'), $request->get('statusType'));
+            $result2 = $dao->query($query1, $qid[0]["QID"], $aids[$i]["AID"], $request->get('statusName'), $request->get('statusType'));
+            //echo json_encode($result2);
         }
-        echo json_encode($result);
+        echo json_encode($aids);
+        //echo json_encode($result);
     }
 
     // Add Question 
@@ -425,22 +430,86 @@ class Action_Faculty {
             }
         }
         print (json_encode($studentAnswers, JSON_PRETTY_PRINT));
-        /*
-          $dao = new ABETDAO();
-          $query = '';
-          $rows = $dao->query($query);
-          $studentAnswers = [];
-          if ($rows != false) {
-          foreach ($rows as $row) {
-          $studentAnswers[] = [
-          "SUID" => $row["SUID"],
-          "Question1Answer" //
-          ];
-          }
-          }
-          echo json_encode($studentAnswers);
-         * 
-         */
+    }
+
+    public function getPCSummary($request) {
+        $dao = new ABETDAO();
+        $query = "SELECT GROUP_CONCAT(DISTINCT CONCAT('count(IF(weight_value = ''',Weight_value,''', Weight_Value, NULL)) AS \'',Weight_Name, '\'') order by weight_value desc) 
+                    FROM ABET.SEMESTER SEM, ABET.Section SEC, ABET.Student_Section SS, ABET.Student STU, 
+                    ABET.StudentQA SQA, ABET.QA QA, ABET.Answer A, ABET.QUESTION Q, ABET.StudentOutcome SO, 
+                    ABET.SurveyType ST, ABET.Course C, ABET.Program P, ABET.Faculty F 
+                    WHERE SEM.SEMESTERNUM = ?
+                    AND SEC.FACULTYID = F.FACULTYID
+                    AND F.EMAIL = ?
+                    AND SEM.SEMESTERID = SEC.SEMESTERID
+                    AND SEC.SECTIONID = SS.SECTIONID
+                    AND SS.STUDENT_STUDENTID = STU.STUDENTID
+                    AND SS.SSID = SQA.STUDENT_SECTION_SSID
+                    AND SQA.QA_QAID = QA.QAID
+                    AND QA.Answer_AID = A.AID
+                    AND QA.Question_QID = Q.QID
+                    AND Q.STUDENTOUTCOME_SOID = SO.SOID
+                    AND Q.SURVEYTYPEID = ST.SURVEYTYPEID
+                    AND ST.SURVEYNAME = ?  
+                    AND Q.COURSE_COURSEID = C.COURSEID
+                    AND C.PROGRAMID = P.PROGRAMID
+                    AND P.PNAMESHORT = ? 
+                    AND C.COURSECODE = ?;";
+        $result = $dao->query($query, $request->get("semester"), $request->get("femail"), $request->get("surveyType"), $request->get("pname"), $request->get("courseCode"));
+        //echo json_encode($result);
+        $answerStr = implode(" ", $result[0]);
+        //echo json_encode($answerStr);
+        $query2 = "SELECT  socode, Q.pcnum, Q.questiontext, " . $answerStr . ", avg(weight_value) as avg, (100*sum(if(a.weight_value > ?, 1, 0)) / count(*)) as percent FROM ABET.SEMESTER SEM, ABET.Section SEC, ABET.Student_Section SS, ABET.Student STU, 
+            ABET.StudentQA SQA, ABET.QA QA, ABET.Answer A, ABET.QUESTION Q, ABET.StudentOutcome SO,
+            ABET.SurveyType ST, ABET.Course C, ABET.Program P
+            WHERE SEM.SEMESTERNUM = ?
+            AND SEM.SEMESTERID = SEC.SEMESTERID
+            AND SEC.SECTIONID = SS.SECTIONID
+            AND SS.STUDENT_STUDENTID = STU.STUDENTID
+            AND SS.SSID = SQA.STUDENT_SECTION_SSID
+            AND SQA.QA_QAID = QA.QAID
+            AND QA.Answer_AID = A.AID
+            AND QA.Question_QID = Q.QID
+            AND Q.STUDENTOUTCOME_SOID = SO.SOID
+            AND Q.SURVEYTYPEID = ST.SURVEYTYPEID
+            AND ST.SURVEYNAME = ?
+            AND Q.COURSE_COURSEID = C.COURSEID
+            AND C.PROGRAMID = P.PROGRAMID
+            AND P.PNAMESHORT = ?
+            AND C.COURSECODE = ? GROUP BY ( Q.questiontext);";
+        $result2 = $dao->query($query2, $request->get("value"), $request->get("semester"), $request->get("surveyType"), $request->get("pname"), $request->get("courseCode"));
+        //echo json_encode($result2);
+        $tmpQuery = "select DISTINCT Weight_Name from answer a, program p where a.program_programid = p.programid and p.pnameshort = ? and a.SurveyType_SurveyTypeID = (SELECT surveytypeid from surveytype WHERE surveyname = 'Rubrics-Based')";
+        $tmpRows = $dao->query($tmpQuery, $request->get('pname'));
+        $answerNames = [];
+        for ($j = 0; $j < count($tmpRows); $j++) {
+            $answerNames[$j] = $tmpRows[$j]["Weight_Name"];
+        }
+        $summary = [];
+        if ($result2 != false) {
+            foreach ($result2 as $row) {
+                $answerCount = [];
+                for ($i = 0; $i < count($answerNames); $i++) {
+                    $tmpStr = str_replace(" ", "_", $answerNames[$i]);
+                    if (isset($row[$tmpStr])) {
+                        $answerCount[$i] = $row[$tmpStr];
+                    } else {
+                        $answerCount[$i] = 0;
+                    }
+                }
+                $summary[] = [
+                    "pcnum" => $row["pcnum"],
+                    "Question" => $row["questiontext"],
+                    "SOCode" => $row["socode"],
+                    "avg" => $row["avg"],
+                    "percent" => $row["percent"],
+                    "answersValues" => $answerCount,
+                    "answerNames" => $answerNames,
+                    "NumberAnswers" => count($answerNames),
+                ];
+            }
+        }
+        echo json_encode($summary);
     }
 
     function getPCResponse($request) {
@@ -471,7 +540,7 @@ class Action_Faculty {
         $rows1 = $dao->query($query1, $request->get("semester"), $request->get("femail"), $request->get("surveyType"), $request->get("pname"), $request->get("courseCode")); //'CLO-Based');
         // $data = [];
         $columns = "";
-        echo json_encode($rows1);
+        //echo json_encode($rows1);
         $i = 0;
         for ($i = 0; $i < count($rows1); $i++) {
             $columns = $columns . "MAX(IF(QuestionText = '" . $rows1[$i]["questiontext"] . "', Weight_Name, NULL)) AS Question_" . ($i + 1) . ""; //$row["questiontext"];
@@ -567,6 +636,7 @@ class Action_Faculty {
         for ($i = 0; $i < count($request->get("answers")); $i++) {
             $rows = $dao->query($query, $tmpRows[0]["SSID"], $request->get("surveyName"), $request->get("courseCode"), $request->get("pname"), $request->get("answers")[$i], $request->get("questions")[$i]);
         }
+        echo json_encode($rows);
         if ($request->get('surveyName') == 'CLO-Based') {
             $query1 = 'UPDATE student_section SET isCLOFilled = 1 '
                     . 'WHERE Student_StudentID = (select StudentID from Student where SUID = ?) '
@@ -575,7 +645,7 @@ class Action_Faculty {
                     . 'AND ProgramID = (select ProgramID from Program where PNameShort = ?)));';
             $rows = $dao->query($query1, $request->get("ID"), $request->get("section"), $request->get("courseCode"), $request->get("pname"));
         }
-        echo json_encode($rows);
+        //echo json_encode($tmpRows);
     }
 
     function deleteStudentAnswers($request) {
@@ -767,8 +837,8 @@ class Action_Faculty {
 
     function getDynamicAnswers($request) {
         $dao = new ABETDAO();
-        $query = "select distinct weight_name, weight_value from abet.answer a, abet.status sta, abet.surveytype st, abet.program p "
-                . "where st.surveyname = ? and sta.statustype = ? and sta.statusname = ? and p.pnameshort = ? and p.programid = a.program_programid and a.surveytype_surveytypeid and sta.statusid = a.status_statusid"
+        $query = "select weight_name, weight_value from abet.answer a, abet.status sta, abet.surveytype st, abet.program p "
+                . "where st.surveyname = ? and sta.statustype = ? and sta.statusname = ? and p.pnameshort = ? and p.programid = a.program_programid and a.surveytype_surveytypeid = st.surveytypeid and sta.statusid = a.status_statusid"
                 . " order by weight_value desc;";
         $rows = $dao->query($query, $request->get('surveyName'), $request->get('statusName'), 'Active', $request->get('pname'));
         echo json_encode($rows);

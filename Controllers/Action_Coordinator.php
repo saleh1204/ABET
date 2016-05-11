@@ -132,7 +132,7 @@ class Action_Coordinator {
         (select SurveyTypeID from SurveyType where SurveyName = ?),
 	(select StatusID from abet.status where statustype = ? and statusname = ?)
         );";
-        $rows = $dao->query($query, $request->get('SOCode'), $request->get('pname'), $request->get('pname'), $request->get('pcnum'), $request->get('answer'), $request->get('weightName'), $request->get('weightValue'), $request->get('dateActivated'), $request->get('dateDeactivated'), 'Rubrics-Based', 'QuestionAnswer', $request->get('statusName'));
+        $rows = $dao->query($query, $request->get('SOCode'), $request->get('pname'), $request->get('pname'), $request->get('pcnum'), $request->get('answer'), $request->get('weightName'), $request->get('weightValue'), $request->get('dateActivated'), $request->get('dateDeactivated'), 'Rubrics-Based', 'Survey', $request->get('statusName'));
         echo json_encode($rows);
     }
 
@@ -587,7 +587,7 @@ class Action_Coordinator {
 
     public function getPCReport($request) {
         $dao = new ABETDAO();
-        $query = "SELECT  concat(pnameshort, '_', coursecode) as course, semesternum, Q.pcnum , avg(weight_value) as avg, 100*sum(if(a.weight_value > ?, 1, 0)) / count(*) as percent
+        $query = "SELECT  concat(pnameshort, '_', coursecode) as course, semesternum, count(*) as count, Q.pcnum , Q.QuestionText ,avg(weight_value) as avg, 100*sum(if(a.weight_value > ?, 1, 0)) / count(*) as percent
             FROM ABET.SEMESTER SEM, ABET.Section SEC, ABET.Student_Section SS, ABET.Student STU,
             ABET.StudentQA SQA, ABET.QA QA, ABET.Answer A, ABET.QUESTION Q, ABET.StudentOutcome SO,
             ABET.SurveyType ST, ABET.Course C, ABET.Program P
@@ -766,7 +766,7 @@ class Action_Coordinator {
         echo json_encode($report);
     }
 
-    function getEmpExitReport($request) {
+    public function getEmpExitReport($request) {
         $dao = new ABETDAO();
         $query1 = "SELECT SOCode , AVG(Weight_Value) as avg 
             FROM ABET.StudentOutcome SO, ABET.Question Q, ABET.Course C, ABET.SurveyType ST, ABET.QA QA, 
