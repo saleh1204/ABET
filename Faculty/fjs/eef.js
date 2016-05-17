@@ -97,7 +97,7 @@ $(document).ready(function () {
         if (questionAnswered)
         {
             $.getJSON("../index.php", parameters).done(function (data, textStatus, jqXHR) {
-                alert("Added Successfully!!!");
+                //alert("Added Successfully!!!");
                 generateTable();
             }
             ).fail(function (jqXHR, textStatus, errorThrown)
@@ -112,7 +112,7 @@ $(document).ready(function () {
     });
     $("#demo-form2").on('click', '#cancel', function () {
 
-        alert("cancel");
+        // alert("cancel");
         // LOOP HERE
         document.getElementById("inputC1A").value = "";
         document.getElementById("inputC2A").value = "";

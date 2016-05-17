@@ -96,7 +96,7 @@ $(document).ready(function () {
         if ($(this).text().length === 6) {
 // DELETE THE RECORD FROM DATABSE PLEASE
 // THIS DELETE WILL USE ALL THE VALUES IN THE COOKIES 
-            alert("Here");
+            //alert("Here");
             var parameters = {
                 grp: "Coordinator",
                 cmd: "deleteStudentOutcome",
@@ -107,7 +107,7 @@ $(document).ready(function () {
             };
 
             $.getJSON("../index.php", parameters).done(function (data, textStatus, jqXHR) {
-                alert("Deleted Successfully!!!");
+                //alert("Deleted Successfully!!!");
                 generateTable();
             }
             ).fail(function (jqXHR, textStatus, errorThrown)
@@ -158,7 +158,7 @@ $(document).ready(function () {
             };
 
             $.getJSON("../index.php", parameters).done(function (data, textStatus, jqXHR) {
-                alert("Added Successfully!!!");
+                //alert("Added Successfully!!!");
                 generateTable();
             }
             ).fail(function (jqXHR, textStatus, errorThrown)
@@ -189,7 +189,7 @@ $(document).ready(function () {
             };
 
             $.getJSON("../index.php", parameters).done(function (data, textStatus, jqXHR) {
-                alert("Added Successfully!!!");
+                //alert("Added Successfully!!!");
                 generateTable();
             }
             ).fail(function (jqXHR, textStatus, errorThrown)
@@ -211,7 +211,7 @@ $(document).ready(function () {
             ;
     $("#demo-form2").on('click', '#cancel', function () {
 
-        alert("cancel");
+        //alert("cancel");
         document.getElementById("inputC1A").value = "";
         document.getElementById("inputC2A").value = "";
         document.getElementById("inputC3A").value = "";

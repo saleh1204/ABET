@@ -171,7 +171,7 @@ $(document).ready(function () {
     });
     $("#demo-form2").on('click', '#cancel', function () {
 
-        alert("cancel");
+        //alert("cancel");
         // LOOP HERE
         document.getElementById("inputC1A").value = "";
         document.getElementById("inputC2A").value = "";

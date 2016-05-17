@@ -100,7 +100,7 @@ $(document).ready(function () {
 
     });
     $('#save').click(function () {
-        alert("INSIDE SAVE");
+        //alert("INSIDE SAVE");
         var newC1 = document.getElementById("inputC1A").value;
         var newC2 = document.getElementById("inputC2A").value;
         var newC3 = document.getElementById("inputC3A").value;
@@ -132,6 +132,5 @@ $(document).ready(function () {
         document.getElementById("inputC2A").value = "";
         document.getElementById("inputC3A").value = "";
         generateTable();
-        //   }
     });
 });

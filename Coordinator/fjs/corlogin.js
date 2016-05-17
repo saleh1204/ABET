@@ -38,22 +38,6 @@ $(document).ready(function () {
             $('#pp').css('color', 'red');
 
         });
-        /*
-         if (email === 'abd' && password === '123') {
-         document.cookie = "email =" + email;
-         //CHANGE LATER
-         window.location = 'Coordinator/so.html';
-         return false;
-         
-         }
-         else {
-         
-         $('#pp').text("Invalid user name or password");
-         $('#pp').css('color', 'red');
-         alert("inside else");
-         
-         }
-         */
     });
     function getCookie(cname) {
         var name = cname + "=";

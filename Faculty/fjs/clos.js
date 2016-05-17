@@ -23,14 +23,7 @@ $(document).ready(function () {
                     table.empty();
                     var col1 = [];//["a", "b", "c", "d"];
                     var col2 = [];//["1", "2", "3", "1"];
-                    // ARRAY BASED ON THE RECORD FROM THE SELECT
-                 
-                    // 
-                    /*************************************
-                     SELECT * FROM TABLE, TABLE, TABLE
-                     THIS SELECT NEEDS ALL COOKIES
-                     *************************************
-                     */
+  
                     var th = $('<thead> <tr>');//.appendTo(table)
                     th.append('<th> # </th>');
                     th.append('<th> Question </th>');

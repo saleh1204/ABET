@@ -2,13 +2,6 @@ $(document).ready(function () {
     $('.btn').click(function () {
         var email = $('#id1').val();
         var password = $('#pass').val();
-        //alert("Email: " + email + " Password: " + password);
-
-        /*
-         SELECT GOES HERE
-         THIS IS FROM THE USERS TABLE
-         */
-        // IF RESULT OF QUERY IS NOT NOLL AND THE TYPE IS ADMIN
 
         var parameters = {
             grp: "DisplayLogin",
@@ -41,23 +34,6 @@ $(document).ready(function () {
 
         });
 
-        /*
-         if (email === 'abd' && password === '123') {
-         email = 'adam@kfupm.edu.sa';
-         document.cookie = "email =" + email;
-         //CHANGE LATER
-         window.location = 'Faculty/facultycourses.html';
-         return false;
-         
-         }
-         else {
-         
-         $('#pp').text("Invalid user name or password");
-         $('#pp').css('color', 'red');
-         alert("inside else");
-         
-         }
-         */
     });
     function getCookie(cname) {
         var name = cname + "=";

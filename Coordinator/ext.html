@@ -291,41 +291,8 @@
         <script src="js/autocomplete/jquery.autocomplete.js"></script>
         <!-- pace -->
         <script src="js/pace/pace.min.js"></script>
-        <script type="text/javascript">
-                            $(function () {
-                                'use strict';
-                                var countriesArray = $.map(countries, function (value, key) {
-                                    return {
-                                        value: value,
-                                        data: key
-                                    };
-                                });
-                                // Initialize autocomplete with custom appendTo:
-                                $('#autocomplete-custom-append').autocomplete({
-                                    lookup: countriesArray,
-                                    appendTo: '#autocomplete-container'
-                                });
-                            });
-        </script>
         <script src="js/custom.js"></script>
 
-
-        <!-- select2 -->
-        <script>
-                            $(document).ready(function () {
-                                $(".select2_single").select2({
-                                    placeholder: "Select a state",
-                                    allowClear: true
-                                });
-                                $(".select2_group").select2({});
-                                $(".select2_multiple").select2({
-                                    maximumSelectionLength: 4,
-                                    placeholder: "With Max Selection limit 4",
-                                    allowClear: true
-                                });
-                            });
-        </script>
-        <!-- /select2 -->
         <!-- input tags -->
         <script>
             function onAddTag(tag) {
@@ -358,13 +325,7 @@
                     validateFront();
                 });
                 var validateFront = function () {
-                    if (true === $('#demo-form').parsley().isValid()) {
-                        $('.bs-callout-info').removeClass('hidden');
-                        $('.bs-callout-warning').addClass('hidden');
-                    } else {
-                        $('.bs-callout-info').addClass('hidden');
-                        $('.bs-callout-warning').removeClass('hidden');
-                    }
+                   
                 };
             });
 
@@ -377,13 +338,7 @@
                     validateFront();
                 });
                 var validateFront = function () {
-                    if (true === $('#demo-form2').parsley().isValid()) {
-                        $('.bs-callout-info').removeClass('hidden');
-                        $('.bs-callout-warning').addClass('hidden');
-                    } else {
-                        $('.bs-callout-info').addClass('hidden');
-                        $('.bs-callout-warning').removeClass('hidden');
-                    }
+                    
                 };
             });
             try {
@@ -394,12 +349,6 @@
         <!-- /form validation -->
         <!-- editor -->
         <script>
-            $(document).ready(function () {
-                $('.xcxc').click(function () {
-                    $('#descr').val($('#editor').html());
-                });
-            });
-
             $(function () {
                 function initToolbarBootstrapBindings() {
                     var fonts = ['Serif', 'Sans', 'Arial', 'Arial Black', 'Courier',

@@ -183,26 +183,7 @@
                                                     <input type="text" id="inputC1A" required="required" class="form-control col-md-7 col-xs-12">
                                                 </div>
                                             </div>
-                                            <!--
-                                            <div class="form-group">
-                                                <label class="control-label col-md-3 col-sm-3 col-xs-12" for="last-name">Student Name<span class="required">*</span>
-                                                </label>
-                                                <div class="col-md-6 col-sm-6 col-xs-12">
-                                                    <input type="text" id="inputC2A" name="last-name" required="required" class="form-control col-md-7 col-xs-12">
-                                                </div>
-                                            </div>
-                                            -->
-                                            <!--
-                                            <label class="control-label col-md-3 col-sm-3 col-xs-12">Survey Type</label>
-                                              <div class="col-md-6 col-sm-6 col-xs-12" id="beforeselect">
-                                                <select class="form-control"  id = "inputC3A">
-                                                  <option value="CLO-Based">CLO-Based</option>
-                                                  <option value="Rubrics-Based">Rubrics-Based</option>
-                                                  <option value="Employer-Based">Employer-Based</option>
-                                                  <option value="Exit-Survey">Exit-Survey</option>
-                                                </select>
-                                              </div>
-                                            -->
+    
                                             <h3 style="visibility: hidden;">h3</h3>
                                             <div class="ln_solid"></div>
                                             <div class="form-group">
@@ -312,41 +293,8 @@
         <script src="js/autocomplete/jquery.autocomplete.js"></script>
         <!-- pace -->
         <script src="js/pace/pace.min.js"></script>
-        <script type="text/javascript">
-                            $(function () {
-                                'use strict';
-                                var countriesArray = $.map(countries, function (value, key) {
-                                    return {
-                                        value: value,
-                                        data: key
-                                    };
-                                });
-                                // Initialize autocomplete with custom appendTo:
-                                $('#autocomplete-custom-append').autocomplete({
-                                    lookup: countriesArray,
-                                    appendTo: '#autocomplete-container'
-                                });
-                            });
-        </script>
         <script src="js/custom.js"></script>
 
-
-        <!-- select2 -->
-        <script>
-                            $(document).ready(function () {
-                                $(".select2_single").select2({
-                                    placeholder: "Select a state",
-                                    allowClear: true
-                                });
-                                $(".select2_group").select2({});
-                                $(".select2_multiple").select2({
-                                    maximumSelectionLength: 4,
-                                    placeholder: "With Max Selection limit 4",
-                                    allowClear: true
-                                });
-                            });
-        </script>
-        <!-- /select2 -->
         <!-- input tags -->
         <script>
             function onAddTag(tag) {

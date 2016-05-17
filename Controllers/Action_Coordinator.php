@@ -766,7 +766,7 @@ class Action_Coordinator {
         echo json_encode($report);
     }
 
-    public function getEmpExitReport($request) {
+    public function getEmpReport($request) {
         $dao = new ABETDAO();
         $query1 = "SELECT SOCode , AVG(Weight_Value) as avg 
             FROM ABET.StudentOutcome SO, ABET.Question Q, ABET.Course C, ABET.SurveyType ST, ABET.QA QA, 
@@ -784,11 +784,39 @@ class Action_Coordinator {
             AND Q.COURSE_COURSEID = C.COURSEID
             AND C.PROGRAMID = P.PROGRAMID
             AND P.PNAMESHORT = ?
-            AND C.COURSECODE = ?
+            AND SEM.SEMESTERNUM = ?
+            GROUP BY SOCODE;";
+        // AND C.COURSECODE = ?
+        // $request->get('courseCode')
+        $rows = $dao->query($query1, $request->get('surveyName'), $request->get('pname'), $request->get('Term'));
+        echo json_encode($rows);
+    }
+
+    public function getExitReport($request) {
+        $dao = new ABETDAO();
+        $query1 = "SELECT SOCode , AVG(Weight_Value) as avg 
+            FROM ABET.StudentOutcome SO, ABET.Question Q, ABET.Course C, ABET.SurveyType ST, ABET.QA QA, 
+            ABET.Answer A, ABET.StudentQA SQA, ABET.Program P, ABET.Semester SEM, ABET.SECTION SEC,
+            ABET.Student_Section SS
+            WHERE SQA.QA_QAID = QA.QAID
+            AND SEM.SEMESTERID = SEC.SEMESTERID
+            AND SS.SECTIONID = SEC.SECTIONID
+            AND SS.SSID = SQA.STUDENT_SECTION_SSID
+            AND QA.Answer_AID = A.AID
+            AND QA.Question_QID = Q.QID
+            AND Q.STUDENTOUTCOME_SOID = SO.SOID
+            AND Q.SURVEYTYPEID = ST.SURVEYTYPEID
+            AND ST.SURVEYNAME = ?
+            AND Q.COURSE_COURSEID = C.COURSEID
+            AND C.PROGRAMID = P.PROGRAMID
+            AND P.PNAMESHORT = ?
+            
             AND SEM.SEMESTERNUM >= ?
             AND SEM.SEMESTERNUM <= ?
             GROUP BY SOCODE;";
-        $rows = $dao->query($query1, $request->get('surveyName'), $request->get('pname'), $request->get('courseCode'), $request->get('beginTerm'), $request->get('endTerm'));
+        // AND C.COURSECODE = ?
+        // $request->get('courseCode')
+        $rows = $dao->query($query1, $request->get('surveyName'), $request->get('pname'), $request->get('beginTerm'), $request->get('endTerm'));
         echo json_encode($rows);
     }
 

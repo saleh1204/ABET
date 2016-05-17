@@ -718,8 +718,8 @@ class Action_Faculty {
         $rows = $dao->query($query, $request->get('semester'), $request->get('femail'), $request->get('surveyName'), $request->get('pname'), $request->get('courseCode'));
         //echo json_encode($rows[0]);
         $answerStr = implode(" ", $rows[0]);
-        $tmpQuery = 'select distinct weight_name from answer a, program p where a.program_programid = p.programid and p.pnameshort = ?';
-        $tmpRows = $dao->query($tmpQuery, $request->get('pname'));
+        $tmpQuery = 'select distinct weight_name from answer a, program p where a.program_programid = p.programid and p.pnameshort = ? and a.SurveyType_SurveyTypeID = (SELECT surveytypeid from surveytype WHERE surveyname = ?)';
+        $tmpRows = $dao->query($tmpQuery, $request->get('pname'), $request->get('surveyName'));
         // echo json_encode($tmpRows);
         // echo '<br />' . $answerStr . '<br /> <br />';
         $query1 = "SELECT Q.orderno, socode, QuestionText, " . $answerStr . ", avg(weight_value) as avg FROM ABET.SEMESTER SEM, ABET.Section SEC, ABET.Student_Section SS, ABET.Student STU, 

@@ -98,7 +98,7 @@ function generateTable() {
                 var courseCode = '';
                 for (var j = 0; j < data.length; j++)
                 {
-                    //alert("JSON_CourseCode: " + data[j].courseCode + " HTML_CourseCode: " + courseCode);
+                  
                     var tmp = "" + data[j].CourseCode;
                     if (tmp !== courseCode)
                     {

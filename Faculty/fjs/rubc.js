@@ -60,7 +60,7 @@ $(document).ready(function () {
                      THIS SELECT NEEDS ALL COOKIES
                      *************************************
                      */
-                    alert('Awesome ' + data.length);
+                    //alert('Awesome ' + data.length);
                     for (var j = 0; j < data.length; j++)
                     {
                         col1[j] = data[j].QuestionText;
@@ -236,7 +236,7 @@ $(document).ready(function () {
     });
     $("#demo-form2").on('click', '#cancel', function () {
 
-        alert("cancel");
+        //alert("cancel");
         document.getElementById("inputC2A").value = "";
         document.getElementById("inputC3A").value = "";
         $("#inputC1A").val('');

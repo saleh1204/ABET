@@ -77,7 +77,7 @@ $(document).ready(function () {
                         $.getJSON("../index.php", parameters).done(
                                 function (data, textStatus, jqXHR)
                                 {
-                                    alert("Success");
+                                    //alert("Success");
                                     window.location = 'studentcourses.html';
                                 }).fail(
                                 function (jqXHR, textStatus, errorThrown)

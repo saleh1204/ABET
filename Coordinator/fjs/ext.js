@@ -79,9 +79,10 @@ function generateTable() {
     var term1 = $("#inputC1A").val();
     var term2 = $("#inputC2A").val();
    // alert(term1 + term2);
+   // beginTerm
     var parameters1 = {
         grp: "Coordinator",
-        cmd: "getEmpExitReport",
+        cmd: "getExitReport",
         beginTerm: term1,
         endTerm: term2,
         pname: getCookie('PName'),
@@ -97,7 +98,8 @@ function generateTable() {
                 var col2 = [];//["3.8125", "3.8056", "3.9167", "2.99"];
                 for (var j = 0; j < data.length; j++)
                 {
-
+                    col1[j] = data[j].SOCode;
+                    col2[j] = data[j].avg;
                 }
                 var tb = $('#tbody');
                 for (var i = 0; i < col1.length; i++) {
