@@ -12,7 +12,8 @@ class Action_Student {
                 . 'JOIN `semester` ON `section`.`SemesterID` = `semester`.`SemesterID` '
                 . 'JOIN `student_section` ON `student_section`.`SectionID` = `section`.`SectionID` '
                 . 'JOIN `student` ON `student_section`.`Student_StudentID` = `student`.`StudentID` '
-                . 'WHERE student.SUID = ? AND isCLOFilled = 0 order by semesternum, pnameshort, coursecode, sectionnum';
+                . 'WHERE student.SUID = ? AND isCLOFilled = 0 '
+                . 'AND `course`.`CourseCode` NOT IN (399, 350, 351, 352) order by semesternum, pnameshort, coursecode, sectionnum';
         $rows = $dao->query($query, $request->get('ID'));
         $courses = [];
         foreach ($rows as $row) {

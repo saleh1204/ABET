@@ -637,14 +637,14 @@ class Action_Faculty {
             $rows = $dao->query($query, $tmpRows[0]["SSID"], $request->get("surveyName"), $request->get("courseCode"), $request->get("pname"), $request->get("answers")[$i], $request->get("questions")[$i]);
         }
         echo json_encode($rows);
-        if ($request->get('surveyName') == 'CLO-Based') {
-            $query1 = 'UPDATE student_section SET isCLOFilled = 1 '
-                    . 'WHERE Student_StudentID = (select StudentID from Student where SUID = ?) '
-                    . 'AND SectionID = (select SectionID from Section where sectionNum = ? '
-                    . 'AND CourseID = (select CourseID from Course where CourseCode = ? '
-                    . 'AND ProgramID = (select ProgramID from Program where PNameShort = ?)));';
-            $rows = $dao->query($query1, $request->get("ID"), $request->get("section"), $request->get("courseCode"), $request->get("pname"));
-        }
+        //if ($request->get('surveyName') == 'CLO-Based') {
+        $query1 = 'UPDATE student_section SET isCLOFilled = 1 '
+                . 'WHERE Student_StudentID = (select StudentID from Student where SUID = ?) '
+                . 'AND SectionID = (select SectionID from Section where sectionNum = ? '
+                . 'AND CourseID = (select CourseID from Course where CourseCode = ? '
+                . 'AND ProgramID = (select ProgramID from Program where PNameShort = ?)));';
+        $rows = $dao->query($query1, $request->get("ID"), $request->get("section"), $request->get("courseCode"), $request->get("pname"));
+        //}
         //echo json_encode($tmpRows);
     }
 

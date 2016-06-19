@@ -1,5 +1,5 @@
-$(document).ready(function () {
-    $('.btn').click(function () {
+$(document).ready(function() {
+    $('.btn').click(function() {
         var email = $('#id1').val();
         var password = $('#pass').val();
         /*
@@ -16,22 +16,17 @@ $(document).ready(function () {
 
         };
 
-        $.getJSON("index.php", parameters).done(function (data, textStatus, jqXHR) {
-            if (data[0].correct == true)
-            {
+        $.getJSON("index.php", parameters).done(function(data, textStatus, jqXHR) {
+            if (data[0].correct == true) {
                 document.cookie = "email =" + email;
                 //CHANGE LATER
                 window.location = 'Student/studentcourses.html';
                 return false;
-            }
-            else
-            {
+            } else {
                 $('#pp').text("Invalid user name or password");
                 $('#pp').css('color', 'red');
             }
-        }
-        ).fail(function (jqXHR, textStatus, errorThrown)
-        {
+        }).fail(function(jqXHR, textStatus, errorThrown) {
             // log error to browser's console
             console.log(textStatus + "\n" + errorThrown.toString());
             $('#pp').text("Cannot Connect to DB");
@@ -55,6 +50,7 @@ $(document).ready(function () {
         }
         */
     });
+
     function getCookie(cname) {
         var name = cname + "=";
         var ca = document.cookie.split(';');
